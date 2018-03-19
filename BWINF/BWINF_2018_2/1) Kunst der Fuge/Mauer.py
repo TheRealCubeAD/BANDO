@@ -1,5 +1,7 @@
 # Import des Zufallsmoduls
 import random
+# Import der Image Library
+from PIL import Image
 
 # Beginn des Programms
 print()

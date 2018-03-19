@@ -1,4 +1,5 @@
 import time
+from PIL import Image
 
 # Methode zur Ausgabe einer Matrix
 def printMatrix(matrix):
