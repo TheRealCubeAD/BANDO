@@ -1,7 +1,7 @@
 # Import des Zufallsmoduls
 import random
 # Import der Image Library
-from PIL import Image
+from PIL import Image, ImageDraw
 
 # Beginn des Programms
 print()
