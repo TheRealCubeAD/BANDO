@@ -1,5 +1,9 @@
 # Import des Zufallsmoduls
 import random
+
+# Um Pillow in PyCharm zu nuttzen:
+# Strg + Alt + S -> Project Interpretor -> grünes Plus -> "Pillow"
+
 # Import der Image Library
 from PIL import Image, ImageDraw
 
