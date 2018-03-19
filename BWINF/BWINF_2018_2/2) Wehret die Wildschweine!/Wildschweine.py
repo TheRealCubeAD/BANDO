@@ -68,6 +68,38 @@ print()
 printMatrix(Feld)
 
 
+# Visualisierung:
+
+s = 50
+x_max = feldbreite * s
+y_max = feldlaenge * s
+
+# Initialisierung des Bildes
+pic = Image.new("RGB", ((x_max+1, y_max+1)), (255, 255, 255))
+draw = ImageDraw.Draw(pic)
+
+# Einzeichnen der Höhen
+# Bestimmung der maximalen Hoehe
+h_max = 0
+for Reihe in Feld:
+    for Zelle in Reihe:
+        if float(Zelle) > h_max:
+            h_max = float(Zelle)
+
+for Reihe in range(feldbreite):
+    for Spalte in range(feldlaenge):
+        farbe = int( 255 * Feld[Spalte][Reihe] / h_max )
+        draw.rectangle([(Spalte*s, Reihe*s),((Reihe+1)*s,(Spalte+1)*s)], (255, 255, 255), (farbe, farbe, farbe))
+
+# Einzeichnen des Rasters
+for i in range(0, feldbreite+1):
+    draw.line([(0,i*s),(x_max,i*s)], (0, 0, 255))
+    draw.line([(i*s,0),(i*s,y_max)], (0, 0, 255))
+
+pic.show()
+
+
+
 # - - - - -
 # Schritt 2:
 # Aufsetzen der Matrizen
