@@ -1,6 +1,9 @@
 import time
 from PIL import Image, ImageDraw
 
+# Um Pillow in PyCharm zu nuttzen:
+# Strg + Alt + S -> Project Interpretor -> grünes Plus -> "Pillow"
+
 # Methode zur Ausgabe einer Matrix
 def printMatrix(matrix):
     for i in range(len(matrix)):
