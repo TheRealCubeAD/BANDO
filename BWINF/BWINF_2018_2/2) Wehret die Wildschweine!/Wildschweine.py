@@ -91,8 +91,8 @@ for Reihe in Feld:
 
 for Reihe in range(feldbreite):
     for Spalte in range(feldlaenge):
-        farbe = int( 255 * Feld[Spalte][Reihe] / h_max )
-        draw.rectangle([(Spalte*s, Reihe*s),((Reihe+1)*s,(Spalte+1)*s)], (255, 255, 255), (farbe, farbe, farbe))
+        farbe = int( 255 * float(Feld[Spalte][Reihe]) / h_max )
+        draw.rectangle([(Spalte*s, Reihe*s),((Reihe+1)*s,(Spalte+1)*s)], (farbe, farbe, farbe), (255, 255, 255))
 
 # Einzeichnen des Rasters
 for i in range(0, feldbreite+1):
