@@ -2,7 +2,7 @@
 import random
 
 # Um Pillow in PyCharm zu nuttzen:
-# Strg + Alt + S -> Project Interpretor -> grünes Plus -> "Pillow"
+# Strg + Alt + S -> Project Interpretor -> Pluszeichen -> "Pillow"
 
 # Import der Image Library
 from PIL import Image, ImageDraw

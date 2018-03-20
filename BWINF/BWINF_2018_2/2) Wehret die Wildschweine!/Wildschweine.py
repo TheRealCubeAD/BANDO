@@ -1,8 +1,9 @@
 import time
 from PIL import Image, ImageDraw
+from copy import deepcopy
 
 # Um Pillow in PyCharm zu nuttzen:
-# Strg + Alt + S -> Project Interpretor -> grünes Plus -> "Pillow"
+# Strg + Alt + S -> Project Interpretor -> Pluszeichen -> "Pillow"
 
 # Methode zur Ausgabe einer Matrix
 def printMatrix(matrix):
@@ -28,12 +29,83 @@ def aufrunden(n):
         while len(n) < 5:
             n += "0"
         n2 = n
-    elif len(n) > 5:
+    elif len(n) >= 5:
         n2 = int(float(n)*1000)
         n2 += 1
         n2 = n2 / 1000
         n2 = str(n2)
     return n2
+
+
+def ZeichneFeld(F):
+
+    # Visualisierung:
+
+    global h_max
+    global feldbreite
+    global feldlaenge
+
+    s = 50
+    x_max = feldbreite * s
+    y_max = feldlaenge * s
+
+    # Initialisierung des Bildes
+    pic = Image.new("RGB", ((x_max+1, y_max+1)), (255, 255, 255))
+    draw = ImageDraw.Draw(pic)
+
+    for Reihe in range(feldbreite):
+        for Spalte in range(feldlaenge):
+            farbe = int( 255 * float(F[Spalte][Reihe]) / h_max )
+            draw.rectangle([(Reihe*s, Spalte*s),((Reihe+1)*s,(Spalte+1)*s)], (farbe, farbe, farbe), (255, 255, 255))
+
+    # Einzeichnen des Rasters
+    for i in range(0, feldbreite+1):
+        draw.line([(0,i*s),(x_max,i*s)], (0, 0, 255))
+        draw.line([(i*s,0),(i*s,y_max)], (0, 0, 255))
+
+    pic.show()
+
+
+def ZeichneFeldMitPfad(F, P):
+
+    # Visualisierung:
+
+    global h_max
+    global feldbreite
+    global feldlaenge
+
+    s = 50
+    x_max = feldbreite * s
+    y_max = feldlaenge * s
+
+    # Initialisierung des Bildes
+    pic = Image.new("RGB", ((x_max+1, y_max+1)), (255, 255, 255))
+    draw = ImageDraw.Draw(pic)
+
+    for Reihe in range(feldbreite):
+        for Spalte in range(feldlaenge):
+            farbe = int( 255 * float(F[Spalte][Reihe]) / h_max )
+            draw.rectangle([(Reihe*s, Spalte*s),((Reihe+1)*s,(Spalte+1)*s)], (farbe, farbe, farbe), (255, 255, 255))
+
+    # Einzeichnen des Rasters
+    for i in range(0, feldbreite+1):
+        draw.line([(0,i*s),(x_max,i*s)], (0, 0, 255))
+        draw.line([(i*s,0),(i*s,y_max)], (0, 0, 255))
+
+    del P[0]
+    del P[len(P)-1]
+
+    while len(P) >= 2:
+        xy1 = P[0].split()
+        xy2 = P[1].split()
+        x1 = int(xy1[0])
+        y1 = int(xy1[1]) + 1
+        x2 = int(xy2[0])
+        y2 = int(xy2[1]) + 1
+        draw.line([(x1 * s, y1 * s), (x2 * s, y2 * s)], (255, 0, 0))
+        del P[0]
+
+    pic.show()
 
 # Beginn des Programms
 print()
@@ -67,41 +139,13 @@ feldlaenge = len(Feld)
 feldbreite = len(Feld[0])
 
 
-print()
-printMatrix(Feld)
-
-
-# Visualisierung:
-
-s = 50
-x_max = feldbreite * s
-y_max = feldlaenge * s
-
-# Initialisierung des Bildes
-pic = Image.new("RGB", ((x_max+1, y_max+1)), (255, 255, 255))
-draw = ImageDraw.Draw(pic)
-
-# Einzeichnen der Höhen
-# Bestimmung der maximalen Hoehe
 h_max = 0
 for Reihe in Feld:
     for Zelle in Reihe:
         if float(Zelle) > h_max:
             h_max = float(Zelle)
 
-for Reihe in range(feldbreite):
-    for Spalte in range(feldlaenge):
-        farbe = int( 255 * float(Feld[Spalte][Reihe]) / h_max )
-        draw.rectangle([(Spalte*s, Reihe*s),((Reihe+1)*s,(Spalte+1)*s)], (farbe, farbe, farbe), (255, 255, 255))
-
-# Einzeichnen des Rasters
-for i in range(0, feldbreite+1):
-    draw.line([(0,i*s),(x_max,i*s)], (0, 0, 255))
-    draw.line([(i*s,0),(i*s,y_max)], (0, 0, 255))
-
-pic.show()
-
-
+altesFeld = deepcopy(Feld)
 
 # - - - - -
 # Schritt 2:
@@ -203,9 +247,6 @@ Pfad.append(letzterKnoten)
 Pfad.reverse()
 
 
-print(Pfad)
-print()
-
 # - - - - -
 # Schritt 4:
 # Umbauarbeiten angeben
@@ -306,8 +347,19 @@ for i in range(1, len(Pfad)-2):
 print()
 print("Es wurden insgesmt", str(S), "m", "Erde verschoben.")
 
-print()
+for Reihe in Feld:
+    for Zelle in Reihe:
+        if float(Zelle) > h_max:
+            h_max = float(Zelle)
+
+print(Pfad)
+
+printMatrix(altesFeld)
 printMatrix(Feld)
+
+ZeichneFeld(altesFeld)
+ZeichneFeldMitPfad(Feld, Pfad)
+
 
 print()
 print()
