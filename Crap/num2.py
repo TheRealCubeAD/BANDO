@@ -66,4 +66,12 @@ for z in range(anzahl_spieler):
     print()
     played.append(eingabe(str(z+1)+" plays: "))
 
+proz = []
+rang2 = []
+for z in range(len(played)):
+    rang2.append(minrange(played[z],played[:z]+played[(z+1):]))
+    proz.append((rang2[-1]/total_range)*100)
+for z in range(len(rang2)):
+    print("Player",str(z+1),": took",str(played[z]),"range",str(rang2[z]),"->",str(proz[z])+"%")
+
                 
