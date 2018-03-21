@@ -1,5 +1,13 @@
 # Import des Zufallsmoduls
 import random
+import time
+
+# Um Pillow in PyCharm zu nuttzen:
+# Strg + Alt + S -> Project Interpretor -> Pluszeichen -> "Pillow"
+
+# Import der Image Library
+from PIL import Image, ImageDraw
+
 
 # Beginn des Programms
 print()
@@ -150,8 +158,39 @@ while True:
     # Falls es fuer diese Hoehe keine Mauer gab, versuch es mit der naechst kleineren
     anzahlReihen -= 1
 
+# Visuelle Ausgabe
+s = 40  # Streckfaktor s
+x_max = int( s * ( n * (n + 1) / 2 ) )  # Breite
+y_max = int( s * anzahlReihen )  # Hoehe
+
+# Initialisierung des Bildes
+pic = Image.new("1", ((x_max+1, y_max+1)), 1)
+draw = ImageDraw.Draw(pic)
+
+# Einzeichnen der Grundlinien
+for i in range(0, anzahlReihen+1):
+    draw.line([(0,i*s),(x_max,i*s)])
+draw.line([(0,0),(0,y_max)])
+draw.line([(x_max,0),(x_max,y_max)])
+
+# Einzeichenen der Fugen
+for R in range(0,len(Mauer)):
+    r = 0
+    Reihe = Mauer[R]
+    for f in range(0,len(Reihe)):
+        r += Reihe[f]
+        draw.line([(r*s, R*s), (r*s, (R+1)*s)])
+
+pic.save( str(n)+"-Mauer.png")
+pic.show()
+
+print()
+print()
+print("Laufzeit:", str(time.process_time()), "s")
+
 
 # Programmende
+print()
 print()
 print(" - - - - - Programmende - - - - -")
 print()

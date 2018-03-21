@@ -1,0 +1,8 @@
+Beispiel 1:
+
+Eine Abiturklasse mit 26 Schülerinnen und Schülern und einer Lehrerin
+wollen an einen Wochentag das Schwimmbad besuchen.  Sie haben drei
+Gutscheine und wollen eigentlich an einem beliebigen Tag in den Ferien
+gehen.  Wenn sie aber dadurch mindestens €5 sparen können, würden
+sie den Besuch auf die Schulzeit verschieben, der dann aber am Wochenende
+stattfinden müsste.

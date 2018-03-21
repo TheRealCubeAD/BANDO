@@ -1,4 +1,9 @@
 import time
+from PIL import Image, ImageDraw
+from copy import deepcopy
+
+# Um Pillow in PyCharm zu nuttzen:
+# Strg + Alt + S -> Project Interpretor -> Pluszeichen -> "Pillow"
 
 # Methode zur Ausgabe einer Matrix
 def printMatrix(matrix):
@@ -24,12 +29,86 @@ def aufrunden(n):
         while len(n) < 5:
             n += "0"
         n2 = n
-    elif len(n) > 5:
+    elif len(n) >= 5:
         n2 = int(float(n)*1000)
         n2 += 1
         n2 = n2 / 1000
         n2 = str(n2)
     return n2
+
+
+def ZeichneFeld(F, name):
+
+    # Visualisierung:
+
+    global h_max
+    global h_min
+    global feldbreite
+    global feldlaenge
+
+    s = 50
+    x_max = feldbreite * s
+    y_max = feldlaenge * s
+
+    # Initialisierung des Bildes
+    pic = Image.new("RGB", ((x_max+1, y_max+1)), (255, 255, 255))
+    draw = ImageDraw.Draw(pic)
+
+    for Reihe in range(feldbreite):
+        for Spalte in range(feldlaenge):
+            farbe = int( 255 * ( float(F[Spalte][Reihe]) - h_min ) / ( h_max - h_min) )
+            draw.rectangle([(Reihe*s, Spalte*s),((Reihe+1)*s,(Spalte+1)*s)], (farbe, farbe, farbe), (255, 255, 255))
+
+    # Einzeichnen des Rasters
+    for i in range(0, feldbreite+1):
+        draw.line([(0,i*s),(x_max,i*s)], (0, 0, 255), 1)
+        draw.line([(i*s,0),(i*s,y_max)], (0, 0, 255), 1)
+
+    pic.save(name)
+    pic.show()
+
+
+def ZeichneFeldMitPfad(F, P, name):
+
+    # Visualisierung:
+
+    global h_max
+    global feldbreite
+    global feldlaenge
+
+    s = 50
+    x_max = feldbreite * s
+    y_max = feldlaenge * s
+
+    # Initialisierung des Bildes
+    pic = Image.new("RGB", ((x_max+1, y_max+1)), (255, 255, 255))
+    draw = ImageDraw.Draw(pic)
+
+    for Reihe in range(feldbreite):
+        for Spalte in range(feldlaenge):
+            farbe = int(255 * (float(F[Spalte][Reihe]) - h_min) / (h_max - h_min))
+            draw.rectangle([(Reihe*s, Spalte*s),((Reihe+1)*s,(Spalte+1)*s)], (farbe, farbe, farbe), (255, 255, 255))
+
+    # Einzeichnen des Rasters
+    for i in range(0, feldbreite+1):
+        draw.line([(0,i*s),(x_max,i*s)], (0, 0, 255), 1)
+        draw.line([(i*s,0),(i*s,y_max)], (0, 0, 255), 1)
+
+    del P[0]
+    del P[len(P)-1]
+
+    while len(P) >= 2:
+        xy1 = P[0].split()
+        xy2 = P[1].split()
+        x1 = int(xy1[0])
+        y1 = int(xy1[1]) + 1
+        x2 = int(xy2[0])
+        y2 = int(xy2[1]) + 1
+        draw.line([(x1 * s, y1 * s), (x2 * s, y2 * s)], (255, 0, 0), 5)
+        del P[0]
+
+    pic.save(name)
+    pic.show()
 
 # Beginn des Programms
 print()
@@ -45,6 +124,7 @@ print()
 
 print("Dateiname der Textdatei.")
 dateiname = input(">>> ")
+print()
 textdatei = open(dateiname, "r")
 
 # Matrix des Feldes
@@ -52,9 +132,9 @@ Feld = []
 for line in textdatei:
     Reihe = line.rstrip()
     Reihe = Reihe.split()
-    for i in Reihe:
-        i = float(i)
     if len(Reihe) != 1:
+        for i in Reihe:
+            i = float(i)
         Feld.append(Reihe)
 textdatei.close()
 
@@ -63,9 +143,16 @@ feldlaenge = len(Feld)
 feldbreite = len(Feld[0])
 
 
-print()
-printMatrix(Feld)
+h_max = 0 - float("inf")
+h_min = float("inf")
+for Reihe in Feld:
+    for Zelle in Reihe:
+        if float(Zelle) > h_max:
+            h_max = float(Zelle)
+        if float(Zelle) < h_min:
+            h_min = float(Zelle)
 
+altesFeld = deepcopy(Feld)
 
 # - - - - -
 # Schritt 2:
@@ -167,9 +254,6 @@ Pfad.append(letzterKnoten)
 Pfad.reverse()
 
 
-print(Pfad)
-print()
-
 # - - - - -
 # Schritt 4:
 # Umbauarbeiten angeben
@@ -258,8 +342,8 @@ for i in range(1, len(Pfad)-2):
                 Feld[y2][x1-1] = aufrunden( float(Feld[y2][x1-1]) - dif )
 
         dif = aufrunden(dif)
-        print("Kippe von", "(" + str(Kox1) + "," + str(Koy1) + ")", "nach", "(" + str(Kox2) + "," + str(Koy2) + ")",
-              str(dif), "m")
+        print("Kippe von", "(" + str(Kox1) + "," + str(Koy1) + ")", "nach", "(" + str(Kox2) + "," + str(Koy2) + ")", "eine Hoehe von",
+              str(dif), "m .")
         dif = float(dif)
         S += dif
         feld1 += dif
@@ -268,10 +352,23 @@ for i in range(1, len(Pfad)-2):
         Adjazenzmatrix[Knoten.index(xy2)][Knoten.index(xy1)] = 0
 
 print()
-print("Es wurden insgesmt", str(S), "m", "Erde verschoben.")
+print("Es wurden insgesmt", aufrunden(str(S)), "m", " Hoehe an Erde verschoben.")
 
-print()
-printMatrix(Feld)
+for Reihe in Feld:
+    for Zelle in Reihe:
+        if float(Zelle) > h_max:
+            h_max = float(Zelle)
+        if float(Zelle) < h_min:
+            h_min = float(Zelle)
+
+
+bilddateiname = ""
+for i in range(len(dateiname)-4):
+    bilddateiname += dateiname[i]
+
+ZeichneFeld(altesFeld, str( "input-"+bilddateiname+".png") )
+ZeichneFeldMitPfad(Feld, Pfad, str( "output-"+bilddateiname+".png"))
+
 
 print()
 print()
