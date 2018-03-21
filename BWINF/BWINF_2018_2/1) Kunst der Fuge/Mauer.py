@@ -1,5 +1,6 @@
 # Import des Zufallsmoduls
 import random
+import time
 
 # Um Pillow in PyCharm zu nuttzen:
 # Strg + Alt + S -> Project Interpretor -> Pluszeichen -> "Pillow"
@@ -183,9 +184,13 @@ for R in range(0,len(Mauer)):
 pic.save( str(n)+"-Mauer.png")
 pic.show()
 
+print()
+print()
+print("Laufzeit:", str(time.process_time()), "s")
 
 
 # Programmende
+print()
 print()
 print(" - - - - - Programmende - - - - -")
 print()
