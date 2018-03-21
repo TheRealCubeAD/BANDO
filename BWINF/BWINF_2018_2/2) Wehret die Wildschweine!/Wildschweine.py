@@ -37,7 +37,7 @@ def aufrunden(n):
     return n2
 
 
-def ZeichneFeld(F):
+def ZeichneFeld(F, name):
 
     # Visualisierung:
 
@@ -64,10 +64,11 @@ def ZeichneFeld(F):
         draw.line([(0,i*s),(x_max,i*s)], (0, 0, 255), 1)
         draw.line([(i*s,0),(i*s,y_max)], (0, 0, 255), 1)
 
+    pic.save(name)
     pic.show()
 
 
-def ZeichneFeldMitPfad(F, P):
+def ZeichneFeldMitPfad(F, P, name):
 
     # Visualisierung:
 
@@ -106,6 +107,7 @@ def ZeichneFeldMitPfad(F, P):
         draw.line([(x1 * s, y1 * s), (x2 * s, y2 * s)], (255, 0, 0), 5)
         del P[0]
 
+    pic.save(name)
     pic.show()
 
 # Beginn des Programms
@@ -130,9 +132,9 @@ Feld = []
 for line in textdatei:
     Reihe = line.rstrip()
     Reihe = Reihe.split()
-    for i in Reihe:
-        i = float(i)
     if len(Reihe) != 1:
+        for i in Reihe:
+            i = float(i)
         Feld.append(Reihe)
 textdatei.close()
 
@@ -350,7 +352,7 @@ for i in range(1, len(Pfad)-2):
         Adjazenzmatrix[Knoten.index(xy2)][Knoten.index(xy1)] = 0
 
 print()
-print("Es wurden insgesmt", aufrunden(str(S)), "m", " Höhe an Erde verschoben.")
+print("Es wurden insgesmt", aufrunden(str(S)), "m", " Hoehe an Erde verschoben.")
 
 for Reihe in Feld:
     for Zelle in Reihe:
@@ -359,8 +361,13 @@ for Reihe in Feld:
         if float(Zelle) < h_min:
             h_min = float(Zelle)
 
-ZeichneFeld(altesFeld)
-ZeichneFeldMitPfad(Feld, Pfad)
+
+bilddateiname = ""
+for i in range(len(dateiname)-4):
+    bilddateiname += dateiname[i]
+
+ZeichneFeld(altesFeld, str( "input-"+bilddateiname+".png") )
+ZeichneFeldMitPfad(Feld, Pfad, str( "output-"+bilddateiname+".png"))
 
 
 print()
