@@ -923,9 +923,3 @@ pic = Image.new("1", (2600, 2600), 1)
 draw = ImageDraw.Draw(pic)
 
 fenster.mainloop()
-
-
-
-
-
-
