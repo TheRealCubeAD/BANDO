@@ -367,8 +367,8 @@ for i in range(1, len(Pfad)-2):
                 Feld[y2][x1-1] = aufrunden( float(Feld[y2][x1-1]) - dif )
 
         dif = aufrunden(dif)
-        print("Kippe von", "(" + str(Kox1) + "," + str(Koy1) + ")", "nach", "(" + str(Kox2) + "," + str(Koy2) + ")", "eine Hoehe von",
-              str(dif), "m .")
+        print("Kippe von", "(" + str(Kox1) + "," + str(Koy1) + ")", "nach", "(" + str(Kox2) + "," + str(Koy2) + ")",
+              "eine Hoehe von", str(dif), "m .")
         dif = float(dif)
         S += dif
         feld1 += dif
