@@ -278,7 +278,31 @@ Pfad.reverse()
 #        damit die Hoehendifferenz nach der Umbauarbeit genau 1 oder genau 1.001 ist.
 # => Wichtig ist alle Aenderungen zu speichern und am Ende die Gesamtaenderung auszugeben.
 
-# Siehe Seite 5 der Dokumentation
+def getdir(e1,e2):
+    if e1[0] != e2[0]:
+        return "y"
+    elif e1[2] != e2[2]:
+        return "x"
+
+gerade_pfade = []
+ecken = []
+for ei in range(len(Pfad)):
+    try:
+        if getdir(Pfad[ei-1],Pfad[ei]) != getdir(Pfad[ei],Pfad[ei+1]):
+            ecken.append(ei)
+    except IndexError:
+        pass
+
+last_ecke = -1
+for ei in ecken+[len(Pfad)]:
+    cur_gerade = []
+    for kn in range(last_ecke+1,ei):
+        cur_gerade.append(Pfad[kn])
+    gerade_pfade.append(cur_gerade)
+    last_ecke = ei
+
+print(ecken)
+print(gerade_pfade)
 
 
 for Reihe in Feld:
