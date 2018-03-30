@@ -1,7 +1,7 @@
 import time
 from PIL import Image, ImageDraw
 from copy import deepcopy
-
+from math import ceil
 # Um Pillow in PyCharm zu nuttzen:
 # Strg + Alt + S -> Project Interpretor -> Pluszeichen -> "Pillow"
 
@@ -9,16 +9,8 @@ from copy import deepcopy
 # Korrekt formatierte Ausgabe der Matrix im Textfeld
 def printMatrix(matrix):
     for i in range(len(matrix)):
-        reihe = matrix[i]
-        print(reihe)
+        print(matrix[i])
 
-# input: ein Float
-# output; Betrag des Floats
-def betrag(n):
-    if n < 0:
-        return -1 * n
-    else:
-        return n
 
 # input: ein Float
 # output: Eine Aufrundung des Floats auf 0, wenn dieser negativ ist
@@ -32,28 +24,18 @@ def nichtNegativ(n):
 # output: ein String mit der aufgerundeten Zahl im Format "(-)X.XXX"
 # Dabei ist X eine Ziffer, das Vorzeichen - ist optional
 def aufrunden(n):
-    n = str(n)
-    if len(n) < 5:
-        while len(n) < 5:
-            n += "0"
-        n2 = n
-    elif len(n) >= 5:
-        n2 = int(float(n)*1000)
-        n2 += 1
-        n2 = n2 / 1000
-        n2 = str(n2)
+    n2 = str(float(ceil(n*1000)/1000))
+    a = 5
+    if n2[0] == "-":
+        a += 1
+    while len(n2) < a:
+        n2 += "0"
     return n2
 
 
 # input: eine Feldmatrix mit einem String fuer den Dateinamen
 # Visualisierung der Feldmatrix in einer exportierten Bilddatei
 def ZeichneFeld(F, name):
-
-    global h_max
-    global h_min
-    global feldbreite
-    global feldlaenge
-
     s = 50
     x_max = feldbreite * s
     y_max = feldlaenge * s
@@ -82,10 +64,6 @@ def ZeichneFeldMitPfad(F, P, name):
 
     # Visualisierung:
 
-    global h_max
-    global feldbreite
-    global feldlaenge
-
     s = 50
     x_max = feldbreite * s
     y_max = feldlaenge * s
@@ -105,15 +83,15 @@ def ZeichneFeldMitPfad(F, P, name):
         draw.line([(i*s,0),(i*s,y_max)], (0, 0, 255), 1)
 
     del P[0]
-    del P[len(P)-1]
+    del P[-1]
 
     while len(P) >= 2:
-        xy1 = P[0].split()
-        xy2 = P[1].split()
-        x1 = int(xy1[0])
-        y1 = int(xy1[1]) + 1
-        x2 = int(xy2[0])
-        y2 = int(xy2[1]) + 1
+        x1,y1 = P[0].split()
+        x2,y2 = P[1].split()
+        x1 = int(x1)
+        y1 = int(y1) + 1
+        x2 = int(x2)
+        y2 = int(y2) + 1
         draw.line([(x1 * s, y1 * s), (x2 * s, y2 * s)], (255, 0, 0), 5)
         del P[0]
 
@@ -137,15 +115,13 @@ print()
 
 # Oeffnen der Datei mit der Feldmatrix
 print("Dateiname der Textdatei.")
-dateiname = input(">>> ")
+textdatei = open(input(">>> "), "r")
 print()
-textdatei = open(dateiname, "r")
 
 # Initialisierung der Matrix des Feldes
 Feld = []
 for line in textdatei:
-    Reihe = line.rstrip()
-    Reihe = Reihe.split()
+    Reihe = line.split()
     if len(Reihe) != 1:
         for i in Reihe:
             i = float(i)
@@ -164,6 +140,17 @@ for Reihe in Feld:
         if float(Zelle) < h_min:
             h_min = float(Zelle)
 
+# Prüfe auf rechteckigkeit des Feldes
+for fx in Feld:
+    if len(fx) != feldlaenge:
+        print("Eingabe nicht rechteckig")
+        print()
+        print()
+        print(" - - - - - Programmende - - - - -")
+        print()
+        input()
+        exit()
+
 # Zwischenspeichern des Feldes
 altesFeld = deepcopy(Feld)
 
@@ -175,9 +162,7 @@ altesFeld = deepcopy(Feld)
 # - - - - -
 
 # Aufsetzen der Knotenliste
-Knoten = []
-Knoten.append("S")
-Knoten.append("E")
+Knoten = ["S","E"]
 for y in range(feldlaenge - 1):
     for x in range(feldbreite + 1):
         Knoten.append( str(x) + " " + str(y) )
@@ -206,14 +191,14 @@ for i in Knoten:
         y = int(k[1])
         if x > 0 and y > 0 and x < feldbreite:
             i2 = str(x) + " " + str(y - 1)
-            dif = aufrunden( nichtNegativ( 1 - betrag(float(Feld[y][x]) - float(Feld[y][x-1])) ) / 2 )
+            dif = aufrunden( nichtNegativ( 1 - abs(float(Feld[y][x]) - float(Feld[y][x-1])) ) / 2 )
             if dif == 0:
                 dif = 0
             Adjazenzmatrix[Knoten.index(i)][Knoten.index(i2)] = dif
             Adjazenzmatrix[Knoten.index(i2)][Knoten.index(i)] = dif
         if y < feldlaenge - 1 and x < feldbreite:
             i2 = str(x + 1) + " " + str(y)
-            dif = nichtNegativ( 1 - betrag(float(Feld[y][x]) - float(Feld[y+1][x])) ) / 2
+            dif = nichtNegativ( 1 - abs(float(Feld[y][x]) - float(Feld[y+1][x])) ) / 2
             if dif == 0:
                 dif = 0
             Adjazenzmatrix[Knoten.index(i)][Knoten.index(i2)] = dif
@@ -377,7 +362,7 @@ for i in range(1, len(Pfad)-2):
         Adjazenzmatrix[Knoten.index(xy2)][Knoten.index(xy1)] = 0
 
 print()
-print("Es wurden insgesmt", aufrunden(str(S)), "m", " Hoehe an Erde verschoben.")
+print("Es wurden insgesmt", aufrunden(S), "m", " Hoehe an Erde verschoben.")
 
 for Reihe in Feld:
     for Zelle in Reihe:
@@ -408,3 +393,4 @@ print()
 print()
 print(" - - - - - Programmende - - - - -")
 print()
+input("töte mich")
