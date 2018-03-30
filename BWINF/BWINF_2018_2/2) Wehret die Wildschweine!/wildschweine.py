@@ -278,6 +278,7 @@ Pfad.reverse()
 #        damit die Hoehendifferenz nach der Umbauarbeit genau 1 oder genau 1.001 ist.
 # => Wichtig ist alle Aenderungen zu speichern und am Ende die Gesamtaenderung auszugeben.
 
+# Siehe Seite 5 der Dokumentation
 
 # Summe der verschobenen Meter an Erde
 S = 0
