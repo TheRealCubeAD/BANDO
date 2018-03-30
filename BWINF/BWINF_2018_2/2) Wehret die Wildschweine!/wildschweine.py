@@ -270,6 +270,10 @@ Pfad.reverse()
 
 # A) Teile den roten Pfad in moeglichst lange geradlinigie bzw. auschliessliche eckige Pfade auf
 # B) Bearbeite die geradlinigen Teilpfade mit dem gewoehnlich Algorithmus
+# C) Bearbeite die eckigen Pfade wie folgt:
+#    Wiederhole solange, bis es nach einem Durchlauf keine Aenderung mehr gibt:
+#  I) "Locke" alle Kanten, wo die Hoehendifferenz 1 oder groesser ist.
+#  II) Wiederhole solange, bis es nach einem Durchlauf keine Aenderung mehr gibt:
 
 
 # Summe der verschobenen Meter an Erde
