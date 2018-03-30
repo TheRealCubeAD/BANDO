@@ -5,24 +5,32 @@ from copy import deepcopy
 # Um Pillow in PyCharm zu nuttzen:
 # Strg + Alt + S -> Project Interpretor -> Pluszeichen -> "Pillow"
 
-# Methode zur Ausgabe einer Matrix
+# input: eine Matrix
+# Korrekt formatierte Ausgabe der Matrix im Textfeld
 def printMatrix(matrix):
     for i in range(len(matrix)):
         reihe = matrix[i]
         print(reihe)
 
+# input: ein Float
+# output; Betrag des Floats
 def betrag(n):
     if n < 0:
         return -1 * n
     else:
         return n
 
+# input: ein Float
+# output: Eine Aufrundung des Floats auf 0, wenn dieser negativ ist
 def nichtNegativ(n):
     if n < 0:
         return 0
     else:
         return n
 
+# input: eine Float
+# output: ein String mit der aufgerundeten Zahl im Format "(-)X.XXX"
+# Dabei ist X eine Ziffer, das Vorzeichen - ist optional
 def aufrunden(n):
     n = str(n)
     if len(n) < 5:
@@ -37,9 +45,9 @@ def aufrunden(n):
     return n2
 
 
+# input: eine Feldmatrix mit einem String fuer den Dateinamen
+# Visualisierung der Feldmatrix in einer exportierten Bilddatei
 def ZeichneFeld(F, name):
-
-    # Visualisierung:
 
     global h_max
     global h_min
@@ -68,6 +76,8 @@ def ZeichneFeld(F, name):
     pic.show()
 
 
+# input: eine Feldmatrix mit Pfad einer roten Linie une Dateinamen
+# Genau wie ZeichneFeld(F, name) nur mit einem zusaetzlich eingezeichnetem Pfad
 def ZeichneFeldMitPfad(F, P, name):
 
     # Visualisierung:
@@ -109,6 +119,8 @@ def ZeichneFeldMitPfad(F, P, name):
 
     pic.save(name)
     pic.show()
+
+
 
 # Beginn des Programms
 print()
