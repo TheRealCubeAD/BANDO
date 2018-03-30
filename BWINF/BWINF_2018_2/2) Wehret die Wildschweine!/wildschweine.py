@@ -129,17 +129,19 @@ print()
 print()
 
 
+
 # - - - - -
 # Schritt 1:
 # Einlesen der Textdatei
 # - - - - -
 
+# Oeffnen der Datei mit der Feldmatrix
 print("Dateiname der Textdatei.")
 dateiname = input(">>> ")
 print()
 textdatei = open(dateiname, "r")
 
-# Matrix des Feldes
+# Initialisierung der Matrix des Feldes
 Feld = []
 for line in textdatei:
     Reihe = line.rstrip()
@@ -150,13 +152,11 @@ for line in textdatei:
         Feld.append(Reihe)
 textdatei.close()
 
-# Masse des Feldes
-feldlaenge = len(Feld)
-feldbreite = len(Feld[0])
-
-
-h_max = 0 - float("inf")
-h_min = float("inf")
+# Dimensionen des Feldes
+feldlaenge = len(Feld)  # Breite
+feldbreite = len(Feld[0])  # Laenge
+h_max = 0 - float("inf")  # Hoehe
+h_min = float("inf")  # Tiefe
 for Reihe in Feld:
     for Zelle in Reihe:
         if float(Zelle) > h_max:
@@ -164,13 +164,17 @@ for Reihe in Feld:
         if float(Zelle) < h_min:
             h_min = float(Zelle)
 
+# Zwischenspeichern des Feldes
 altesFeld = deepcopy(Feld)
+
+
 
 # - - - - -
 # Schritt 2:
-# Aufsetzen der Matrizen
+# Initialisierung des Graphens
 # - - - - -
 
+# Aufsetzen der Knotenliste
 Knoten = []
 Knoten.append("S")
 Knoten.append("E")
@@ -179,9 +183,10 @@ for y in range(feldlaenge - 1):
         Knoten.append( str(x) + " " + str(y) )
 
 
-# Setze die Adjazenzmatrix auf
+# Aufsetzen der Adjazenzmatrix
 Adjazenzmatrix = [[-1 for x in range(len(Knoten))] for y in range(len(Knoten))]
 
+# Gewichtung der Kanten
 for i in Knoten:
     if i == "S":
         for j in Knoten:
@@ -216,6 +221,9 @@ for i in Knoten:
 
 print()
 
+
+
+
 # - - - - -
 # Schritt 3:
 # Guenstigsten Blockadepfad finden
@@ -230,7 +238,7 @@ Distanzen[0] = 0  # Distanz des Startknotens ist 0
 Dijkstra.append(Distanzen)  # Distanz
 Dijkstra.append(["-1" for i in range(len(Knoten))])  # Vorgaenger
 
-# noch zu besuchende Knoten
+# Liste der noch zu besuchenden Knoten
 unbesuchteKnoten = Knoten[:]
 
 # Solange noch nicht alle Knoten besucht wurden:
