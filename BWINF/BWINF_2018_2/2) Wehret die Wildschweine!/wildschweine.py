@@ -82,9 +82,6 @@ def ZeichneFeldMitPfad(F, P, name):
         draw.line([(0,i*s),(x_max,i*s)], (0, 0, 255), 1)
         draw.line([(i*s,0),(i*s,y_max)], (0, 0, 255), 1)
 
-    del P[0]
-    del P[-1]
-
     while len(P) >= 2:
         x1,y1 = P[0].split()
         x2,y2 = P[1].split()
