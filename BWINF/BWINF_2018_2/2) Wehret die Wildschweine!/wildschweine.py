@@ -320,7 +320,7 @@ while ecken != []:
             break
     laenge -= 1
     eck_pfad = []
-    for i in range(-1, laenge+1):
+    for i in range(-1, laenge+2):
         eck_pfad.append(Pfad[erste+i])
     for i in range(laenge+1):
         del ecken[0]
@@ -329,7 +329,6 @@ while ecken != []:
 
 
 
-print(ecken)
 print(gerade_pfade)
 print(eck_pfade)
 print(Pfad)
