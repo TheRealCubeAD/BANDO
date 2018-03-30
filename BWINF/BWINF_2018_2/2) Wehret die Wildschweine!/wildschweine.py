@@ -243,6 +243,7 @@ unbesuchteKnoten = Knoten[:]
 
 # Solange noch nicht alle Knoten besucht wurden:
 while unbesuchteKnoten != []:
+
     # Finde den Knoten mit der kuerzesten Distanz
     kuerzesteDistanz = float("inf")
     naechsterKnoten = "-1"
@@ -255,6 +256,7 @@ while unbesuchteKnoten != []:
     # Speichere, dass dieser Knoten besucht wurde
     unbesuchteKnoten.remove(naechsterKnoten)
 
+    # Besuche alle seine Nachbarknoten und ueberschreibe wenn noetig deren Distanz / Vorgaenger
     indexKnoten = Knoten.index(naechsterKnoten)
     Reihe = Adjazenzmatrix[indexKnoten]
     for i in range(len(Reihe)):
@@ -264,6 +266,7 @@ while unbesuchteKnoten != []:
                 Dijkstra[1][i] = distanz
                 Dijkstra[2][i] = naechsterKnoten
 
+# Bestimmte den kuerzesten Pfad von S zu E
 Pfad = []
 letzterKnoten = "E"
 while letzterKnoten != "S":
@@ -274,11 +277,13 @@ Pfad.append(letzterKnoten)
 Pfad.reverse()
 
 
+
 # - - - - -
 # Schritt 4:
 # Umbauarbeiten angeben
 # - - - - -
 
+# Summe der verschobenen Meter an Erde
 S = 0
 
 for i in range(1, len(Pfad)-2):
@@ -382,6 +387,7 @@ for Reihe in Feld:
             h_min = float(Zelle)
 
 
+# Ausgabe der Bilddateien
 bilddateiname = ""
 for i in range(len(dateiname)-4):
     bilddateiname += dateiname[i]
@@ -390,9 +396,12 @@ ZeichneFeld(altesFeld, str( "input-"+bilddateiname+".png") )
 ZeichneFeldMitPfad(Feld, Pfad, str( "output-"+bilddateiname+".png"))
 
 
+# Ausgabe der Laufzeit
 print()
 print()
 print("Laufzeit:", str(time.process_time()), "s")
+
+
 
 # Programmende
 print()
