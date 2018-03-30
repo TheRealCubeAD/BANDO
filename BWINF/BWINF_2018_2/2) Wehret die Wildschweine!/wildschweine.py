@@ -115,7 +115,8 @@ print()
 
 # Oeffnen der Datei mit der Feldmatrix
 print("Dateiname der Textdatei.")
-textdatei = open(input(">>> "), "r")
+dateiname = input(">>> ")
+textdatei = open(dateiname, "r")
 print()
 
 # Initialisierung der Matrix des Feldes
