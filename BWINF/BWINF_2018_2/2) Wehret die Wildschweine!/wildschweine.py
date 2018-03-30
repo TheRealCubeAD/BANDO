@@ -263,22 +263,6 @@ Pfad.append(letzterKnoten)
 Pfad.reverse()
 
 
-for Reihe in Feld:
-    for Zelle in Reihe:
-        if float(Zelle) > h_max:
-            h_max = float(Zelle)
-        if float(Zelle) < h_min:
-            h_min = float(Zelle)
-
-
-# Ausgabe der Bilddateien
-bilddateiname = ""
-for i in range(len(dateiname)-4):
-    bilddateiname += dateiname[i]
-
-# ZeichneFeld(altesFeld, str( "input-"+bilddateiname+".png") )
-ZeichneFeldMitPfad(Feld, Pfad, str( "output-"+bilddateiname+".png"))
-
 # - - - - -
 # Schritt 4:
 # Umbauarbeiten angeben
@@ -293,6 +277,7 @@ ZeichneFeldMitPfad(Feld, Pfad, str( "output-"+bilddateiname+".png"))
 #     a) Gehe alle Kanten der Reihe nach durch und kippe ueber die Kante die Menge an Erde,
 #        damit die Hoehendifferenz nach der Umbauarbeit genau 1 oder genau 1.001 ist.
 # => Wichtig ist alle Aenderungen zu speichern und am Ende die Gesamtaenderung auszugeben.
+
 Pfad.remove("S")
 Pfad.remove("E")
 
@@ -328,6 +313,22 @@ print()
 print()
 print("Laufzeit:", str(time.process_time()), "s")
 
+
+for Reihe in Feld:
+    for Zelle in Reihe:
+        if float(Zelle) > h_max:
+            h_max = float(Zelle)
+        if float(Zelle) < h_min:
+            h_min = float(Zelle)
+
+
+# Ausgabe der Bilddateien
+bilddateiname = ""
+for i in range(len(dateiname)-4):
+    bilddateiname += dateiname[i]
+
+# ZeichneFeld(altesFeld, str( "input-"+bilddateiname+".png") )
+ZeichneFeldMitPfad(Feld, Pfad, str( "output-"+bilddateiname+".png"))
 
 
 # Programmende
