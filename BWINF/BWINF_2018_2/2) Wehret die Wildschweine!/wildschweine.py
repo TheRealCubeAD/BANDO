@@ -305,6 +305,28 @@ for ei in ecken+[len(Pfad)]:
     last_ecke = ei
 
 
+while ecken != []:
+    laenge = 0
+    erste = ecken[0]
+    letzte = ecken[0]
+    while 1:
+        try:
+            laenge += 1
+            if ecken[laenge] == ecken[laenge - 1] + 1:
+                letzte = ecken[laenge]
+            else:
+                break
+        except IndexError:
+            break
+    laenge -= 1
+    eck_pfad = []
+    for i in range(-1, laenge+1):
+        eck_pfad.append(Pfad[erste+i])
+    eck_pfade.append(eck_pfad)
+
+
+
+
 print(ecken)
 print(gerade_pfade)
 print(Pfad)
