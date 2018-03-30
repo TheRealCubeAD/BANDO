@@ -274,6 +274,9 @@ Pfad.reverse()
 #    Wiederhole solange, bis es nach einem Durchlauf keine Aenderung mehr gibt:
 #  I) "Locke" alle Kanten, wo die Hoehendifferenz 1 oder groesser ist.
 #  II) Wiederhole solange, bis es nach einem Durchlauf keine Aenderung mehr gibt:
+#     a) Gehe alle Kanten der Reihe nach durch und kippe ueber die Kante die Menge an Erde,
+#        damit die Hoehendifferenz nach der Umbauarbeit genau 1 oder genau 1.001 ist.
+# => Wichtig ist alle Aenderungen zu speichern und am Ende die Gesamtaenderung auszugeben.
 
 
 # Summe der verschobenen Meter an Erde
