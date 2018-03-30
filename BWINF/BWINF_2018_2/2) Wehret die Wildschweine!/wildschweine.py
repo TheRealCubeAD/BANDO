@@ -293,6 +293,8 @@ ZeichneFeldMitPfad(Feld, Pfad, str( "output-"+bilddateiname+".png"))
 #     a) Gehe alle Kanten der Reihe nach durch und kippe ueber die Kante die Menge an Erde,
 #        damit die Hoehendifferenz nach der Umbauarbeit genau 1 oder genau 1.001 ist.
 # => Wichtig ist alle Aenderungen zu speichern und am Ende die Gesamtaenderung auszugeben.
+Pfad.remove("S")
+Pfad.remove("E")
 
 def getdir(e1,e2):
     if e1[0] != e2[0]:
