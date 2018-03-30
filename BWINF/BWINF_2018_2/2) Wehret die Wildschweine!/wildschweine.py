@@ -329,6 +329,7 @@ while ecken != []:
 
 print(ecken)
 print(gerade_pfade)
+print(eck_pfade)
 print(Pfad)
 
 # Ausgabe der Laufzeit
