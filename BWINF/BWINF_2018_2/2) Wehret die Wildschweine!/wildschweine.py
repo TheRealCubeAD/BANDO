@@ -279,16 +279,18 @@ Pfad.remove("S")
 Pfad.remove("E")
 
 def getdir(e1,e2):
-    if e1[0] != e2[0]:
-        return "y"
-    elif e1[2] != e2[2]:
+    e1x,e1y = e1.split()
+    e2x,e2y = e2.split()
+    if e1x != e2x[0]:
         return "x"
+    elif e1y != e2y:
+        return "y"
 
 gerade_pfade = []
 ecken = []
 for ei in range(len(Pfad)):
     try:
-        if getdir(Pfad[ei-1],Pfad[ei]) != getdir(Pfad[ei],Pfad[ei+1]):
+        if getdir(Pfad[ei],Pfad[ei+1]) != getdir(Pfad[ei+1],Pfad[ei+2]):
             ecken.append(ei)
     except IndexError:
         pass
@@ -303,7 +305,7 @@ for ei in ecken+[len(Pfad)]:
 
 print(ecken)
 print(gerade_pfade)
-
+print(Pfad)
 
 # Ausgabe der Laufzeit
 print()
