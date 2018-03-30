@@ -268,6 +268,10 @@ Pfad.reverse()
 # Umbauarbeiten angeben
 # - - - - -
 
+# A) Teile den roten Pfad in moeglichst lange geradlinigie bzw. auschliessliche eckige Pfade auf
+# B) Bearbeite die geradlinigen Teilpfade mit dem gewoehnlich Algorithmus
+
+
 # Summe der verschobenen Meter an Erde
 S = 0
 
