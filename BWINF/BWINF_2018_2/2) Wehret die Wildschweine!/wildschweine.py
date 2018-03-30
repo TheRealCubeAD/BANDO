@@ -262,6 +262,21 @@ Pfad.append(letzterKnoten)
 Pfad.reverse()
 
 
+for Reihe in Feld:
+    for Zelle in Reihe:
+        if float(Zelle) > h_max:
+            h_max = float(Zelle)
+        if float(Zelle) < h_min:
+            h_min = float(Zelle)
+
+
+# Ausgabe der Bilddateien
+bilddateiname = ""
+for i in range(len(dateiname)-4):
+    bilddateiname += dateiname[i]
+
+# ZeichneFeld(altesFeld, str( "input-"+bilddateiname+".png") )
+ZeichneFeldMitPfad(Feld, Pfad, str( "output-"+bilddateiname+".png"))
 
 # - - - - -
 # Schritt 4:
@@ -303,23 +318,6 @@ for ei in ecken+[len(Pfad)]:
 
 print(ecken)
 print(gerade_pfade)
-
-
-for Reihe in Feld:
-    for Zelle in Reihe:
-        if float(Zelle) > h_max:
-            h_max = float(Zelle)
-        if float(Zelle) < h_min:
-            h_min = float(Zelle)
-
-
-# Ausgabe der Bilddateien
-bilddateiname = ""
-for i in range(len(dateiname)-4):
-    bilddateiname += dateiname[i]
-
-ZeichneFeld(altesFeld, str( "input-"+bilddateiname+".png") )
-ZeichneFeldMitPfad(Feld, Pfad, str( "output-"+bilddateiname+".png"))
 
 
 # Ausgabe der Laufzeit
