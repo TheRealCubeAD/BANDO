@@ -140,7 +140,7 @@ for Reihe in Feld:
 
 # Prüfe auf rechteckigkeit des Feldes
 for fx in Feld:
-    if len(fx) != feldlaenge:
+    if len(fx) != feldbreite:
         print("Eingabe nicht rechteckig")
         print()
         print()
