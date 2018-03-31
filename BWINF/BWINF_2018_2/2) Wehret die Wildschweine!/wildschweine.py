@@ -63,7 +63,6 @@ def ZeichneFeld(F, name):
 def ZeichneFeldMitPfad(F, PP, name):
 
     # Visualisierung:
-
     s = 50
     x_max = feldbreite * s
     y_max = feldlaenge * s
@@ -140,6 +139,27 @@ def pruefung(F,P,name):
 
     pic.save(name)
     pic.show()
+
+# Input: Zwei Knoten e1 und e2, die eine Kante bilden
+# Output: Koordinaten, der beiden anliegenden Planquadrate und deren Hoehedifferenz
+def kante(e1,e2):
+    richtung = getdir(e1, e2)
+    x1, y1 = e1.split()
+    x2, y2 = e2.split()
+    p1 = [None, None]
+    p2 = [None, None]
+    if richtung == "x":
+        xm = min(int(x1), int(x2))
+        p1 = [xm, int(y1)]
+        p2 = [xm, int(y1) + 1]
+    elif richtung == "y":
+        ym = min(int(y1), int(y2))
+        p1 = [int(x1) - 1, int(ym) + 1]
+        p2 = [int(x1), int(ym) + 1]
+    p1h = float(Feld[p1[1]][p1[0]])
+    p2h = float(Feld[p2[1]][p2[0]])
+    diff = round((p2h - p1h), 3)
+    return p1,p2,diff
 
 
 # Beginn des Programms
@@ -323,88 +343,9 @@ P.reverse()
 P.remove("S")
 P.remove("E")
 
-# A) Teile den roten Pfad in moeglichst lange geradlinigie bzw. auschliessliche eckige Pfade auf
-gerade_pfade = []
-ecken = []
-eck_pfade = []
-for ei in range(len(P)):
-    try:
-        if getdir(P[ei], P[ei + 1]) != getdir(P[ei + 1], P[ei + 2]):
-            ecken.append(ei+1)
-    except IndexError:
-        pass
-
-last_ecke = -1
-for ei in ecken+[len(P)]:
-    cur_gerade = []
-    for kn in range(last_ecke+1,ei):
-        cur_gerade.append(P[kn])
-    gerade_pfade.append(cur_gerade)
-    last_ecke = ei
-
-
-while ecken != []:
-    laenge = 0
-    erste = ecken[0]
-    letzte = ecken[0]
-    while 1:
-        try:
-            laenge += 1
-            if ecken[laenge] == ecken[laenge - 1] + 1:
-                letzte = ecken[laenge]
-            else:
-                break
-        except IndexError:
-            break
-    laenge -= 1
-    eck_pfad = []
-    for i in range(-1, laenge+2):
-        eck_pfad.append(P[erste + i])
-    for i in range(laenge+1):
-        del ecken[0]
-    eck_pfade.append(eck_pfad)
-
-# B) Bearbeite die geradlinigen Teilpfade mit dem gewoehnlich Algorithmus
-
 printMatrix(Feld)
 print()
 Merkliste = [0 for i in range(len(P) - 1)]
-
-def kante(e1,e2):
-    richtung = getdir(e1, e2)
-    x1, y1 = e1.split()
-    x2, y2 = e2.split()
-    p1 = [None, None]
-    p2 = [None, None]
-    if richtung == "x":
-        xm = min(int(x1), int(x2))
-        p1 = [xm, int(y1)]
-        p2 = [xm, int(y1) + 1]
-    elif richtung == "y":
-        ym = min(int(y1), int(y2))
-        p1 = [int(x1) - 1, int(ym) + 1]
-        p2 = [int(x1), int(ym) + 1]
-    p1h = float(Feld[p1[1]][p1[0]])
-    p2h = float(Feld[p2[1]][p2[0]])
-    diff = round((p2h - p1h), 3)
-    return p1,p2,diff
-
-while gerade_pfade != []:
-    teilpfad = gerade_pfade[0]
-    while len(teilpfad) > 1:
-        index = P.index(teilpfad[0])
-        p1,p2,diff = kante(teilpfad[0],teilpfad[1])
-        if not abs(diff) >= 1:
-            um = float(aufrunden((1 - abs(diff)) / 2))
-            if diff < 0:
-                um *= -1
-            Merkliste[index] += um
-            Feld[p1[1]][p1[0]] = aufrunden(float(Feld[p1[1]][p1[0]]) - um)
-            Feld[p2[1]][p2[0]] = aufrunden(float(Feld[p2[1]][p2[0]]) + um)
-        del teilpfad[0]
-    del gerade_pfade[0]
-
-
 
 # C) Wiederhole solange, bis es nach einem Durchlauf keine Aenderung mehr gibt:
 aenderung1 = True
@@ -441,7 +382,6 @@ while aenderung1:
 
 
 
-
 printMatrix(Feld)
 # Ausgabe der Laufzeit
 print()
@@ -464,7 +404,6 @@ for i in range(len(dateiname)-4):
     bilddateiname += dateiname[i]
 
 ZeichneFeld(altesFeld, str( "input-"+bilddateiname+".png") )
-pruefung(Feld, P, str("pruefung-" + bilddateiname + ".png"))
 ZeichneFeldMitPfad(Feld, P, str("output-" + bilddateiname + ".png"))
 
 
