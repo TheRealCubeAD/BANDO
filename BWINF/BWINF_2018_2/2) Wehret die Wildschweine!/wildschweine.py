@@ -105,41 +105,6 @@ def getdir(e1,e2):
     elif e1y != e2y:
         return "y"
 
-def pruefung(F,P,name):
-    print(P)
-    s = 50
-    x_max = feldbreite * s
-    y_max = feldlaenge * s
-
-    # Initialisierung des Bildes
-    pic = Image.new("RGB", ((x_max + 1, y_max + 1)), (255, 255, 255))
-    draw = ImageDraw.Draw(pic)
-
-    for Reihe in range(feldbreite):
-        for Spalte in range(feldlaenge):
-            farbe = int(255 * (float(F[Spalte][Reihe]) - h_min) / (h_max - h_min))
-            draw.rectangle([(Reihe * s, Spalte * s), ((Reihe + 1) * s, (Spalte + 1) * s)], (farbe, farbe, farbe),
-                           (255, 255, 255))
-
-    # Einzeichnen des Rasters
-    for i in range(0, feldbreite + 1):
-        draw.line([(0, i * s), (x_max, i * s)], (0, 0, 255), 1)
-        draw.line([(i * s, 0), (i * s, y_max)], (0, 0, 255), 1)
-
-    for i in range(len(P)-1):
-        p1,p2,diff = kante(P[i], P[i + 1])
-        if abs(diff) >= 1:
-            x1, y1 = P[i].split()
-            x2, y2 = P[i+1].split()
-            x1 = int(x1)
-            y1 = int(y1) + 1
-            x2 = int(x2)
-            y2 = int(y2) + 1
-            draw.line([(x1 * s, y1 * s), (x2 * s, y2 * s)], (0, 255, 0), 5)
-
-    pic.save(name)
-    pic.show()
-
 # Input: Zwei Knoten e1 und e2, die eine Kante bilden
 # Output: Koordinaten, der beiden anliegenden Planquadrate und deren Hoehedifferenz
 def kante(e1,e2):
@@ -330,29 +295,17 @@ P.reverse()
 # Umbauarbeiten angeben
 # - - - - -
 
-# A) Teile den roten Pfad in moeglichst lange geradlinigie bzw. auschliessliche eckige Pfade auf
-# B) Bearbeite die geradlinigen Teilpfade mit dem gewoehnlich Algorithmus
-# C) Bearbeite die eckigen Pfade wie folgt:
-#    Wiederhole solange, bis es nach einem Durchlauf keine Aenderung mehr gibt:
-#  I) "Locke" alle Kanten, wo die Hoehendifferenz 1 oder groesser ist.
-#  II) Wiederhole solange, bis es nach einem Durchlauf keine Aenderung mehr gibt:
-#     a) Gehe alle Kanten der Reihe nach durch und kippe ueber die Kante die Menge an Erde,
-#        damit die Hoehendifferenz nach der Umbauarbeit genau 1 oder genau 1.001 ist.
-# => Wichtig ist alle Aenderungen zu speichern und am Ende die Gesamtaenderung auszugeben.
-
 P.remove("S")
 P.remove("E")
 
 printMatrix(Feld)
 print()
+print()
 Merkliste = [0 for i in range(len(P) - 1)]
 
-# C) Wiederhole solange, bis es nach einem Durchlauf keine Aenderung mehr gibt:
 aenderung1 = True
 while aenderung1:
     aenderung1 = False
-
-    # I) "Locke" alle Kanten, wo die Hoehendifferenz 1 oder groesser ist.
     Locks = [False for i in range(len(P) - 1)]
     for i in range(len(P) - 1):
         p1,p2,diff = kante(P[i], P[i + 1])
@@ -360,7 +313,6 @@ while aenderung1:
             Locks[i] = True
         else:
             aenderung1 = True
-    print(Locks)
     aenderung2 = True
     while aenderung2:
         aenderung2 = False
@@ -369,23 +321,16 @@ while aenderung1:
                 p1, p2, diff = kante(P[ii], P[ii + 1])
                 if abs(diff) not in [1, 1.001]:
                     um = float(aufrunden((1 - abs(diff)) / 2))
-                    if abs(diff) < 1:
-                        if diff < 0:
-                            um *= -1
-                    else:
-                        if diff < 0:
-                            um *= -1
+                    if diff < 0:
+                        um *= -1
                     Feld[p1[1]][p1[0]] = aufrunden(float(Feld[p1[1]][p1[0]]) - um)
                     Feld[p2[1]][p2[0]] = aufrunden(float(Feld[p2[1]][p2[0]]) + um)
                     Merkliste[ii] += um
                     aenderung2 = True
 
-
-
 printMatrix(Feld)
 # Ausgabe der Laufzeit
 print()
-print(Merkliste)
 print()
 print("Laufzeit:", str(time.process_time()), "s")
 
