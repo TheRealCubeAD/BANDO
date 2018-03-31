@@ -60,7 +60,7 @@ def ZeichneFeld(F, name):
 
 # input: eine Feldmatrix mit Pfad einer roten Linie und Dateinamen
 # Genau wie ZeichneFeld(F, name) nur mit einem zusaetzlich eingezeichnetem Pfad
-def ZeichneFeldMitPfad(F, P, name):
+def ZeichneFeldMitPfad(F, PP, name):
 
     # Visualisierung:
 
@@ -82,15 +82,15 @@ def ZeichneFeldMitPfad(F, P, name):
         draw.line([(0,i*s),(x_max,i*s)], (0, 0, 255), 1)
         draw.line([(i*s,0),(i*s,y_max)], (0, 0, 255), 1)
 
-    while len(P) >= 2:
-        x1,y1 = P[0].split()
-        x2,y2 = P[1].split()
+    while len(PP) >= 2:
+        x1,y1 = PP[0].split()
+        x2,y2 = PP[1].split()
         x1 = int(x1)
         y1 = int(y1) + 1
         x2 = int(x2)
         y2 = int(y2) + 1
         draw.line([(x1 * s, y1 * s), (x2 * s, y2 * s)], (255, 0, 0), 5)
-        del P[0]
+        del PP[0]
 
     pic.save(name)
     pic.show()
@@ -105,6 +105,41 @@ def getdir(e1,e2):
         return "x"
     elif e1y != e2y:
         return "y"
+
+def pruefung(F,P,name):
+    print(P)
+    s = 50
+    x_max = feldbreite * s
+    y_max = feldlaenge * s
+
+    # Initialisierung des Bildes
+    pic = Image.new("RGB", ((x_max + 1, y_max + 1)), (255, 255, 255))
+    draw = ImageDraw.Draw(pic)
+
+    for Reihe in range(feldbreite):
+        for Spalte in range(feldlaenge):
+            farbe = int(255 * (float(F[Spalte][Reihe]) - h_min) / (h_max - h_min))
+            draw.rectangle([(Reihe * s, Spalte * s), ((Reihe + 1) * s, (Spalte + 1) * s)], (farbe, farbe, farbe),
+                           (255, 255, 255))
+
+    # Einzeichnen des Rasters
+    for i in range(0, feldbreite + 1):
+        draw.line([(0, i * s), (x_max, i * s)], (0, 0, 255), 1)
+        draw.line([(i * s, 0), (i * s, y_max)], (0, 0, 255), 1)
+
+    for i in range(len(P)-1):
+        p1,p2,diff = kante(P[i], P[i + 1])
+        if abs(diff) >= 1:
+            x1, y1 = P[i].split()
+            x2, y2 = P[i+1].split()
+            x1 = int(x1)
+            y1 = int(y1) + 1
+            x2 = int(x2)
+            y2 = int(y2) + 1
+            draw.line([(x1 * s, y1 * s), (x2 * s, y2 * s)], (0, 255, 0), 5)
+
+    pic.save(name)
+    pic.show()
 
 
 # Beginn des Programms
@@ -260,14 +295,14 @@ while unbesuchteKnoten != []:
                 Dijkstra[2][i] = naechsterKnoten
 
 # Bestimmte den kuerzesten Pfad von S zu E
-Pfad = []
+P = []
 letzterKnoten = "E"
 while letzterKnoten != "S":
-    Pfad.append(letzterKnoten)
+    P.append(letzterKnoten)
     indexKnoten = Knoten.index(letzterKnoten)
     letzterKnoten = Dijkstra[2][indexKnoten]
-Pfad.append(letzterKnoten)
-Pfad.reverse()
+P.append(letzterKnoten)
+P.reverse()
 
 
 # - - - - -
@@ -285,25 +320,25 @@ Pfad.reverse()
 #        damit die Hoehendifferenz nach der Umbauarbeit genau 1 oder genau 1.001 ist.
 # => Wichtig ist alle Aenderungen zu speichern und am Ende die Gesamtaenderung auszugeben.
 
-Pfad.remove("S")
-Pfad.remove("E")
+P.remove("S")
+P.remove("E")
 
 # A) Teile den roten Pfad in moeglichst lange geradlinigie bzw. auschliessliche eckige Pfade auf
 gerade_pfade = []
 ecken = []
 eck_pfade = []
-for ei in range(len(Pfad)):
+for ei in range(len(P)):
     try:
-        if getdir(Pfad[ei],Pfad[ei+1]) != getdir(Pfad[ei+1],Pfad[ei+2]):
+        if getdir(P[ei], P[ei + 1]) != getdir(P[ei + 1], P[ei + 2]):
             ecken.append(ei+1)
     except IndexError:
         pass
 
 last_ecke = -1
-for ei in ecken+[len(Pfad)]:
+for ei in ecken+[len(P)]:
     cur_gerade = []
     for kn in range(last_ecke+1,ei):
-        cur_gerade.append(Pfad[kn])
+        cur_gerade.append(P[kn])
     gerade_pfade.append(cur_gerade)
     last_ecke = ei
 
@@ -324,7 +359,7 @@ while ecken != []:
     laenge -= 1
     eck_pfad = []
     for i in range(-1, laenge+2):
-        eck_pfad.append(Pfad[erste+i])
+        eck_pfad.append(P[erste + i])
     for i in range(laenge+1):
         del ecken[0]
     eck_pfade.append(eck_pfad)
@@ -333,29 +368,32 @@ while ecken != []:
 
 printMatrix(Feld)
 print()
-Merkliste = [0 for i in range(len(Pfad)-1)]
+Merkliste = [0 for i in range(len(P) - 1)]
+
+def kante(e1,e2):
+    richtung = getdir(e1, e2)
+    x1, y1 = e1.split()
+    x2, y2 = e2.split()
+    p1 = [None, None]
+    p2 = [None, None]
+    if richtung == "x":
+        xm = min(int(x1), int(x2))
+        p1 = [xm, int(y1)]
+        p2 = [xm, int(y1) + 1]
+    elif richtung == "y":
+        ym = min(int(y1), int(y2))
+        p1 = [int(x1) - 1, int(ym) + 1]
+        p2 = [int(x1), int(ym) + 1]
+    p1h = float(Feld[p1[1]][p1[0]])
+    p2h = float(Feld[p2[1]][p2[0]])
+    diff = round((p2h - p1h), 3)
+    return p1,p2,diff
 
 while gerade_pfade != []:
     teilpfad = gerade_pfade[0]
     while len(teilpfad) > 1:
-        index = Pfad.index(teilpfad[0])
-        richtung = getdir(teilpfad[0], teilpfad[1])
-        x1,y1 = teilpfad[0].split()
-        x2,y2 = teilpfad[1].split()
-        p1 = [None,None]
-        p2 = [None,None]
-        if richtung == "x":
-            xm = min(int(x1),int(x2))
-            p1 = [xm,int(y1)]
-            p2 = [xm,int(y1)+1]
-        elif richtung == "y":
-            ym = min(int(y1),int(y2))
-            p1 = [int(x1)-1,int(ym)+1]
-            p2 = [int(x1),int(ym)+1]
-        p1h = float(Feld[p1[1]][p1[0]])
-        p2h = float(Feld[p2[1]][p2[0]])
-        diff = round((p2h - p1h),3)
-        print(diff)
+        index = P.index(teilpfad[0])
+        p1,p2,diff = kante(teilpfad[0],teilpfad[1])
         if not abs(diff) >= 1:
             um = float(aufrunden((1 - abs(diff)) / 2))
             if diff < 0:
@@ -368,14 +406,38 @@ while gerade_pfade != []:
 
 
 
-#   Wiederhole solange, bis es nach einem Durchlauf keine Aenderung mehr gibt:
+# C) Wiederhole solange, bis es nach einem Durchlauf keine Aenderung mehr gibt:
+aenderung1 = True
+while aenderung1:
+    aenderung1 = False
 
-anderung = True
-while anderung:
-    anderung = False
-    Locks = [0 for i in range(len(Pfad)-1)]
-    for i in range()
-
+    # I) "Locke" alle Kanten, wo die Hoehendifferenz 1 oder groesser ist.
+    Locks = [False for i in range(len(P) - 1)]
+    for i in range(len(P) - 1):
+        p1,p2,diff = kante(P[i], P[i + 1])
+        if abs(diff) >= 1:
+            Locks[i] = True
+        else:
+            aenderung1 = True
+    print(Locks)
+    aenderung2 = True
+    while aenderung2:
+        aenderung2 = False
+        for ii in range(len(P) - 1):
+            if not Locks[ii]:
+                p1, p2, diff = kante(P[ii], P[ii + 1])
+                if abs(diff) not in [1, 1.001]:
+                    um = float(aufrunden((1 - abs(diff)) / 2))
+                    if abs(diff) < 1:
+                        if diff < 0:
+                            um *= -1
+                    else:
+                        if diff < 0:
+                            um *= -1
+                    Feld[p1[1]][p1[0]] = aufrunden(float(Feld[p1[1]][p1[0]]) - um)
+                    Feld[p2[1]][p2[0]] = aufrunden(float(Feld[p2[1]][p2[0]]) + um)
+                    Merkliste[ii] += um
+                    aenderung2 = True
 
 
 
@@ -402,7 +464,8 @@ for i in range(len(dateiname)-4):
     bilddateiname += dateiname[i]
 
 ZeichneFeld(altesFeld, str( "input-"+bilddateiname+".png") )
-ZeichneFeldMitPfad(Feld, Pfad, str( "output-"+bilddateiname+".png"))
+pruefung(Feld, P, str("pruefung-" + bilddateiname + ".png"))
+ZeichneFeldMitPfad(Feld, P, str("output-" + bilddateiname + ".png"))
 
 
 # Programmende
