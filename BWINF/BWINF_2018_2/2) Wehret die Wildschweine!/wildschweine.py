@@ -329,11 +329,8 @@ while ecken != []:
     eck_pfade.append(eck_pfad)
 
 
+Merkliste = [0 for i in range(len(Pfad)-1)]
 
-
-print(gerade_pfade)
-print(eck_pfade)
-print(Pfad)
 
 # Ausgabe der Laufzeit
 print()
