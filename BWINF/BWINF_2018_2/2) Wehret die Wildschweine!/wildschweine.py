@@ -8,8 +8,11 @@ from math import ceil
 # input: eine Matrix
 # Korrekt formatierte Ausgabe der Matrix im Textfeld
 def printMatrix(matrix):
-    for i in range(len(matrix)):
-        print(matrix[i])
+    for i in matrix:
+        s = ""
+        for j in i:
+            s += j + "  "
+        print(s)
 
 
 # input: ein Float
@@ -24,10 +27,12 @@ def nichtNegativ(n):
 # output: ein String mit der aufgerundeten Zahl im Format "(-)X.XXX"
 # Dabei ist X eine Ziffer, das Vorzeichen - ist optional
 def aufrunden(n):
+    n = float(n)
+    n = round(n,8)
     n2 = str(float(ceil(n*1000)/1000))
-    a = 5
-    if n2[0] == "-":
-        a += 1
+    a = 6
+    if n2[0] != "-":
+        n2 = " " + n2
     while len(n2) < a:
         n2 += "0"
     return n2
@@ -151,9 +156,11 @@ Feld = []
 for line in textdatei:
     Reihe = line.split()
     if len(Reihe) != 1:
+        Reihe2 = []
         for i in Reihe:
-            i = float(i)
-        Feld.append(Reihe)
+            x = aufrunden(i)
+            Reihe2.append(x)
+        Feld.append(Reihe2)
 textdatei.close()
 
 # Dimensionen des Feldes
@@ -295,6 +302,9 @@ P.reverse()
 # Umbauarbeiten angeben
 # - - - - -
 
+# Zwischenspeichern des Feldes
+altesFeld = deepcopy(Feld)
+
 P.remove("S")
 P.remove("E")
 
@@ -302,6 +312,7 @@ printMatrix(Feld)
 print()
 print()
 Merkliste = [0 for i in range(len(P) - 1)]
+
 
 aenderung1 = True
 while aenderung1:
