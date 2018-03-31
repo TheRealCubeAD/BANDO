@@ -2,7 +2,7 @@ import time
 from PIL import Image, ImageDraw
 from copy import deepcopy
 from math import ceil
-# Um Pillow in PyCharm zu nuttzen:
+# Um Pillow in PyCharm zu nutzen:
 # Strg + Alt + S -> Project Interpretor -> Pluszeichen -> "Pillow"
 
 # input: eine Matrix
@@ -58,7 +58,7 @@ def ZeichneFeld(F, name):
     pic.show()
 
 
-# input: eine Feldmatrix mit Pfad einer roten Linie une Dateinamen
+# input: eine Feldmatrix mit Pfad einer roten Linie und Dateinamen
 # Genau wie ZeichneFeld(F, name) nur mit einem zusaetzlich eingezeichnetem Pfad
 def ZeichneFeldMitPfad(F, P, name):
 
@@ -95,6 +95,16 @@ def ZeichneFeldMitPfad(F, P, name):
     pic.save(name)
     pic.show()
 
+
+# input: Zwei Koordinatenpunkte e1 und e2 im Format "x y"
+# output: Ausgabe der Koordinatenbezeichnung, die sie nicht gemeinsam haben
+def getdir(e1,e2):
+    e1x,e1y = e1.split()
+    e2x,e2y = e2.split()
+    if e1x != e2x:
+        return "x"
+    elif e1y != e2y:
+        return "y"
 
 
 # Beginn des Programms
@@ -278,14 +288,6 @@ Pfad.reverse()
 Pfad.remove("S")
 Pfad.remove("E")
 
-def getdir(e1,e2):
-    e1x,e1y = e1.split()
-    e2x,e2y = e2.split()
-    if e1x != e2x:
-        return "x"
-    elif e1y != e2y:
-        return "y"
-
 gerade_pfade = []
 ecken = []
 eck_pfade = []
@@ -361,4 +363,3 @@ print()
 print()
 print(" - - - - - Programmende - - - - -")
 print()
-input("töte mich")
