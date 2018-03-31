@@ -97,7 +97,7 @@ def ZeichneFeldMitPfad(F, P, name):
 
 
 # input: Zwei Koordinatenpunkte e1 und e2 im Format "x y"
-# output: Ausgabe der Koordinatenbezeichnung, die sie nicht gemeinsam haben
+# output: Ausgabe der Achsenbezeichnung, zu der die Kante e1,e2 parallel verlaeuft
 def getdir(e1,e2):
     e1x,e1y = e1.split()
     e2x,e2y = e2.split()
@@ -331,6 +331,35 @@ while ecken != []:
 
 Merkliste = [0 for i in range(len(Pfad)-1)]
 
+while gerade_pfade != []:
+    teilpfad = gerade_pfade[0]
+    while len(teilpfad) > 1:
+        index = Pfad.index(teilpfad[0])
+        richtung = detdir(teilpfad[0], teilpfad[1])
+        x1,y1 = teilpfad[0].split()
+        x2,y2 = teilpfad[1].split()
+        p1 = [None,None]
+        p2 = [None,None]
+        if richtung == "x":
+            xm = min(int(x1),int(x2))
+            p1 = [xm,int(y1)]
+            p2 = [xm,int(y1)+1]
+        elif richtung == "y":
+            ym = min(int(y1),int(y2))
+            p1 = [int(x1)-1,int(ym)+1]
+            p2 = [int(x1),int(ym)+1]
+        p1h = float(Feld[p1[0]][p1[1]])
+        p2h = float(Feld[p2[0]][p2[1]])
+        dif = p2h - p1h
+        if not abs(dif) >= 1:
+            um = float(aufrunden((1-abs(dif))/2))
+            if dif < 0:
+                um *= -1
+                Merkliste[index] += um
+                Feld[p1[0]][p1[1]] -= um
+                Feld[p2[0]][p2[1]] += um
+
+print(Merkliste)
 
 # Ausgabe der Laufzeit
 print()
@@ -351,7 +380,7 @@ bilddateiname = ""
 for i in range(len(dateiname)-4):
     bilddateiname += dateiname[i]
 
-# ZeichneFeld(altesFeld, str( "input-"+bilddateiname+".png") )
+ZeichneFeld(altesFeld, str( "input-"+bilddateiname+".png") )
 ZeichneFeldMitPfad(Feld, Pfad, str( "output-"+bilddateiname+".png"))
 
 
