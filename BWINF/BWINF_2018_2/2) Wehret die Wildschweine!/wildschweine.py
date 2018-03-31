@@ -199,18 +199,18 @@ for i in Knoten:
         y = int(k[1])
         if x > 0 and y > 0 and x < feldbreite:
             i2 = str(x) + " " + str(y - 1)
-            dif = aufrunden( nichtNegativ( 1 - abs(float(Feld[y][x]) - float(Feld[y][x-1])) ) / 2 )
-            if dif == 0:
-                dif = 0
-            Adjazenzmatrix[Knoten.index(i)][Knoten.index(i2)] = dif
-            Adjazenzmatrix[Knoten.index(i2)][Knoten.index(i)] = dif
+            diff = aufrunden(nichtNegativ(1 - abs(float(Feld[y][x]) - float(Feld[y][x - 1]))) / 2)
+            if diff == 0:
+                diff = 0
+            Adjazenzmatrix[Knoten.index(i)][Knoten.index(i2)] = diff
+            Adjazenzmatrix[Knoten.index(i2)][Knoten.index(i)] = diff
         if y < feldlaenge - 1 and x < feldbreite:
             i2 = str(x + 1) + " " + str(y)
-            dif = nichtNegativ( 1 - abs(float(Feld[y][x]) - float(Feld[y+1][x])) ) / 2
-            if dif == 0:
-                dif = 0
-            Adjazenzmatrix[Knoten.index(i)][Knoten.index(i2)] = dif
-            Adjazenzmatrix[Knoten.index(i2)][Knoten.index(i)] = dif
+            diff = nichtNegativ(1 - abs(float(Feld[y][x]) - float(Feld[y + 1][x]))) / 2
+            if diff == 0:
+                diff = 0
+            Adjazenzmatrix[Knoten.index(i)][Knoten.index(i2)] = diff
+            Adjazenzmatrix[Knoten.index(i2)][Knoten.index(i)] = diff
 
 print()
 
@@ -254,7 +254,7 @@ while unbesuchteKnoten != []:
     Reihe = Adjazenzmatrix[indexKnoten]
     for i in range(len(Reihe)):
         if Reihe[i] != -1:
-            distanz = float(Dijkstra[1][indexKnoten]) + float(Reihe[i])
+            distanz = round((float(Dijkstra[1][indexKnoten]) + float(Reihe[i])),4)
             if Dijkstra[1][i] > distanz:
                 Dijkstra[1][i] = distanz
                 Dijkstra[2][i] = naechsterKnoten
@@ -288,6 +288,7 @@ Pfad.reverse()
 Pfad.remove("S")
 Pfad.remove("E")
 
+# A) Teile den roten Pfad in moeglichst lange geradlinigie bzw. auschliessliche eckige Pfade auf
 gerade_pfade = []
 ecken = []
 eck_pfade = []
@@ -328,14 +329,17 @@ while ecken != []:
         del ecken[0]
     eck_pfade.append(eck_pfad)
 
+# B) Bearbeite die geradlinigen Teilpfade mit dem gewoehnlich Algorithmus
 
+printMatrix(Feld)
+print()
 Merkliste = [0 for i in range(len(Pfad)-1)]
 
 while gerade_pfade != []:
     teilpfad = gerade_pfade[0]
     while len(teilpfad) > 1:
         index = Pfad.index(teilpfad[0])
-        richtung = detdir(teilpfad[0], teilpfad[1])
+        richtung = getdir(teilpfad[0], teilpfad[1])
         x1,y1 = teilpfad[0].split()
         x2,y2 = teilpfad[1].split()
         p1 = [None,None]
@@ -348,21 +352,38 @@ while gerade_pfade != []:
             ym = min(int(y1),int(y2))
             p1 = [int(x1)-1,int(ym)+1]
             p2 = [int(x1),int(ym)+1]
-        p1h = float(Feld[p1[0]][p1[1]])
-        p2h = float(Feld[p2[0]][p2[1]])
-        dif = p2h - p1h
-        if not abs(dif) >= 1:
-            um = float(aufrunden((1-abs(dif))/2))
-            if dif < 0:
+        p1h = float(Feld[p1[1]][p1[0]])
+        p2h = float(Feld[p2[1]][p2[0]])
+        diff = round((p2h - p1h),3)
+        print(diff)
+        if not abs(diff) >= 1:
+            um = float(aufrunden((1 - abs(diff)) / 2))
+            if diff < 0:
                 um *= -1
-                Merkliste[index] += um
-                Feld[p1[0]][p1[1]] -= um
-                Feld[p2[0]][p2[1]] += um
+            Merkliste[index] += um
+            Feld[p1[1]][p1[0]] = aufrunden(float(Feld[p1[1]][p1[0]]) - um)
+            Feld[p2[1]][p2[0]] = aufrunden(float(Feld[p2[1]][p2[0]]) + um)
+        del teilpfad[0]
+    del gerade_pfade[0]
 
-print(Merkliste)
 
+
+#   Wiederhole solange, bis es nach einem Durchlauf keine Aenderung mehr gibt:
+
+anderung = True
+while anderung:
+    anderung = False
+    Locks = [0 for i in range(len(Pfad)-1)]
+    for i in range()
+
+
+
+
+
+printMatrix(Feld)
 # Ausgabe der Laufzeit
 print()
+print(Merkliste)
 print()
 print("Laufzeit:", str(time.process_time()), "s")
 
