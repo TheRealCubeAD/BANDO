@@ -14,7 +14,7 @@ def printMatrix(matrix):
             s += j + "  "
         print(s)
 
-def printMatrixMitPfad(matrix):
+def printMatrixMitPfad(matrix, titel):
     roteQuadrate = []
     RED = '\033[91m'
     END = '\033[0m'
@@ -33,6 +33,12 @@ def printMatrixMitPfad(matrix):
         while len(x) < 7:
             x += " "
         s += x
+    r = ""
+    while len(r) < (len(s)-len(titel))/2:
+        r += " "
+    r += titel
+    print(r)
+    print()
     print(s)
     print()
     for y in range(len(matrix)):
@@ -376,22 +382,24 @@ while aenderung1:
 # Umbauarbeiten angeben
 # - - - - -
 
-printMatrixMitPfad(altesFeld)
+printMatrixMitPfad(altesFeld, "Eingabefeld")
 print()
 print()
 print()
-printMatrixMitPfad(Feld)
+printMatrixMitPfad(Feld, "Ausgabefeld")
 print()
 print()
+print()
+print("Menge aller Umbauarbeiten:")
 print()
 S = 0
 for i in range(len(P)-1):
     p1, p2, diff = kante( P[i], P[i+1] )
     verschoben = aufrunden(round(abs(Merkliste[i]),3))
     S += float(verschoben)
-    if round(Merkliste[i],3) < 0:
+    if Merkliste[i] < 0:
         print("Kippe von", p2, "nach", p1, "insgesamt", verschoben.replace(" ", "") , "Meter Erde.")
-    elif round(Merkliste[i],3) > 0:
+    elif Merkliste[i] > 0:
         print("Kippe von", p1, "nach", p2, "insgesamt", verschoben.replace(" ", "")  , "Meter Erde.")
     else:
         pass
