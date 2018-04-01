@@ -14,6 +14,24 @@ def printMatrix(matrix):
             s += j + "  "
         print(s)
 
+def printMatrixMitPfad(matrix):
+    roteQuadrate = []
+    RED = '\033[91m'
+    END = '\033[0m'
+    for i in range(len(P)-1):
+        e1, e2, a = kante(P[i], P[i+1])
+        roteQuadrate.append(e1)
+        roteQuadrate.append(e2)
+    for y in range(len(matrix)):
+        Reihe = matrix[y]
+        s = ""
+        for x in range(len(Reihe)):
+            if [x, y] in roteQuadrate:
+                s += RED + j + END + "  "
+            else:
+                s += j + "  "
+        print(s)
+
 
 # input: ein Float
 # output: Eine Aufrundung des Floats auf 0, wenn dieser negativ ist
@@ -308,9 +326,6 @@ altesFeld = deepcopy(Feld)
 P.remove("S")
 P.remove("E")
 
-printMatrix(Feld)
-print()
-print()
 Merkliste = [0 for i in range(len(P) - 1)]
 
 
@@ -339,7 +354,11 @@ while aenderung1:
                     Merkliste[ii] += um
                     aenderung2 = True
 
-printMatrix(Feld)
+printMatrixMitPfad(altesFeld)
+print()
+print()
+print()
+printMatrixMitPfad(Feld)
 # Ausgabe der Laufzeit
 print()
 print()
