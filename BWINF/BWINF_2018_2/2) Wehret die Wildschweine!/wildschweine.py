@@ -44,7 +44,7 @@ def nichtNegativ(n):
 # input: eine Float
 # output: ein String mit der aufgerundeten Zahl im Format "(-)X.XXX"
 # Dabei ist X eine Ziffer, das Vorzeichen - ist optional
-deigeef aufrunden(n):
+def aufrunden(n):
     n = float(n)
     n = round(n,8)
     n2 = str(float(ceil(n*1000)/1000))
