@@ -354,11 +354,31 @@ while aenderung1:
                     Merkliste[ii] += um
                     aenderung2 = True
 
+
 printMatrixMitPfad(altesFeld)
 print()
 print()
 print()
 printMatrixMitPfad(Feld)
+print()
+print()
+print()
+S = 0
+for i in range(len(P)-1):
+    p1, p2, diff = kante( P[i], P[i+1] )
+    verschoben = aufrunden(round(abs(Merkliste[i]),3))
+    S += float(verschoben)
+    if Merkliste[i] < 0:
+        print("Kippe von", p2, "nach", p1, "insgesamt", verschoben.replace(" ", "") , "Meter Erde.")
+    elif Merkliste[i] > 0:
+        print("Kippe von", p1, "nach", p2, "insgesamt", verschoben.replace(" ", "")  , "Meter Erde.")
+    else:
+        pass
+print()
+print("In der Summe werden", aufrunden(S).replace(" ", "") ,"Meter Erde verschoben.")
+
+
+
 # Ausgabe der Laufzeit
 print()
 print()
