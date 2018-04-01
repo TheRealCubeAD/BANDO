@@ -22,9 +22,25 @@ def printMatrixMitPfad(matrix):
         e1, e2, a = kante(P[i], P[i+1])
         roteQuadrate.append(e1)
         roteQuadrate.append(e2)
+    a = len(str(feldlaenge))
+    a += 3
+    s = ""
+    while len(s) < a:
+        s += " "
+    for i in range(feldbreite):
+        x = ""
+        x += " " +  str(i) + "."
+        while len(x) < 7:
+            x += " "
+        s += x
+    print(s)
+    print()
     for y in range(len(matrix)):
         Reihe = matrix[y]
-        s = ""
+        s = str(y)
+        s += "."
+        while len(s) < a:
+            s += " "
         for x in range(len(Reihe)):
             if [x, y] in roteQuadrate:
                 s += RED + Reihe[x] + END + " "
@@ -314,17 +330,17 @@ while letzterKnoten != "S":
 P.append(letzterKnoten)
 P.reverse()
 
+P.remove("S")
+P.remove("E")
 
 # - - - - -
 # Schritt 4:
-# Umbauarbeiten angeben
+# Umbauarbeiten bestimmen
 # - - - - -
+
 
 # Zwischenspeichern des Feldes
 altesFeld = deepcopy(Feld)
-
-P.remove("S")
-P.remove("E")
 
 Merkliste = [0 for i in range(len(P) - 1)]
 
@@ -355,6 +371,11 @@ while aenderung1:
                     aenderung2 = True
 
 
+# - - - - -
+# Schritt 5:
+# Umbauarbeiten angeben
+# - - - - -
+
 printMatrixMitPfad(altesFeld)
 print()
 print()
@@ -375,7 +396,7 @@ for i in range(len(P)-1):
     else:
         pass
 print()
-print("In der Summe werden", aufrunden(S).replace(" ", "") ,"Meter Erde verschoben.")
+print("In der Summe wurden", aufrunden(S).replace(" ", "") ,"Meter Erde verschoben.")
 
 
 
