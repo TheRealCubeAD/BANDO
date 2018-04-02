@@ -347,8 +347,23 @@ P.remove("E")
 
 # Zwischenspeichern des Feldes
 altesFeld = deepcopy(Feld)
-
 Merkliste = [0 for i in range(len(P) - 1)]
+
+planquadrate = []
+for i in range(len(P)-1):
+    p1, p2, diff = kante(P[i], P[i+1])
+    planquadrate.append(p1)
+    planquadrate.append(p2)
+
+mehrfachePlanquadrate = []
+while planquadrate != []:
+    q = planquadrate[0]
+    if planquadrate.count(q) >= 2:
+        mehrfachePlanquadrate.append(q)
+    while planquadrate.count(q) > 0:
+        mehrfachePlanquadrate.remove(q)
+
+
 
 
 aenderung1 = True
