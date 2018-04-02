@@ -361,7 +361,7 @@ while planquadrate != []:
     if planquadrate.count(q) >= 2:
         mehrfachePlanquadrate.append(q)
     while planquadrate.count(q) > 0:
-        mehrfachePlanquadrate.remove(q)
+        planquadrate.remove(q)
 
 
 
