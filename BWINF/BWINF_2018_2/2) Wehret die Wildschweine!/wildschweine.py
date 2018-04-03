@@ -19,7 +19,7 @@ def printMatrixMitPfad(matrix, titel):
     RED = '\033[91m'
     END = '\033[0m'
     for i in range(len(P)-1):
-        e1, e2, a = kante(P[i], P[i+1])
+        e1, e2, a = kante(P[i], P[i+1], matrix)
         roteQuadrate.append(e1)
         roteQuadrate.append(e2)
     a = len(str(feldlaenge))
@@ -152,7 +152,7 @@ def getdir(e1,e2):
 
 # Input: Zwei Knoten e1 und e2, die eine Kante bilden
 # Output: Koordinaten, der beiden anliegenden Planquadrate und deren Hoehedifferenz
-def kante(e1,e2):
+def kante(e1,e2, Feld):
     richtung = getdir(e1, e2)
     x1, y1 = e1.split()
     x2, y2 = e2.split()
@@ -170,6 +170,62 @@ def kante(e1,e2):
     p2h = float(Feld[p2[1]][p2[0]])
     diff = round((p2h - p1h), 3)
     return p1,p2,diff
+
+
+def umbauen(Feld, kritischeKanten, ausrichtung):
+    Merkliste = [0 for i in range(len(P) - 1)]
+    aenderung1 = True
+    while aenderung1:
+        aenderung1 = False
+        Locks = [False for i in range(len(P) - 1)]
+        for i in range(len(P) - 1):
+            p1,p2,diff = kante(P[i], P[i + 1], Feld)
+            if abs(diff) >= 1:
+                Locks[i] = True
+            else:
+                aenderung1 = True
+        aenderung2 = True
+        while aenderung2:
+            aenderung2 = False
+            for i in range(len(P) - 1):
+                if not Locks[i]:
+                    p1, p2, diff = kante(P[i], P[i + 1], Feld)
+                    if abs(diff) not in [1, 1.001]:
+                        um = float(aufrunden((1 - abs(diff)) / 2))
+                        if diff < 0:
+                            um *= -1
+                        Feld[p1[1]][p1[0]] = aufrunden(float(Feld[p1[1]][p1[0]]) - um)
+                        Feld[p2[1]][p2[0]] = aufrunden(float(Feld[p2[1]][p2[0]]) + um)
+                        Merkliste[i] += um
+                        aenderung2 = True
+                    if i in kritischeKanten:
+                        index = kritischeKanten.index(i)
+                        richtung = ausrichtung[index]
+                        um = round(float(aufrunden((abs(diff)))), 3)
+                        if richtung == 1 and diff >= 0:
+                            Feld[p1[1]][p1[0]] = aufrunden(float(Feld[p1[1]][p1[0]]) + um)
+                            Feld[p2[1]][p2[0]] = aufrunden(float(Feld[p2[1]][p2[0]]) - um)
+                            Merkliste[i] -= um
+                        elif richtung == 0 and diff <= 0:
+                            Feld[p1[1]][p1[0]] = aufrunden(float(Feld[p1[1]][p1[0]]) - um)
+                            Feld[p2[1]][p2[0]] = aufrunden(float(Feld[p2[1]][p2[0]]) + um)
+                            Merkliste[i] += um
+    return Feld, Merkliste
+
+
+def binaerliste(L, n):
+    if len(L) < n:
+        L.append(0)
+        binaerliste(L, n)
+        del L[len(L)-1]
+        L.append(1)
+        binaerliste(L, n)
+        del L[len(L) - 1]
+    elif len(L) == n:
+        global ausrichtungKritischeKanten
+        M = deepcopy(L)
+        ausrichtungKritischeKanten.append(M)
+
 
 
 # Beginn des Programms
@@ -347,11 +403,10 @@ P.remove("E")
 
 # Zwischenspeichern des Feldes
 altesFeld = deepcopy(Feld)
-Merkliste = [0 for i in range(len(P) - 1)]
 
 planquadrate = []
 for i in range(len(P)-1):
-    p1, p2, diff = kante(P[i], P[i+1])
+    p1, p2, diff = kante(P[i], P[i+1], Feld)
     planquadrate.append(p1)
     planquadrate.append(p2)
 
@@ -363,34 +418,35 @@ while planquadrate != []:
     while planquadrate.count(q) > 0:
         planquadrate.remove(q)
 
+kritischeKanten = []
+for i in range(len(P)-1):
+    p1, p2, diff = kante(P[i], P[i + 1], Feld)
+    if p1 in mehrfachePlanquadrate or p2 in mehrfachePlanquadrate:
+        kritischeKanten.append(i)
 
+ausrichtungKritischeKanten = []
+binaerliste([], len(kritischeKanten))
 
+if kritischeKanten == []:
+    altesFeld = deepcopy(Feld)
+    beste_Feld, beste_Merkliste = umbauen(altesFeld, [], [])
 
-aenderung1 = True
-while aenderung1:
-    aenderung1 = False
-    Locks = [False for i in range(len(P) - 1)]
-    for i in range(len(P) - 1):
-        p1,p2,diff = kante(P[i], P[i + 1])
-        if abs(diff) >= 1:
-            Locks[i] = True
-        else:
-            aenderung1 = True
-    aenderung2 = True
-    while aenderung2:
-        aenderung2 = False
-        for ii in range(len(P) - 1):
-            if not Locks[ii]:
-                p1, p2, diff = kante(P[ii], P[ii + 1])
-                if abs(diff) not in [1, 1.001]:
-                    um = float(aufrunden((1 - abs(diff)) / 2))
-                    if diff < 0:
-                        um *= -1
-                    Feld[p1[1]][p1[0]] = aufrunden(float(Feld[p1[1]][p1[0]]) - um)
-                    Feld[p2[1]][p2[0]] = aufrunden(float(Feld[p2[1]][p2[0]]) + um)
-                    Merkliste[ii] += um
-                    aenderung2 = True
+beste_s = float("inf")
+while ausrichtungKritischeKanten != []:
+    ausrichtung = ausrichtungKritischeKanten[0]
+    altesFeld = deepcopy(Feld)
+    neuesFeld, Merkliste = umbauen(altesFeld, kritischeKanten, ausrichtung)
+    s = 0
+    for i in Merkliste:
+        s += round(abs(i),3)
+    if s < beste_s:
+        beste_s = s
+        beste_Merkliste = Merkliste
+        beste_Feld = neuesFeld
+    del ausrichtungKritischeKanten[0]
 
+Merkliste = beste_Merkliste
+neuesFeld = beste_Feld
 
 # - - - - -
 # Schritt 5:
@@ -401,7 +457,7 @@ printMatrixMitPfad(altesFeld, "Eingabefeld")
 print()
 print()
 print()
-printMatrixMitPfad(Feld, "Ausgabefeld")
+printMatrixMitPfad(neuesFeld, "Ausgabefeld")
 print()
 print()
 print()
@@ -409,7 +465,7 @@ print("Menge aller Umbauarbeiten:")
 print()
 S = 0
 for i in range(len(P)-1):
-    p1, p2, diff = kante( P[i], P[i+1] )
+    p1, p2, diff = kante( P[i], P[i+1], Feld )
     verschoben = aufrunden(round(abs(Merkliste[i]),3))
     S += float(verschoben)
     if Merkliste[i] < 0:
@@ -429,7 +485,7 @@ print()
 print("Laufzeit:", str(time.process_time()), "s")
 
 
-for Reihe in Feld:
+for Reihe in neuesFeld:
     for Zelle in Reihe:
         if float(Zelle) > h_max:
             h_max = float(Zelle)
@@ -443,7 +499,7 @@ for i in range(len(dateiname)-4):
     bilddateiname += dateiname[i]
 
 ZeichneFeld(altesFeld, str( "input-"+bilddateiname+".png") )
-ZeichneFeldMitPfad(Feld, P, str("output-" + bilddateiname + ".png"))
+ZeichneFeldMitPfad(neuesFeld, P, str("output-" + bilddateiname + ".png"))
 
 
 # Programmende
