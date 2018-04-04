@@ -1,20 +1,16 @@
-import time
-from PIL import Image, ImageDraw
-from copy import deepcopy
-from math import ceil
-# Um Pillow in PyCharm zu nutzen:
+import time # fuer die Ausgabe der Rechenzeit
+from PIL import Image, ImageDraw # fuer spaetere graphische Ausgaben
+from copy import deepcopy # fuer das Zwischenspeichern von Bearbeitungsversuchen des Feldes
+from math import ceil # fuer das Aufrunden der Hoehen der Planquadrate
+
+# Um Pillow in PyCharm zu aktivieren:
 # Strg + Alt + S -> Project Interpretor -> Pluszeichen -> "Pillow"
 
-# input: eine Matrix
-# Korrekt formatierte Ausgabe der Matrix im Textfeld
-def printMatrix(matrix):
-    for i in matrix:
-        s = ""
-        for j in i:
-            s += j + "  "
-        print(s)
-
+# printMatrixMitPfad(matrix, titel)
+# input: ein Feld und eine Ueberschrift fuer die Ausgabe
+# output: Textausgabe des Feldes mit Ueberschrift und Koordinatenachsen
 def printMatrixMitPfad(matrix, titel):
+    # Vorbereitung zur Rotfaerbung der Planquadrate, die an den Pfad direkt anliegen
     roteQuadrate = []
     RED = '\033[91m'
     END = '\033[0m'
@@ -22,6 +18,7 @@ def printMatrixMitPfad(matrix, titel):
         e1, e2, a = kante(P[i], P[i+1], matrix)
         roteQuadrate.append(e1)
         roteQuadrate.append(e2)
+    # Schaffung der richtigen Zwischenabstaende fuer die Ausgabe der x-Achse bzw. des Titels
     a = len(str(feldlaenge))
     a += 3
     s = ""
@@ -37,16 +34,19 @@ def printMatrixMitPfad(matrix, titel):
     while len(r) < (len(s)-len(titel))/2:
         r += " "
     r += titel
+    # Ausgabe der x-Achse bzw. des Titels
     print(r)
     print()
     print(s)
     print()
+    # Ausgabe der y-Achse + der Feldhoehen
     for y in range(len(matrix)):
         Reihe = matrix[y]
         s = str(y)
         s += "."
         while len(s) < a:
             s += " "
+        # Rotfaerbung der Planquadrate am Pfad
         for x in range(len(Reihe)):
             if [x, y] in roteQuadrate:
                 s += RED + Reihe[x] + END + " "
@@ -76,31 +76,6 @@ def aufrunden(n):
     while len(n2) < a:
         n2 += "0"
     return n2
-
-
-# input: eine Feldmatrix mit einem String fuer den Dateinamen
-# Visualisierung der Feldmatrix in einer exportierten Bilddatei
-def ZeichneFeld(F, name):
-    s = 50
-    x_max = feldbreite * s
-    y_max = feldlaenge * s
-
-    # Initialisierung des Bildes
-    pic = Image.new("RGB", ((x_max+1, y_max+1)), (255, 255, 255))
-    draw = ImageDraw.Draw(pic)
-
-    for Reihe in range(feldbreite):
-        for Spalte in range(feldlaenge):
-            farbe = int( 255 * ( float(F[Spalte][Reihe]) - h_min ) / ( h_max - h_min) )
-            draw.rectangle([(Reihe*s, Spalte*s),((Reihe+1)*s,(Spalte+1)*s)], (farbe, farbe, farbe), (255, 255, 255))
-
-    # Einzeichnen des Rasters
-    for i in range(0, feldbreite+1):
-        draw.line([(0,i*s),(x_max,i*s)], (0, 0, 255), 1)
-        draw.line([(i*s,0),(i*s,y_max)], (0, 0, 255), 1)
-
-    pic.save(name)
-    pic.show()
 
 
 # input: eine Feldmatrix mit Pfad einer roten Linie und Dateinamen
@@ -470,7 +445,9 @@ for i in range(len(P)-1):
     p1, p2, diff = kante( P[i], P[i+1], Feld )
     verschoben = aufrunden(round(abs(Merkliste[i]),3))
     S += float(verschoben)
-    if Merkliste[i] < 0:
+    if round(Merkliste[i],3) == 0:
+        pass
+    elif Merkliste[i] < 0:
         print("Kippe von", p2, "nach", p1, "insgesamt", verschoben.replace(" ", "") , "Meter Erde.")
     elif Merkliste[i] > 0:
         print("Kippe von", p1, "nach", p2, "insgesamt", verschoben.replace(" ", "")  , "Meter Erde.")
@@ -500,8 +477,8 @@ bilddateiname = ""
 for i in range(len(dateiname)-4):
     bilddateiname += dateiname[i]
 
-ZeichneFeld(altesFeld, str( "input-"+bilddateiname+".png") )
-ZeichneFeldMitPfad(neuesFeld, P, str("output-" + bilddateiname + ".png"))
+ZeichneFeldMitPfad(altesFeld, [], str( bilddateiname+"-input.png") )
+ZeichneFeldMitPfad(neuesFeld, P, str(bilddateiname + "-output.png"))
 
 
 # Programmende
