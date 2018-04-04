@@ -112,7 +112,6 @@ def ZeichneFeldMitPfad(F, PP, name):
         del PP[0]
 
     pic.save(name)
-    pic.show()
 
 
 # input: Zwei Koordinatenpunkte e1 und e2 im Format "x y"
@@ -482,6 +481,22 @@ for i in range(len(dateiname)-4):
 ZeichneFeldMitPfad(altesFeld, [], str( bilddateiname+"-input.png") )
 ZeichneFeldMitPfad(neuesFeld, P, str(bilddateiname + "-output.png"))
 
+lsgdatei = open(bilddateiname+"-lsg.txt", "w")
+textdatei = open(dateiname, "r")
+for line in textdatei:
+    lsgdatei.write(line)
+    break
+textdatei.close()
+for i in neuesFeld:
+    s = ""
+    if h_min < 0:
+        for j in i:
+            s += j + " "
+    else:
+        for j in i:
+            s += j[1:] + " "
+    lsgdatei.write(s[:-1]+"\n")
+lsgdatei.close()
 
 # Programmende
 print()
