@@ -201,6 +201,7 @@ def umbauen(Feld, kritischeKanten, ausrichtung):
                     if i in kritischeKanten:
                         index = kritischeKanten.index(i)
                         richtung = ausrichtung[index]
+                        p1, p2, diff = kante(P[i], P[i + 1], Feld)
                         um = round(float(aufrunden((abs(diff)))), 3)
                         if richtung == 1 and diff >= 0:
                             Feld[p1[1]][p1[0]] = aufrunden(float(Feld[p1[1]][p1[0]]) + um)
