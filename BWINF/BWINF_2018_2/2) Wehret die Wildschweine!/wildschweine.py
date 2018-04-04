@@ -149,6 +149,7 @@ def kante(e1,e2, Feld):
 # input: ein Feld, die Menge aller kritischer Kanten, die Ausrichtung der Umbauarbeiten an den kritischen Kanten
 # output: das optimal umgebaute Feld in Abhängigkeit der Ausrichtung an den kritschen Kanten
 def umbauen(Feld, kritischeKanten, ausrichtung):
+    # Aufsetzen der Merkliste
     Merkliste = [0 for i in range(len(P) - 1)]
     aenderung1 = True
     while aenderung1:
