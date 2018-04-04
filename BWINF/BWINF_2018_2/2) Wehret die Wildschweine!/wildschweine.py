@@ -6,7 +6,7 @@ from math import ceil # fuer das Aufrunden der Hoehen der Planquadrate
 # Um Pillow in PyCharm zu aktivieren:
 # Strg + Alt + S -> Project Interpretor -> Pluszeichen -> "Pillow"
 
-# printMatrixMitPfad(matrix, titel)
+
 # input: ein Feld und eine Ueberschrift fuer die Ausgabe
 # output: Textausgabe des Feldes mit Ueberschrift und Koordinatenachsen
 def printMatrixMitPfad(matrix, titel):
@@ -146,7 +146,8 @@ def kante(e1,e2, Feld):
     diff = round((p2h - p1h), 3)
     return p1,p2,diff
 
-
+# input: ein Feld, die Menge aller kritischer Kanten, die Ausrichtung der Umbauarbeiten an den kritischen Kanten
+# output: das optimal umgebaute Feld in Abhängigkeit der Ausrichtung an den kritschen Kanten
 def umbauen(Feld, kritischeKanten, ausrichtung):
     Merkliste = [0 for i in range(len(P) - 1)]
     aenderung1 = True
@@ -171,7 +172,7 @@ def umbauen(Feld, kritischeKanten, ausrichtung):
                             um *= -1
                         Feld[p1[1]][p1[0]] = aufrunden(float(Feld[p1[1]][p1[0]]) - um)
                         Feld[p2[1]][p2[0]] = aufrunden(float(Feld[p2[1]][p2[0]]) + um)
-                        Merkliste[i] += um
+                        Merkliste[i] = round(Merkliste[i] + um, 3)
                         aenderung2 = True
                     if i in kritischeKanten:
                         index = kritischeKanten.index(i)
@@ -181,14 +182,14 @@ def umbauen(Feld, kritischeKanten, ausrichtung):
                         if richtung == 1 and diff >= 0:
                             Feld[p1[1]][p1[0]] = aufrunden(float(Feld[p1[1]][p1[0]]) + um)
                             Feld[p2[1]][p2[0]] = aufrunden(float(Feld[p2[1]][p2[0]]) - um)
-                            Merkliste[i] -= um
+                            Merkliste[i] = round(Merkliste[i] - um, 3)
                         elif richtung == 0 and diff <= 0:
                             Feld[p1[1]][p1[0]] = aufrunden(float(Feld[p1[1]][p1[0]]) - um)
                             Feld[p2[1]][p2[0]] = aufrunden(float(Feld[p2[1]][p2[0]]) + um)
-                            Merkliste[i] += um
+                            Merkliste[i] = round(Merkliste[i] + um, 3)
     return Feld, Merkliste
 
-
+# rekursive Methode, die alle Moeglichkeiten einer Binaerliste der Laenge n generiert
 def binaerliste(L, n):
     if len(L) < n:
         L.append(0)
