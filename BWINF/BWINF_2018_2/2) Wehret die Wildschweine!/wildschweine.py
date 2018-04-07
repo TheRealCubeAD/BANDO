@@ -10,6 +10,7 @@ from math import ceil # fuer das Aufrunden der Hoehen der Planquadrate
 # input: ein Feld und eine Ueberschrift fuer die Ausgabe
 # output: Textausgabe des Feldes mit Ueberschrift und Koordinatenachsen
 def printMatrixMitPfad(matrix, titel):
+
     # Vorbereitung zur Rotfaerbung der Planquadrate, die an den Pfad direkt anliegen
     roteQuadrate = []
     RED = '\033[91m'
@@ -18,6 +19,7 @@ def printMatrixMitPfad(matrix, titel):
         e1, e2, a = kante(P[i], P[i+1], matrix)
         roteQuadrate.append(e1)
         roteQuadrate.append(e2)
+
     # Schaffung der richtigen Zwischenabstaende fuer die Ausgabe der x-Achse bzw. des Titels
     a = len(str(feldlaenge))
     a += 3
@@ -34,11 +36,13 @@ def printMatrixMitPfad(matrix, titel):
     while len(r) < (len(s)-len(titel))/2:
         r += " "
     r += titel
+
     # Ausgabe der x-Achse bzw. des Titels
     print(r)
     print()
     print(s)
     print()
+
     # Ausgabe der y-Achse + der Feldhoehen
     for y in range(len(matrix)):
         Reihe = matrix[y]
@@ -46,6 +50,7 @@ def printMatrixMitPfad(matrix, titel):
         s += "."
         while len(s) < a:
             s += " "
+
         # Rotfaerbung der Planquadrate am Pfad
         for x in range(len(Reihe)):
             if [x, y] in roteQuadrate:
@@ -101,6 +106,7 @@ def ZeichneFeldMitPfad(F, PP, name):
         draw.line([(0,i*s),(x_max,i*s)], (0, 0, 255), 1)
         draw.line([(i*s,0),(i*s,y_max)], (0, 0, 255), 1)
 
+    # Einzeichnen des Pfades
     while len(PP) >= 2:
         x1,y1 = PP[0].split()
         x2,y2 = PP[1].split()
@@ -111,6 +117,7 @@ def ZeichneFeldMitPfad(F, PP, name):
         draw.line([(x1 * s, y1 * s), (x2 * s, y2 * s)], (255, 0, 0), 5)
         del PP[0]
 
+    # Speichern des Bildes
     pic.save(name)
 
 
@@ -146,13 +153,17 @@ def kante(e1,e2, Feld):
     return p1,p2,diff
 
 # input: ein Feld, die Menge aller kritischer Kanten, die Ausrichtung der Umbauarbeiten an den kritischen Kanten
-# output: das optimal umgebaute Feld in Abhängigkeit der Ausrichtung an den kritschen Kanten
+# output: das optimal umgebaute Feld in Abhaengigkeit der Ausrichtung an den kritschen Kanten
 def umbauen(Feld, kritischeKanten, ausrichtung):
-    # Aufsetzen der Merkliste
+    # 4.2.) Setze eine 'Merkliste' auf, in der alle folgenden Umbauarbeiten gespeichert werden.
     Merkliste = [0 for i in range(len(P) - 1)]
+    # 4.3.) Wiederhole solange, bis nach einem Durchlauf keine Erde mehr verschoben wird:
     aenderung1 = True
     while aenderung1:
         aenderung1 = False
+        # 4.3.3.) Entsperre alle Kanten.
+        # 4.3.1.) Sperre alle Kanten, an denen die Hoehendifferenz 1 m oder groesser ist.
+        # Ueber gesperrete Kanten kann keine Erde gekippt werden.
         Locks = [False for i in range(len(P) - 1)]
         for i in range(len(P) - 1):
             p1,p2,diff = kante(P[i], P[i + 1], Feld)
@@ -160,9 +171,13 @@ def umbauen(Feld, kritischeKanten, ausrichtung):
                 Locks[i] = True
             else:
                 aenderung1 = True
+        # 4.3.2.) Wiederhole solange, bis nach einem Durchlauf keine Erde mehr verschoben wird:
         aenderung2 = True
         while aenderung2:
             aenderung2 = False
+            # 4.3.2.1.) Gehe alle Kanten des Teilpfades der Reihe nach durch und kippe ueber jede nicht gesperrte Kante
+            # die kleinste Menge an Erde, die noetig ist, um die Hoehendifferenz auf genau 1 m oder 1.001 m zu erhoehen
+            # oder zu erniedrigen. Speichere die Aenderungen in der 'Merkliste'.
             for i in range(len(P) - 1):
                 if not Locks[i]:
                     p1, p2, diff = kante(P[i], P[i + 1], Feld)
@@ -174,6 +189,11 @@ def umbauen(Feld, kritischeKanten, ausrichtung):
                         Feld[p2[1]][p2[0]] = aufrunden(float(Feld[p2[1]][p2[0]]) + um)
                         Merkliste[i] = round(Merkliste[i] + um, 3)
                         aenderung2 = True
+                    # 4.3.2.2.) Jedesmal, wenn ueber eine kritische Kante Erde geschuettet wird, ueberpruefe,
+                    # ob die Ausrichtung der kritischen Kante der Angabe der Binaerliste entspricht.
+                    # Wenn sie es nicht tut, so kippe die Hoehendifferenz der zwei Planquadrate
+                    # vom hoeherem Planquadrat zum tieferem um die Ausrichtung zu korrigieren.
+                    # Speichere die Aenderungen in der 'Merkliste'.
                     if i in kritischeKanten:
                         index = kritischeKanten.index(i)
                         richtung = ausrichtung[index]
@@ -214,8 +234,7 @@ print()
 
 
 # - - - - -
-# Schritt 1:
-# Einlesen der Textdatei
+# 1) Einlesen der Textdatei
 # - - - - -
 
 # Oeffnen der Datei mit der Feldmatrix
@@ -265,8 +284,7 @@ altesFeld = deepcopy(Feld)
 
 
 # - - - - -
-# Schritt 2:
-# Initialisierung des Graphens
+# 2) Initialisierung des Graphens
 # - - - - -
 
 # Aufsetzen der Knotenliste
@@ -318,8 +336,7 @@ print()
 
 
 # - - - - -
-# Schritt 3:
-# Guenstigsten Blockadepfad finden
+# 3) Guenstigste rote Linie finden
 # - - - - -
 
 
@@ -373,20 +390,24 @@ P.remove("S")
 P.remove("E")
 
 # - - - - -
-# Schritt 4:
-# Umbauarbeiten bestimmen
+# 4) Umbauarbeiten bestimmen
 # - - - - -
 
+# Die Nummerierung entsprcht dem des Pseudocodes aus der Dokumentation
 
 # Zwischenspeichern des Feldes
 altesFeld = deepcopy(Feld)
 
+# 1.) Bestimme alle kritischen Kanten.
+
+# Bestimme alle kritischen Planquadrate
 planquadrate = []
 for i in range(len(P)-1):
+    # Trage alle Planquadrate an der roten Linie in eine Liste ein.
     p1, p2, diff = kante(P[i], P[i+1], Feld)
     planquadrate.append(p1)
     planquadrate.append(p2)
-
+# Suche alle doppeltvorkommenden Planquadrate heraus.
 mehrfachePlanquadrate = []
 while planquadrate != []:
     q = planquadrate[0]
@@ -395,40 +416,51 @@ while planquadrate != []:
     while planquadrate.count(q) > 0:
         planquadrate.remove(q)
 
+# Bestimme alle kritische Kanten
 kritischeKanten = []
 for i in range(len(P)-1):
     p1, p2, diff = kante(P[i], P[i + 1], Feld)
     if p1 in mehrfachePlanquadrate or p2 in mehrfachePlanquadrate:
         kritischeKanten.append(i)
 
+# 2.) Erstelle eine Liste B, die alle 2^n unterschiedlichen Binaerlisten enthaelt.
 ausrichtungKritischeKanten = []
 binaerliste([], len(kritischeKanten))
 
+# Wenn n == 0:
 if kritischeKanten == []:
     altesFeld = deepcopy(Feld)
     beste_Feld, beste_Merkliste = umbauen(altesFeld, [], [])
 
+# 3.) Definiere s_b = unendlich
 beste_s = float("inf")
+
+# 4.) Wiederhole solange, bis B leer ist:
 while ausrichtungKritischeKanten != []:
+    # 4.1.) Waehle eine Binaerliste aus B.
     ausrichtung = ausrichtungKritischeKanten[0]
+    # 4.7.) Setze das soeben bearbeitete Feld zurueck.
     altesFeld = deepcopy(Feld)
     neuesFeld, Merkliste = umbauen(altesFeld, kritischeKanten, ausrichtung)
+    # 4.5.) Rechne die Summe s der Bilanzen aus.
     s = 0
     for i in Merkliste:
         s += round(abs(i),3)
+    # 4.6.) Wenn s < s_b, so ueberschreibe s_b mit s und speichere die 'Merkliste'.
     if s < beste_s:
         beste_s = round(s,3)
         beste_Merkliste = Merkliste
         beste_Feld = neuesFeld
+    # 4.8.) Loesche die Binaerliste aus B.
     del ausrichtungKritischeKanten[0]
 
+# 5.) Die Bilanzen der zuletzt gespeicherten Merkliste gibt die optimale Menge an Umbauarbeiten an.
 Merkliste = beste_Merkliste
 neuesFeld = beste_Feld
 altesFeld = deepcopy(Feld)
 
 # - - - - -
-# Schritt 5:
-# Umbauarbeiten angeben
+# 5) Visualisierung des Ergebnisses
 # - - - - -
 
 printMatrixMitPfad(altesFeld, "Eingabefeld")
