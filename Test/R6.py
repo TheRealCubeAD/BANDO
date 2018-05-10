@@ -4,6 +4,7 @@ import random
 print()
 print("Was ist dein Name?")
 name = input(">>> ")
+Atacker = {"Sledge":"softbreach","Thatcher":"support"}
 
 if name == "Alex":
     Angreifer = ["Sledge", "Thermite", "Dokkaebi", "Finka"]
