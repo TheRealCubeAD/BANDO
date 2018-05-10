@@ -79,6 +79,8 @@ def printTeam(T):
     for i in range(anzahlSpieler):
         print(Spieler[i],": ",T[i])
 
+[["1HB",["hardbreacher 1,1"],[]],["SuperBreach",["hardbreacher 1,2","softbreacher 1,5"],["thatcher +"]]]
+
 print()
 print()
 print("Angriff: 'A', Verteidigung: 'V'")
