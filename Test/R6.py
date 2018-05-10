@@ -9,7 +9,11 @@ Attackers = {"Sledge":"softbreach","Thatcher":"support","Ash":"softbreach","Ther
            "IQ":"gadget","Buck":"attack","Blackbeard":"attack","Capitao":"attack","Hibana":"hardbreach",
            "Jackel":"support","Ying":"gadget","Zofia":"attack","Doakkaebi":"support","Lion":"support",
            "Finka":"support"}
-Defenders
+Defenders = {"Doc":"support","Rook":"support","Ela":"entryDenial","Kapkan":"entryDenial","Frost":"entryDenial",
+             "Lesion":"entryDenial","Smoke":"entryDenial","Mute":"gadgetDenial","Bandit":"gadgetDenial",
+             "Jäger":"gadgetDenial","Vigil":"gadgetDenial","Mira":"fortification","Castle":"fortification",
+             "Tachanka":"fortification","Pulse":"intelligence","Echo":"intelligence","Valkyrie":"intelligence",
+             "Caveira":"intelligence"}
 
 if name == "Alex":
     Angreifer = ["Sledge", "Thermite", "Dokkaebi", "Finka"]
