@@ -88,7 +88,7 @@ while True:
     a = input(">>> ")
     if a == "A":
         printTeam(random.choice(alleTeamsAngreifer))
-    elif a == "B":
+    elif a == "V":
         printTeam(random.choice(alleTeamsVerteidiger))
     else:
         print("Ungültige Eingabe")
