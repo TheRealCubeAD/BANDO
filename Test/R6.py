@@ -4,11 +4,12 @@ import random
 print()
 print("Was ist dein Name?")
 name = input(">>> ")
-Atacker = {"Sledge":"softbreach","Thatcher":"support","Ash":"softbreach","Thermite":"hardbreach",
+Attackers = {"Sledge":"softbreach","Thatcher":"support","Ash":"softbreach","Thermite":"hardbreach",
            "Twitch":"gadget","Montagne":"support","Glaz":"attack","Fuze":"gadget","Blitz":"attack",
            "IQ":"gadget","Buck":"attack","Blackbeard":"attack","Capitao":"attack","Hibana":"hardbreach",
            "Jackel":"support","Ying":"gadget","Zofia":"attack","Doakkaebi":"support","Lion":"support",
            "Finka":"support"}
+Defenders
 
 if name == "Alex":
     Angreifer = ["Sledge", "Thermite", "Dokkaebi", "Finka"]
