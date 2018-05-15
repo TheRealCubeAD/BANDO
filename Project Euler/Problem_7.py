@@ -1,9 +1,11 @@
-from math import sqrt
+import sympy
 
-x = 1
-y = 3
-while x != 10001:
-    if all([y % i != 0 for i in range(2, int(sqrt(y) + 1))]):
-        x += 1
-    y += 2
-print(y)  # 104745
+a = 0
+i = 1
+
+while a < 10001:
+    i += 1
+    if sympy.isprime(i) == True:
+        a += 1
+
+print(i)
