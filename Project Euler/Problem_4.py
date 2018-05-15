@@ -3,6 +3,6 @@ for x in range(998001):
     if str(xx) == str(xx)[::-1]:
         for y in range(100,1000):
             z = xx/y
-            if z == int(z) and len(str(z)) == 3:
-                print(xx)
+            if z == int(z) and len(str(int(z))) == 3:
+                print(xx) # 913 * 993 = 906609
                 exit(0)

@@ -23,6 +23,7 @@ for i in range(anzahlSpieler):
 
 Angreifer = []
 Verteidiger = []
+
 for i in Spieler:
     if i == "Alex":
         Angreifer.append(["Sledge", "Thermite", "Dokkaebi", "Finka"])
@@ -36,6 +37,9 @@ for i in Spieler:
     elif i == "Andreas":
         Angreifer.append(["Ash","Glaz","Fuze","Lion","IQ","Twitch","Thermite","Blitz","Thatcher"])
         Verteidiger.append(["Echo","Mira","Lesion","Bandit","Jäger","Tachanka","Doc","Smoke"])
+    elif i == "Gru":
+        Angreifer.append(["Sledge","Thatcher","Ash","Thermite","Twitch","Montagne","Glaz","Fuze","Blitz","IQ","Buck","Blackbeard","Capitao","Hibana","Jackel","Ying","Zofia", ])
+        Verteidiger.append([])
 
 
 alleTeamsAngreifer = []
@@ -65,13 +69,13 @@ alleTeamsDef([],Verteidiger)
 
 for i in alleTeamsAngreifer:
     for j in i:
-        if i.count(j) != 1:
+        if i.count(j) > 1:
             alleTeamsAngreifer.remove(i)
             break
 
 for i in alleTeamsVerteidiger:
     for j in i:
-        if i.count(j) != 1:
+        if i.count(j) > 1:
             alleTeamsVerteidiger.remove(i)
             break
 
@@ -79,8 +83,8 @@ def printTeam(T):
     for i in range(anzahlSpieler):
         print(Spieler[i],": ",T[i])
 
-[["1HB",["hardbreacher 1,1"],[]],
- ["SuperBreach",["hardbreacher 1,2","softbreacher 1,5"],["thatcher +"]]]
+#[["1HB",["hardbreacher 1,1"],[]],
+# ["SuperBreach",["hardbreacher 1,2","softbreacher 1,5"],["thatcher +"]]]
 
 print()
 print()
