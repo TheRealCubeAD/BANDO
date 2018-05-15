@@ -8,4 +8,4 @@ while a < 10001:
     if sympy.isprime(i) == True:
         a += 1
 
-print(i)
+print(i) # 104743
