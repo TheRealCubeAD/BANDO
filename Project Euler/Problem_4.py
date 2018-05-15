@@ -1,8 +1,8 @@
-for a in range(899):
-    aa = 999 - a
-    for b in range(899):
-        bb = 999 - a
-        x = aa * bb
-        if str(x) == str(x)[::-1]:
-            print(aa, bb, x)
-            exit(0)
+for x in range(998001):
+    xx = 998001
+    if str(xx) == str(xx)[::-1]:
+        for y in range(100,1000):
+            z = xx/y
+            if z == int(z) and len(str(z)) == 3:
+                print(xx)
+                exit(0)
