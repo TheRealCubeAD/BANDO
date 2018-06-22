@@ -4,13 +4,18 @@ import time
 
 
 # - - - - - Programminterne Moduswahl - - - - -
+
+# Abfragemodus:
 #modus = "quadrat"
 #modus = "quadrat_schnell"
 #modus = "rechteck"
 modus = "rechteck_schnell"
 
+# Ausgabemodus:
+modus_a = "farbe"
+#modus_a = "zahl"
 
-#
+
 # Beginn des Programms
 print()
 print("- - - - - Programmstart - - - - -")
@@ -86,14 +91,18 @@ def printMatrix(matrix):
     for Reihe in matrix:
         s = "          "
         for zahl in Reihe:
+            if modus_a == "farbe":
+                t = "●"
+            elif modus_a == "zahl":
+                t = str(zahl)
             if zahl == 0:
-                s += RED + "●" + END + " "
+                s += RED + t + END + " "
             elif zahl == 1:
-                s += BLUE + "●" + END + " "
+                s += BLUE + t + END + " "
             elif zahl == 2:
-                s += GREEN + "●" + END + " "
+                s += GREEN + t + END + " "
             elif zahl == 3:
-                s += LILA + "●" + END + " "
+                s += LILA + t + END + " "
         print(s)
 
 
