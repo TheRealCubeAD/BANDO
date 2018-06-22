@@ -10,7 +10,7 @@ modus = "quadrat_schnell"
 #modus = "rechteck_schnell"
 
 
-
+#
 # Beginn des Programms
 print()
 print("- - - - - Programmstart - - - - -")
