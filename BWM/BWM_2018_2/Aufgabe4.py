@@ -15,6 +15,7 @@ modus = "rechteck_schnell"
 modus_a = "farbe"
 #modus_a = "zahl"
 
+#
 
 # Beginn des Programms
 print()
