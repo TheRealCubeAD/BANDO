@@ -5,9 +5,9 @@ import time
 
 # - - - - - Programminterne Moduswahl - - - - -
 #modus = "quadrat"
-modus = "quadrat_schnell"
+#modus = "quadrat_schnell"
 #modus = "rechteck"
-#modus = "rechteck_schnell"
+modus = "rechteck_schnell"
 
 
 #
@@ -69,8 +69,7 @@ elif modus == "rechteck_schnell":
 
     lautDenken = False
 
-print()
-print()
+
 e = min(b, h)
 
 # n = Anzahl der Farben
@@ -79,9 +78,23 @@ n = 1
 
 # Methode zur Ausgabe einer Matrix
 def printMatrix(matrix):
-    for i in range(len(matrix)):
-        reihe = matrix[i]
-        print(reihe)
+    RED = '\033[91m'
+    BLUE = '\033[94m'
+    GREEN = '\033[92m'
+    LILA = '\033[95m'
+    END = '\033[0m'
+    for Reihe in matrix:
+        s = "          "
+        for zahl in Reihe:
+            if zahl == 0:
+                s += RED + "●" + END + " "
+            elif zahl == 1:
+                s += BLUE + "●" + END + " "
+            elif zahl == 2:
+                s += GREEN + "●" + END + " "
+            elif zahl == 3:
+                s += LILA + "●" + END + " "
+        print(s)
 
 
 
@@ -194,10 +207,10 @@ print("Ein", str(b)+"x"+str(h)+"-Feld", "braucht mindestens", n, "Farben.")
 
 
 print()
-print()
 print("Laufzeit:", str(time.process_time()), "s")
 
 # Programmende
+print()
 print()
 print()
 print(" - - - - - Programmende - - - - -")
