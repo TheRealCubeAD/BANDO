@@ -11,6 +11,7 @@ modus = "quadrat_schnell"
 #modus = "rechteck"
 #modus = "rechteck_schnell"
 
+#
 # Ausgabemodus:
 modus_a = "farbe"
 #modus_a = "zahl"
