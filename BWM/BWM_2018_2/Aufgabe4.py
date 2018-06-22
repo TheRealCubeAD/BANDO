@@ -1,17 +1,76 @@
-# e = Groese der Ebene
+
+import time
+
+
+
+# - - - - - Programminterne Moduswahl - - - - -
+#modus = "quadrat"
+modus = "quadrat_schnell"
+#modus = "rechteck"
+#modus = "rechteck_schnell"
+
+
+
+# Beginn des Programms
 print()
-print("Wie breit soll die Ebene sein?")
-b = int(input(">>> "))
+print("- - - - - Programmstart - - - - -")
+print()
+print()
+
+if modus == "quadrat":
+
+    # e = Groese der Ebene
+    print()
+    print("Wie gross soll das Quadrat sein?")
+    b = int(input(">>> "))
+    h = b
+
+    print()
+    print("Sollen die Denkschritte ausgegeben werden?", "( Ja: (1), Nein: (0) )")
+    lautDenken = bool(int(input(">>> ")))
+
+
+elif modus == "quadrat_schnell":
+
+    # e = Groese der Ebene
+    print()
+    print("Wie gross soll das Quadrat sein?")
+    b = int(input(">>> "))
+    h = b
+    lautDenken = False
+
+
+elif modus == "rechteck":
+
+    # e = Groese der Ebene
+    print()
+    print("Wie breit soll die Ebene sein?")
+    b = int(input(">>> "))
+
+    print()
+    print("Wie hoch soll die Ebene sein?")
+    h = int(input(">>> "))
+
+    print()
+    print("Sollen die Denkschritte ausgegeben werden?", "( Ja: (1), Nein: (0) )")
+    lautDenken = bool(int(input(">>> ")))
+
+
+elif modus == "rechteck_schnell":
+
+    # e = Groese der Ebene
+    print()
+    print("Wie breit soll die Ebene sein?")
+    b = int(input(">>> "))
+
+    print()
+    print("Wie hoch soll die Ebene sein?")
+    h = int(input(">>> "))
+
+    lautDenken = False
 
 print()
-print("Wie hoch soll die Ebene sein?")
-h = int(input(">>> "))
-
-
 print()
-print("Sollen die Denkschritte ausgegeben werden?", "( Ja: (1), Nein: (0) )")
-lautDenken = bool(int(input(">>> ")))
-
 e = min(b, h)
 
 # n = Anzahl der Farben
@@ -131,5 +190,15 @@ while n <= e:
 
 
 print()
-print()
 print("Ein", str(b)+"x"+str(h)+"-Feld", "braucht mindestens", n, "Farben.")
+
+
+print()
+print()
+print("Laufzeit:", str(time.process_time()), "s")
+
+# Programmende
+print()
+print()
+print(" - - - - - Programmende - - - - -")
+print()
