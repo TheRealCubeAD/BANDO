@@ -7,15 +7,14 @@ import time
 
 # Abfragemodus:
 #modus = "quadrat"
-#modus = "quadrat_schnell"
+modus = "quadrat_schnell"
 #modus = "rechteck"
-modus = "rechteck_schnell"
+#modus = "rechteck_schnell"
 
 # Ausgabemodus:
 modus_a = "farbe"
 #modus_a = "zahl"
 
-#
 
 # Beginn des Programms
 print()
@@ -32,6 +31,10 @@ if modus == "quadrat":
     h = b
 
     print()
+    print("Wie viele Mindestfarben?")
+    mindestfarben = int(input(">>> "))
+
+    print()
     print("Sollen die Denkschritte ausgegeben werden?", "( Ja: (1), Nein: (0) )")
     lautDenken = bool(int(input(">>> ")))
 
@@ -44,6 +47,10 @@ elif modus == "quadrat_schnell":
     b = int(input(">>> "))
     h = b
     lautDenken = False
+    if h >= 7:
+        mindestfarben = 3
+    else:
+        mindestfarben = 1
 
 
 elif modus == "rechteck":
@@ -56,6 +63,10 @@ elif modus == "rechteck":
     print()
     print("Wie hoch soll die Ebene sein?")
     h = int(input(">>> "))
+
+    print()
+    print("Wie viele Mindestfarben?")
+    mindestfarben = int(input(">>> "))
 
     print()
     print("Sollen die Denkschritte ausgegeben werden?", "( Ja: (1), Nein: (0) )")
@@ -74,12 +85,16 @@ elif modus == "rechteck_schnell":
     h = int(input(">>> "))
 
     lautDenken = False
+    e = min(b, h)
+    if e >= 7:
+        mindestfarben = 3
+    else:
+        mindestfarben = 1
 
 
 e = min(b, h)
-
 # n = Anzahl der Farben
-n = 1
+n = mindestfarben
 
 
 # Methode zur Ausgabe einer Matrix
