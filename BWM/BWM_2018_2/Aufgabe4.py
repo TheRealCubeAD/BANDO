@@ -7,6 +7,11 @@ print()
 print("Wie hoch soll die Ebene sein?")
 h = int(input(">>> "))
 
+
+print()
+print("Sollen die Denkschritte ausgegeben werden?", "( Ja: (1), Nein: (0) )")
+lautDenken = bool(int(input(">>> ")))
+
 e = min(b, h)
 
 # n = Anzahl der Farben
@@ -77,7 +82,7 @@ def findeFaerbung(Ebene):
                 for f in Farben:
                     Ebene[y][x] = f
 
-                    if b*h <= 36:
+                    if lautDenken:
                         print()
                         printMatrix(Ebene)
 
@@ -86,7 +91,7 @@ def findeFaerbung(Ebene):
 
                         # Ueberpruefe die Ebene vollstaendig ist
                         if x == b - 1 and y == h - 1:
-                            if b * h > 36:
+                            if not lautDenken:
                                 print()
                                 printMatrix(Ebene)
                             return True
@@ -97,7 +102,7 @@ def findeFaerbung(Ebene):
 
                 Ebene[y][x] = -1
 
-                if b * h <= 36:
+                if lautDenken:
                     print()
                     printMatrix(Ebene)
 
@@ -112,7 +117,7 @@ while n <= e:
     # Ebene
     Ebene1 = [[-1 for x in range(b)] for y in range(h)]
 
-    if b * h <= 36:
+    if lautDenken:
         print()
         print()
         print()
