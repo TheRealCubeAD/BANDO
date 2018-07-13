@@ -1,5 +1,7 @@
 
 import time
+from copy import deepcopy
+
 
 
 
@@ -97,13 +99,22 @@ e = min(b, h)
 n = mindestfarben
 
 
+def anzahlFarben(matrix, farbe):
+    a = 0
+    for i in matrix:
+        for j in i:
+            if j == farbe:
+                a += 1
+    return a
+
+RED = '\033[91m'
+BLUE = '\033[94m'
+GREEN = '\033[92m'
+LILA = '\033[95m'
+END = '\033[0m'
+
 # Methode zur Ausgabe einer Matrix
 def printMatrix(matrix):
-    RED = '\033[91m'
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    LILA = '\033[95m'
-    END = '\033[0m'
     for Reihe in matrix:
         s = "          "
         for zahl in Reihe:
@@ -188,9 +199,11 @@ def findeFaerbung(Ebene):
 
                         # Ueberpruefe die Ebene vollstaendig ist
                         if x == b - 1 and y == h - 1:
+                            global besteEbene
                             if not lautDenken:
                                 print()
                                 printMatrix(Ebene)
+                            besteEbene = deepcopy(Ebene)
                             return True
 
                         # Suche weiter
@@ -213,6 +226,7 @@ while n <= e:
 
     # Ebene
     Ebene1 = [[-1 for x in range(b)] for y in range(h)]
+    besteEbene = deepcopy(Ebene1)
 
     if lautDenken:
         print()
@@ -230,7 +244,12 @@ while n <= e:
 print()
 print("Ein", str(b)+"x"+str(h)+"-Feld", "braucht mindestens", n, "Farben.")
 
+print()
+print(RED + "●" + END + ": " +  str(anzahlFarben(besteEbene, 0)) )
+print(BLUE + "●" + END + ": " +  str(anzahlFarben(besteEbene, 1)) )
+print(GREEN + "●" + END + ": " +  str(anzahlFarben(besteEbene, 2)) )
 
+print()
 print()
 print("Laufzeit:", str(time.process_time()), "s")
 

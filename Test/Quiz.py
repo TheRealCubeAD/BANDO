@@ -4,15 +4,16 @@ import random
 a = input(">>> ")
 b = input(">>> ")
 c = input(">>> ")
-d = input(">>> ")
+D = [a, b, c]
+d = random.choice(D)
 
 print()
 print()
 print()
 
-L = [a, b, c, d]
+L = [a, b, c, a, b, c, d]
 
-for i in range(4):
+for i in range(7):
     o = random.choice(L)
     i = L.index(o)
     del L[i]
