@@ -1,5 +1,6 @@
 
 import time
+import math
 from copy import deepcopy
 
 
@@ -49,10 +50,7 @@ elif modus == "quadrat_schnell":
     b = int(input(">>> "))
     h = b
     lautDenken = False
-    if h >= 7:
-        mindestfarben = 3
-    else:
-        mindestfarben = 1
+    mindestfarben = math.ceil( math.sqrt(h) )
 
 
 elif modus == "rechteck":

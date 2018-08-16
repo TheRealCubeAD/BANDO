@@ -1,3 +1,0 @@
-Für jede natürliche Zahl n werde die Quersumme ihrer Darstellung im Zehnersystem mit Q(n) bezeichnet.
-Man beweise, dass für unendlich viele natürliche Zahlen k die folgende Ungleichung gilt:
-Q( 3**k ) >= Q( 3**(k+1) )
