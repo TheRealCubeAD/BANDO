@@ -93,8 +93,8 @@ def delete():
         os.remove(fpq+"/"+i)
         print(i,"gelöscht")
         
-fpq = "E:/DCIM/100MEDIA"
-fps = "D:/QUAX/Days"
+fpq = "G:/DCIM/100MEDIA"
+fps = "E:/QUAX/Days"
 print("--------QuaxManager--------")
 print("           V1.2")
 print("         16.03.2018")
@@ -114,10 +114,10 @@ print()
 print("Alle Dateien kopiert")
 time.sleep(1)
 print()
-if input("Dateien von Drohne löschen?") == "y":
+if input("Dateien von Drohne löschen?") == "j":
     delete()
-print()
-print("Alle Dateien gelöscht")
+    print()
+    print("Alle Dateien gelöscht")
 time.sleep(4)
 
 
