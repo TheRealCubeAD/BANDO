@@ -11,10 +11,9 @@ modus = "quadrat_schnell"
 #modus = "rechteck"
 #modus = "rechteck_schnell"
 
-#
 # Ausgabemodus:
-modus_a = "farbe"
-#modus_a = "zahl"
+#modus_a = "farbe"
+modus_a = "zahl"
 
 
 # Beginn des Programms
@@ -43,9 +42,7 @@ if modus == "quadrat":
 elif modus == "quadrat_schnell":
 
     # e = Groese der Ebene
-    print()
-    print("Wie gross soll das Quadrat sein?")
-    b = int(input(">>> "))
+    b = 7
     h = b
     lautDenken = False
     if h >= 7:
@@ -100,11 +97,11 @@ n = mindestfarben
 
 # Methode zur Ausgabe einer Matrix
 def printMatrix(matrix):
-    RED = '\033[91m'
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    LILA = '\033[95m'
-    END = '\033[0m'
+    RED = ''
+    BLUE = ''
+    GREEN = ''
+    LILA = ''
+    END = ''
     for Reihe in matrix:
         s = "          "
         for zahl in Reihe:
