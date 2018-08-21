@@ -1,9 +1,9 @@
 from PIL import Image
 
 
-path1 = ""  #text
-path2 = ""  #hintergrund
-path3 = ""  #ergebniss
+path1 = "C:/Users/benni/PycharmProjects/BANDO/Saskia/B10001.png"  #text
+path2 = "C:/Users/benni/PycharmProjects/BANDO/Saskia/B20001.png"  #hintergrund
+path3 = "C:/Users/benni/PycharmProjects/BANDO/Saskia/B30001.png"  #ergebniss
 
 
 text = Image.open(path1)
