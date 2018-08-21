@@ -24,7 +24,8 @@ for xx in range(x):
         pixR = (pixT[0]+pixH[0],pixT[1]+pixH[1],pixT[2]+pixH[2])
 
         if pixT[0] != 255:
-            pixR = (pixR[0]-verd,pixR[1]-verd,pixR[2]-verd)
+            mi = min(pixR[0],pixR[1],pixR[2])
+            pixR = (pixR[0]-mi,pixR[1]-mi,pixR[2]-mi)
 
         res.putpixel((xx,yy),pixR)
 
