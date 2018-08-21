@@ -1,9 +1,9 @@
 from PIL import Image
 
 
-path1 = "C:/Users/benni/PycharmProjects/BANDO/Saskia/B10001.png"  #text
-path2 = "C:/Users/benni/PycharmProjects/BANDO/Saskia/B20001.png"  #hintergrund
-path3 = "C:/Users/benni/PycharmProjects/BANDO/Saskia/B30001.png"  #ergebniss
+path1 = "Saskia.png"  #text
+path2 = "Text.png"  #hintergrund
+path3 = "RES.png"  #ergebniss
 
 
 text = Image.open(path2)
@@ -12,6 +12,7 @@ hint = Image.open(path1)
 
 x,y = text.size
 verd = 50
+verd2 = 0
 
 res = Image.new("RGB",(x,y))
 
@@ -26,6 +27,8 @@ for xx in range(x):
 
         if pixT[0] != 255:
             pixR = (pixR[0]-verd,pixR[1]-verd,pixR[2]-verd)
+        else:
+            pixR = (pixR[0] - verd2, pixR[1] - verd2, pixR[2] - verd2)
 
         res.putpixel((xx,yy),pixR)
 
