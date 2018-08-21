@@ -6,12 +6,12 @@ path2 = "C:/Users/benni/PycharmProjects/BANDO/Saskia/B20001.png"  #hintergrund
 path3 = "C:/Users/benni/PycharmProjects/BANDO/Saskia/B30001.png"  #ergebniss
 
 
-text = Image.open(path1)
-hint = Image.open(path2)
+text = Image.open(path2)
+hint = Image.open(path1)
 
 
 x,y = text.size
-
+verd = 50
 
 res = Image.new("RGB",(x,y))
 
@@ -23,6 +23,9 @@ for xx in range(x):
         pixH = hint.getpixel((xx,yy))
 
         pixR = (pixT[0]+pixH[0],pixT[1]+pixH[1],pixT[2]+pixH[2])
+
+        if pixT[0] != 255:
+            pixR = (pixR[0]-verd,pixR[1]-verd,pixR[2]-verd)
 
         res.putpixel((xx,yy),pixR)
 
