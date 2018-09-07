@@ -23,8 +23,8 @@ for xx in range(x):
         pixH = hint.getpixel((xx,yy))
         pixR = (pixT[0]+pixH[0],pixT[1]+pixH[1],pixT[2]+pixH[2])
 
-        if pixT[0] < 240:
-            mi = int((min(pixR[0],pixR[1],pixR[2])*2)/3)
+        if pixT[0] < 253:
+            mi = int((min(pixR[0],pixR[1],pixR[2])/2))
             pixR = (pixR[0]-mi,pixR[1]-mi,pixR[2]-mi)
 
         res.putpixel((xx,yy),pixR)
