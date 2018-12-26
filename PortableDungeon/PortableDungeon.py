@@ -123,6 +123,7 @@ def mainmenu():
     elif c == "Credits":
         gameCredits()
     elif c == "Spiel Beenden":
+        newline(1)
         exit("Spiel wurde beendet.")
 
 
