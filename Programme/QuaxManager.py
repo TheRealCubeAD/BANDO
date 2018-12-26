@@ -1,6 +1,9 @@
 import os
 import time
 import shutil
+import tkinter
+from tkinter import scrolledtext
+from PIL import Image
 
 def searchdirs():
     dirs = [fpq,fps]
@@ -17,7 +20,7 @@ def searchdirs():
     print("Alle Ordner gefunden")
     
 
-def allfiles():
+def allFilesFromQuax():
     f = os.listdir(fpq)
     for element in f:
         print(element,"gefunden")
@@ -45,7 +48,7 @@ def getDates():
     print(allDates)
     return allDates,Dates
 
-def getDFolders():
+def getDFoldersFromSave():
     allFolders = []
     for folder in os.listdir(fps):
         print(folder)
@@ -92,18 +95,77 @@ def delete():
     for i in files:
         os.remove(fpq+"/"+i)
         print(i,"gelöscht")
-        
-fpq = "G:/DCIM/100MEDIA"
-fps = "E:/QUAX/Days"
-print("--------QuaxManager--------")
-print("           V1.2")
-print("         16.03.2018")
-print("---------------------------")
-print()
-searchdirs()
-print()
-input("Bereit >>")
-print()
+
+def loadConfig():
+    global fps
+    Tags = []
+    try:
+        config = open("SETUP.config","r")
+        dirr, path = config.readline().split(":")
+        yield dirr == "fps"
+        if path != "NONE":
+            fps = path
+            config.close()
+        else:
+            config.close()
+            with open("SETUP.config","w") as config:
+                config[0] = "fps:" + chooseDir()
+            loadConfig()
+    except:
+        if(quest("Die SETUP.config Datei ist beschädigt oder nicht vorhanden. "
+              "Bei einer Wiederherstellung gehen alle Einstellungen verloren. Wiederherstellen?")):
+            try:
+                os.remove("SETUP.config")
+            except FileNotFoundError:
+                pass
+            with open("SETUP.config","w+") as new_config:
+                new_config.write("fps:NONE")
+            exit("RESTART")
+        else:
+            exit("SETUP corrupted")
+
+def initWindow():
+    global window
+    global droneImageObjekt
+    window = tkinter.Tk()
+    window.title("Quax Manager V2.0")
+    window.configure(bg="#ffffff")
+
+    area_connect = tkinter.Frame(window)
+    area_connect.grid(column=0)
+
+    area_connect_drone = tkinter.Frame(area_connect)
+    area_connect_location = tkinter.Frame(area_connect)
+    area_connect_drone.grid(row=0)
+    area_connect_location.grid(row=1)
+
+    area_operation = tkinter.Frame(window)
+    area_operation.grid(column=1)
+
+    area_operation_copy = tkinter.Frame(area_operation)
+    area_operation_info = tkinter.Frame(area_operation)
+    area_operation_select = tkinter.Frame(area_operation)
+    area_operation_copy.grid(row=0)
+    area_operation_info.grid(row=1)
+    area_operation_select.grid(row=2)
+
+    droneImageObjekt = tkinter.PhotoImage(file="HLXS3.pgm")
+    droneImage = tkinter.Label(area_connect_drone,image=droneImageObjekt)
+    droneImage.grid(column=0)
+
+    info = tkinter.Label(area_operation_info,text="INFO",bg="#ffffff")
+    info.grid()
+
+
+    
+fpq = ":/DCIM/100MEDIA"
+fps = ""
+window = None
+droneImageObjekt = None
+initWindow()
+window.mainloop()
+loadConfig()
+
 files = allfiles()
 print()
 Dates, aDates = getDates()
