@@ -185,7 +185,7 @@ def gameCredits():
 # Öffne Titelbildschirm
 titlescreen()
 
-
+characterCustomization()
 
 
 
