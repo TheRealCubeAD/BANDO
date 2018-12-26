@@ -36,7 +36,7 @@ def textDivider(string):
     # Nach Moeglichkeit soll der Texttrenner ~ 120 Zeichen lang sein.
     # Der String nimmt len(string) Zeichen ein.
     # Links und rechts des zentrierten Strings liegen eine gleiche gerade Anzahl an Zeichen.
-    anz = math.floor( ( 70 - len(string) ) / 4 )
+    anz = math.floor( ( 90 - len(string) ) / 4 )
     # Zusammenbauen des Strings
     t = ""
     for _ in range(anz):
@@ -50,7 +50,7 @@ def textDivider(string):
 # Ouptput: N/A, Gibt einen Texttrenner aus
 def neutralDivider():
     t = ""
-    for _ in range(35):
+    for _ in range(45):
         t += "- "
     print(t)
 
@@ -222,7 +222,7 @@ class Monster:
 class Player:
 
     # Konstruktor
-    def __init__(self, name, room, coordinates, strength, dexterity, wisdom):
+    def __init__(self, name, room, coordinates, profession, strength, dexterity, wisdom):
         self.name = str(name)
         self.floor = floor
         self.coordinates = str(coordinates)
@@ -235,7 +235,22 @@ class Player:
 
 
 
+class Weapon:
 
+    # Konstruktor
+    def __init__(self, name, range, damage, hits, hands):
+        self.name = str(name)
+        self.range = int(range)
+        self.hits = int(hits)
+        self.hands = int(hands)
+
+handAxe = Weapon("Axt",1,2,0,1)
+sword = Weapon("Schwert",1,2,0,1)
+dagger = Weapon("Dolch",1,1,1,1)
+battleAxe = Weapon("Kampf-Axt",1,3,0,2)
+ironKnuckles = Weapon("Schlagringe",1,1,1,2)
+bow = Weapon("Bogen",3,2,0,2)
+wand = Weapon("Zauberstab",3,1,1,1)
 
 
 class Floor:
@@ -331,3 +346,27 @@ class Game:
 
 
 # - Spiel - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+def characterCustomization():
+
+    newline(4)
+    textDivider("Charakter-Erstellung")
+
+    newline(2)
+    sprint("Wähle eine Klasse!")
+    kriegerKlasse   = "Krieger   - Kennt keine Zaubersprüche und kann keine Schriftrollen verwenden"
+    diebKlasse      = "Dieb      - Kennt keine Zaubersprüche und kann Schriftrollen verwenden"
+    elfKlasse       = "Elf       - Kennt einen Zauberspruch und kann Schriftrollen verwenden"
+    magierKlasse    = "Magier    - Kennt zwei Zaubersprüche und kann Schriftrollen verwenden"
+    klasse = choice(kriegerKlasse,diebKlasse,elfKlasse,magierKlasse)
+
+
+
+
+
+
+
+
+
+
+
