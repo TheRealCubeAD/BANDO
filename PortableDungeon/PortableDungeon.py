@@ -9,8 +9,6 @@ import time # "The laws of time are mine and they will obey me!"
 
 
 
-
-
 # - Textmethoden - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
@@ -38,21 +36,12 @@ def textDivider(string):
     # Links und rechts des zentrierten Strings liegen eine gleiche gerade Anzahl an Zeichen.
     anz = math.floor( ( 90 - len(string) ) / 4 )
     # Zusammenbauen des Strings
-    t = ""
-    for _ in range(anz):
-        t += "- "
-    t += string
-    for _ in range(anz):
-        t += " -"
-    print(t)
+    print("- "*anz + string + " -"*anz)
 
 # Input: N/A
 # Ouptput: N/A, Gibt einen Texttrenner aus
 def neutralDivider():
-    t = ""
-    for _ in range(45):
-        t += "- "
-    print(t)
+    print("- "*45)
 
 
 # Input: Eine Auswahl von Entschiedungsmöglichkeiten in Form von Strings in einer Liste
