@@ -6,6 +6,8 @@ import math # <3
 import sys # Aus Stack Overflow kopiert
 sys.stdout.flush() # https://stackoverflow.com/questions/493386/how-to-print-without-newline-or-space
 import time # "The laws of time are mine and they will obey me!"
+import socket
+import trheading
 
 
 
