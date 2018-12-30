@@ -15,30 +15,47 @@ class Server:
         runThread.start()
 
 
-    def handler(self,c,a):
-        while True:
-            data = c.recv(1024)
-            data = str(data,"utf-8")
-            out([data])
+    def recv(self, conn):
+        c,a = conn
+        try:
+            while True:
+                data = c.recv(1024)
+                data = str(data,"utf-8")
+                return data
+        except ConnectionResetError:
+            print("--Player disconeccted--")
+            del (self.connections[self.connections.index(c)])
+            return None
 
     def run(self):
         while True:
             c,a = self.sock.accept()
-            cThread = threading.Thread(target=self.handler,args=(c,a))
-            cThread.daemon = True
-            cThread.start()
-            self.connections.append(c)
-            print(self.connections)
+            self.connections.append([c,a])
+            print("--Player connected--")
+
+    def sendRecive(self,ID,data):
+        data += "§*INPUT*"
+        if self.send(ID,data):
+            answer = self.recv(self.connections[ID])
+            out(answer)
 
     def send(self,ID,data):
-        self.connections[ID].send(bytes(data,"utf-8"))
+        try:
+            self.connections[ID][0].send(bytes(data,"utf-8"))
+            return True
+        except ConnectionResetError:
+            print("--Player disconeccted--")
+            del (self.connections[ID])
+            return False
 
-    def getInput(self,ID):
-        self.connections[ID].send(bytes("*INPUT*","utf-8"))
+
+
+
 
 
 class Client:
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    printCue = []
 
     def __init__(self):
         print("IP-Adresse")
@@ -48,7 +65,14 @@ class Client:
         recThread.daemon = True
         recThread.start()
         while True:
-            pass
+            if len(self.printCue) > 0:
+                line = self.printCue[0]
+                del(self.printCue[0])
+                if line == "*INPUT*":
+                    self.inp()
+                    print()
+                else:
+                    out(line)
 
     def inp(self):
         self.send(input(">>> "))
@@ -61,25 +85,26 @@ class Client:
             data = self.sock.recv(1024)
             if data:
                 data = str(data, "utf-8")
-                if data == "*INPUT*":
-                    self.inp()
-                else:
-                    out(data.split("#"))
+                data = data.split("§")
+                self.printCue += data
 
 
 
 
-def out(prints):
-    for printLine in prints:
-        print(printLine)
-        #for i in printLine:
-            #sys.stdout.write(i)
-            #time.sleep(0.05)
 
+def out(printLine):
+    for i in printLine:
+        sys.stdout.write(i)
+        time.sleep(0.05)
+    print()
 
+#TESTING
 if input("Host?") == "y":
     S = Server()
     while 1:
-        S.send(0,input(">>> "))
+        if input() == "r":
+            S.sendRecive(0,input(">>> "))
+        else:
+            S.send(0,input(">>> "))
 else:
     C = Client()
