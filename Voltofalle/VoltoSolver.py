@@ -47,7 +47,7 @@ Input: N/A
 Output: N/A, Gibt ein Titelmenue aus
 """
 def titlescreen():
-    newline(3435)
+    newline(10)
     neutralDivider()
     textDivider("Volto-Solver")
     textDivider("by Alex Duca")
@@ -183,11 +183,11 @@ VoltoSummen = [-1 for x in range(10)]  # die Liste, die die Summe der Voltobaell
 
 def erfrageSummen():
     printLegendeIndikatoren()
-    print("Punkte Summen:")
+    print("Sums of Points:")
     for i in range(10):
         PunkteSummen[i] = intIntervallChoice(0,15)
     newline(1)
-    print("Volto Summen:")
+    print("Sums of Voltorbs:")
     for i in range(10):
         VoltoSummen[i] = intIntervallChoice(0,5)
     newline(3)
@@ -360,7 +360,7 @@ def printWahrscheinlichkeitstabelle():
     print("│   Φ: "+f(VoltoSummen[9],2)+"     │   Φ: "+f(VoltoSummen[8],2)+"     │   Φ: "+f(VoltoSummen[7],2)+"     │   Φ: "+f(VoltoSummen[6],2)+"     │   Φ: "+f(VoltoSummen[5],2)+"     │              ")
     print("│             │             │             │             │             │              ")
     print("└─────────────┴─────────────┴─────────────┴─────────────┴─────────────┘              ")
-
+    return W
 
 def bestimmeWahrscheinlichkeiten():
     W = [[0 for x in range(4)] for y in range(25)]
@@ -374,16 +374,31 @@ def bestimmeWahrscheinlichkeiten():
             V[i][j] = int( W[i][j] * 100 / len(Matrizen) )
     return V
 
-printWahrscheinlichkeitstabelle()
+W = printWahrscheinlichkeitstabelle()
+
 
 while len(Matrizen) > 1:
 
     printLegendeFelder()
     newline(1)
-    print("Feldnummer")
+
+    best = -1
+    for i in range(1,25):
+        if ( W[i][0] < 100 ) and ( W[i][1] < 100 ) and ( W[i][2] < 100 ) and ( W[i][3] < 100 ):
+            if ( best == -1 ) and ( W[i][2] > 0 or W[i][3] > 0 ):
+                best = i
+            elif ( W[i][0] < W[best][0] ) and ( W[i][2] > 0 or W[i][3] > 0 ):
+                best = i
+            elif ( W[i][0] == W[best][0] ) and ( W[i][1] < W[best][1] ):
+                best = i
+
+    print("Recommended Choice:", best+1)
+    
+    newline(1)
+    print("Fieldnumber")
     feldnummer = intIntervallChoice(1,25)
     newline(1)
-    print("aufgedeckte Zahl")
+    print("Revealed Number")
     zahl = intIntervallChoice(0,3)
     newline(1)
 
@@ -404,6 +419,6 @@ while len(Matrizen) > 1:
 
     newline(5)
 
-    printWahrscheinlichkeitstabelle()
+    W = printWahrscheinlichkeitstabelle()
 
 input("")
