@@ -40,6 +40,8 @@ def textDivider(string):
     # Zusammenbauen des Strings
     print("- "*anz + string + " -"*anz)
 
+
+
 # Input: N/A
 # Ouptput: N/A, Gibt einen Texttrenner aus
 def neutralDivider():
@@ -74,6 +76,8 @@ def choice(*choices):
     # neutralDivider()
     # newline(2)
     return outp
+
+
 
 
 
@@ -234,6 +238,8 @@ class Weapon:
         self.range = int(range)
         self.hits = int(hits)
         self.hands = int(hands)
+
+
 
 handAxe = Weapon("Axt",1,2,0,1)
 sword = Weapon("Schwert",1,2,0,1)
