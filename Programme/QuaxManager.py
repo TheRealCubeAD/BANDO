@@ -158,18 +158,18 @@ def initWindow():
 
 
     
-fpq = ":/DCIM/100MEDIA"
+fpq = "/DCIM/100MEDIA"
 fps = ""
 window = None
 droneImageObjekt = None
-initWindow()
-window.mainloop()
-loadConfig()
+#initWindow()
+#window.mainloop()
+#loadConfig()
 
-files = allfiles()
+files = allFilesFromQuax()
 print()
 Dates, aDates = getDates()
-newDirs(getMerge(Dates,getDFolders()))
+newDirs(getMerge(Dates,getDFoldersFromSave()))
 print("Starte Kopiervorgang...")
 copy()
 print()
