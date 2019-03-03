@@ -1,5 +1,7 @@
 from pyudmx import pyudmx
+from playsound import playsound
 import time
+import threading
 
 dev = None
 
@@ -17,7 +19,7 @@ def init():
         raise ConnectionError
 
 
-def sendV(device,color,value):
+def sendDMX(device,color,value):
     global dev
     print()
     print("Sending:")
@@ -68,7 +70,7 @@ def sendV(device,color,value):
     print()
 
 
-def buzz(side):
+def LightBuzz(side,lock):
     buzzColor = "R"
     buzzIntensity = 255
     buzzLenght = 1
@@ -77,17 +79,46 @@ def buzz(side):
     print()
     print("Sending Full")
     print()
-    sendV(side,buzzColor,buzzIntensity)
+    sendDMX(side,buzzColor,buzzIntensity)
     print("Waiting",buzzLenght,"seconds")
     print()
     time.sleep(buzzLenght)
     print("Sending Off")
-    sendV(side,buzzColor,0)
+    sendDMX(side,buzzColor,0)
     print()
     print("Buzz completet")
     print()
 
 
+def SoundBuzz(side,lock):
+    print()
+    print("Playing sound on",side,"side")
+    if side == "left":
+        playsound("C:/Users/benni/PycharmProjects/BANDO/Buzzer/BuzzLeft.wav")
+    elif side == "right":
+        playsound("C:/Users/benni/PycharmProjects/BANDO/Buzzer/BuzzRight.wav")
+
+
+def interpreter(code):
+    print()
+    sides = {0:"left",1:"right"}
+    try:
+        side = sides[code]
+        print("Interpreted Code",code,"as side",side)
+    except KeyError:
+        print("Error: Unknown code")
+
+    print("Starting Threads")
+    lock = threading.Lock()
+    Thread_Light = threading.Thread(target=LightBuzz,name="1",args=(side,lock))
+    Thread_Light.daemon = True
+    Thread_Light.start()
+
+    Thread_Sound = threading.Thread(target=SoundBuzz,name="2",args=(side,lock))
+    Thread_Sound.daemon = True
+    Thread_Sound.start()
+    print("Threads started")
+
 init()
 while 1:
-    buzz(input("Side:"))
+    interpreter(int(input(">>>")))
