@@ -2,27 +2,88 @@ from pyudmx import pyudmx
 from playsound import playsound
 import time
 import threading
+import socket
+from termcolor import cprint
 
 dev = None
+sock = None
+connections = []
+buzzColor = "R"
+
+
+def recv(c, side):
+    try:
+        while True:
+            data = c.recv(1024)
+            print(data)
+            data = str(data,"utf-8")
+            cprint(("Data recived from",side,":",data),"blue")
+            if data == "TERROR! HILFE":
+                interpreter(side)
+    except ConnectionResetError:
+        cprint("--Buzzer disconeccted--","red")
+        del (connections[connections.index(c)])
+
+
+def run():
+    while True:
+        c,a = sock.accept()
+        connections.append([c,a])
+        cprint("--Buzzer connected--","green")
+        if len(connections) == 1:
+            print("Buzzer is left")
+            left = threading.Thread(target=recv,name="left",args=(c,"left"))
+            left.daemon = True
+            left.start()
+            print()
+            cprint("Buzzer R can now be connected","green")
+        elif len(connections) == 2:
+            print("Buzzer is right")
+            right = threading.Thread(target=recv, name="right", args=(c,"right"))
+            right.daemon = True
+            right.start()
+
 
 def init():
     global dev
-    print("Initalizing")
+    global sock
+    cprint("...INITALIZING...","blue")
+    print("Starting Server")
     print()
+    print("Creating Socket...")
+    sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+    print("Binding Socket...")
+    sock.bind(("0.0.0.0", 10000))
+    sock.listen(1)
+    time.sleep(2)
+    cprint("Server started","green")
+    print("Starting Thread: Connections")
+    runThread = threading.Thread(target=run)
+    runThread.daemon = True
+    runThread.start()
+    time.sleep(1)
+    cprint("Thread started","green")
+    print()
+    print("Connecting DMX-Controller")
+    time.sleep(1)
     try:
         dev = pyudmx.uDMXDevice()
-        print("Connected")
+        cprint("Connected","green")
         print()
     except:
-        print("Error during connect")
-        print("shutting down")
+        cprint("Error during connect","red")
+        cprint("shutting down","red")
         raise ConnectionError
+    cprint("FINISHED","blue")
+    print()
+    cprint("Sever is running. Buzzer L can now be connected","green")
+    print()
 
 
 def sendDMX(device,color,value):
     global dev
     print()
-    print("Sending:")
+    cprint("Sending to DMX:","blue")
     print()
     print("got:",device,color,value)
     ch = 0
@@ -32,7 +93,7 @@ def sendDMX(device,color,value):
     elif device == "right":
         ch = 5
     else:
-        print("Error: unknown device")
+        cprint("Error: unknown device","red")
         print()
         return
     print("Device is:",ch)
@@ -40,38 +101,40 @@ def sendDMX(device,color,value):
     try:
         ch += colors[color]
     except KeyError:
-        print("Error: unknown color")
+        cprint("Error: unknown color","red")
         print()
         return
     print("-> Channel is:",ch)
 
     if not(1<=ch<=8 and 0<=value<=255):
-        print("Error: Values are not accepted")
+        cprint("Error: Values are not accepted","red")
         return
     print()
-    print("Values seem normal")
+    print("Values are normal")
     print()
-    print("Sending...")
+    cprint("Sending...","blue")
     print()
 
     try:
         dev.open()
         print("Connection opend")
-        dev.send_single_value(ch,value)
-        print("Value:",value,"sent at:",ch)
     except:
-        print("USBError occured during sending. Continuign anyways...")
+        cprint("DMX could not be opend! Abording...","red")
+    try:
+        dev.send_single_value(ch,value)
+        cprint(("Value:",value,"sent at:",ch),"blue")
+    except:
+        cprint("USBError occured during sending. Continuing anyways...","red")
     finally:
         dev.close()
         print("Connection closed")
 
     print()
-    print("Sending completet")
+    cprint("Sending completet","green")
     print()
 
 
 def LightBuzz(side,lock):
-    buzzColor = "R"
     buzzIntensity = 255
     buzzLenght = 1
     print()
@@ -86,28 +149,35 @@ def LightBuzz(side,lock):
     print("Sending Off")
     sendDMX(side,buzzColor,0)
     print()
-    print("Buzz completet")
+    cprint("Buzz completet","green")
     print()
 
 
 def SoundBuzz(side,lock):
     print()
-    print("Playing sound on",side,"side")
+    cprint(("Playing sound on",side,"side"),"blue")
     if side == "left":
         playsound("C:/Users/benni/PycharmProjects/BANDO/Buzzer/BuzzLeft.wav")
     elif side == "right":
         playsound("C:/Users/benni/PycharmProjects/BANDO/Buzzer/BuzzRight.wav")
 
 
-def interpreter(code):
-    print()
-    sides = {0:"left",1:"right"}
-    try:
-        side = sides[code]
-        print("Interpreted Code",code,"as side",side)
-    except KeyError:
-        print("Error: Unknown code")
-
+def interpreter(side):
+    if side == "n":
+        side = "left"
+    elif side == "m":
+        side = "right"
+    elif side == "nm":
+        interpreter("left")
+        side = "right"
+    elif side in ("R","G","B","W"):
+        global buzzColor
+        buzzColor = side
+        cprint("Color set to "+side,"blue")
+        return
+    elif side not in ("left","right"):
+        cprint("Unknown device","red")
+        return
     print("Starting Threads")
     lock = threading.Lock()
     Thread_Light = threading.Thread(target=LightBuzz,name="1",args=(side,lock))
@@ -121,4 +191,4 @@ def interpreter(code):
 
 init()
 while 1:
-    interpreter(int(input(">>>")))
+    interpreter(input(">>>"))
