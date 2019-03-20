@@ -11,6 +11,46 @@ connections = []
 buzzColor = "R"
 
 
+def test():
+    t = 0.5
+    print("Testing left Buzzer...")
+    for r in range(25):
+        if not sendDMX("left","R",r*10):
+            print("Left Buzzer is not working")
+            return False
+        time.sleep(t)
+    print("Left Buzzer is working")
+    time.sleep(1)
+    for r in range(25):
+        if not sendDMX("right","R",r*10):
+            print("Right Buzzer is not working")
+            return False
+        time.sleep(t)
+    print("Right Buzzer is working")
+    time.sleep(2)
+    sendDMX("left", "R", 0)
+    sendDMX("right", "R", 0)
+    sendDMX("left", "G", 255)
+    sendDMX("right", "G", 255)
+    time.sleep(3)
+    sendDMX("left", "G", 0)
+    sendDMX("right", "G", 0)
+    time.sleep(1)
+    print("Testing left Sound")
+    if not SoundBuzz("left",None):
+        print("Left sound is not working")
+        return False
+    print("Left sound is working")
+    time.sleep(1)
+    print("Testing right Sound")
+    if not SoundBuzz("right",None):
+        print("Right sound is not working")
+        return False
+    print("Right sound is working")
+    time.sleep(1)
+    print("All systems are running")
+    return True
+
 def recv(c, side):
     try:
         while True:
@@ -74,6 +114,10 @@ def init():
         cprint("Error during connect","red")
         cprint("shutting down","red")
         raise ConnectionError
+    if input("silent?") == "":
+        if not test():
+            print("Not all Systems are running...")
+            exit()
     cprint("FINISHED","blue")
     print()
     cprint("Sever is running. Buzzer L can now be connected","green")
@@ -95,7 +139,7 @@ def sendDMX(device,color,value):
     else:
         cprint("Error: unknown device","red")
         print()
-        return
+        return False
     print("Device is:",ch)
     print("Color is:",colors[color])
     try:
@@ -103,12 +147,12 @@ def sendDMX(device,color,value):
     except KeyError:
         cprint("Error: unknown color","red")
         print()
-        return
+        return False
     print("-> Channel is:",ch)
 
     if not(1<=ch<=8 and 0<=value<=255):
         cprint("Error: Values are not accepted","red")
-        return
+        return False
     print()
     print("Values are normal")
     print()
@@ -120,6 +164,7 @@ def sendDMX(device,color,value):
         print("Connection opend")
     except:
         cprint("DMX could not be opend! Abording...","red")
+        return False
     try:
         dev.send_single_value(ch,value)
         cprint(("Value:",value,"sent at:",ch),"blue")
@@ -132,6 +177,7 @@ def sendDMX(device,color,value):
     print()
     cprint("Sending completet","green")
     print()
+    return True
 
 
 def LightBuzz(side,lock):
@@ -154,12 +200,33 @@ def LightBuzz(side,lock):
 
 
 def SoundBuzz(side,lock):
-    print()
-    cprint(("Playing sound on",side,"side"),"blue")
-    if side == "left":
-        playsound("C:/Users/benni/PycharmProjects/BANDO/Buzzer/BuzzLeft.wav")
-    elif side == "right":
-        playsound("C:/Users/benni/PycharmProjects/BANDO/Buzzer/BuzzRight.wav")
+    try:
+        print()
+        cprint(("Playing sound on",side,"side"),"blue")
+        if side == "left":
+            playsound("C:/Users/benni/PycharmProjects/BANDO/Buzzer/BuzzLeft.wav")
+        elif side == "right":
+            playsound("C:/Users/benni/PycharmProjects/BANDO/Buzzer/BuzzRight.wav")
+        return True
+    except:
+        try:
+            if side == "left":
+                playsound("C:/Users/Benno/PycharmProjects/BANDO/Buzzer/BuzzLeft.wav")
+            elif side == "right":
+                playsound("C:/Users/Benno/PycharmProjects/BANDO/Buzzer/BuzzRight.wav")
+            return True
+        except:
+            try:
+                if side == "left":
+                    playsound("/home/pi/Music/BuzzLeft.wav")
+                elif side == "right":
+                    playsound("/home/pi/Music/BuzzRight.wav")
+                return True
+            except:
+                print("Error during playsound")
+                return False
+
+        return False
 
 
 def interpreter(side):

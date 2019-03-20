@@ -5,8 +5,8 @@ import socket
 import time
 
 
-NetworkName = "OnePlus2"
-NetworkPass = "dasPasswort"
+NetworkName = "BUZZER"
+NetworkPass = "r1o2s3e4n5b6e7r8g9e0r"
 serveripadr = "192.168.43.100"
 
 sta_if = None
@@ -27,7 +27,7 @@ def init():
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     time.sleep(2)
-    sock.connect(("192.168.43.100", 10000))
+    sock.connect((serveripadr, 10000))
 
 
 def pressed():
