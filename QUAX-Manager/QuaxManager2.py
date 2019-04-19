@@ -9,13 +9,15 @@ import tkinter
 gui = False
 
 
+#Im Programm verwendete Ausgabemethode. Entscheidet ob der Text ausgegeben oder an das Gui weitergegeben wird
 def out(content):
     if gui:
-        pass
+        pass  #Noch nicht implementiert
     else:
         print(content)
 
 
+#Im Programm verwendete Eingabemethode. Entscheidet ob die Eingabe aus der Konsole oder aus dem Gui ausgelesen wird
 def inp(out_content):
     if gui:
         if out_content:
@@ -27,16 +29,18 @@ def inp(out_content):
 
 
 
+#Klasse HDD: übernimmt die Steuerung für den geordneten Speicherort
 class HDD:
-    path = None
-    folders = []
-    dates = []
+    path = None   #Speicherort der Tages-Ordner
+    folders = []  #Namen der Tages-Ordner ["19.02.01,...] (yy,mm,dd)
 
     def init(self):
         if not self.searchHDD():
             return False
         return True
 
+    #Durchsucht alle verfügbaren Laufwerke nach der IDENT.HDD.txt Datei
+    # und liest aus dieser den relativen Speicherort aus
     def searchHDD(self):
         available_drives = ['%s:' % d for d in string.ascii_uppercase if os.path.exists('%s:' % d)]
         for drive in available_drives:
@@ -48,15 +52,19 @@ class HDD:
                 return True
         return False
 
+    #Speichert alle bereits existierenden (Tages-)Ordner in folders
+    # ["19.02.01",...]
     def loadFolders(self):
         self.folders = [folder.split(".") for folder in os.listdir(self.path)]
 
-
+    #Erstellt für ein gegebenes Datum einen neuen Ordner sowie die Unterordner Images und Videos
     def createFolder(self,date):
         os.mkdir(self.path+"/"+date)
         os.mkdir(self.path+"/"+date+"/Images")
         os.mkdir(self.path+"/"+date+"/Videos")
 
+    #Erstellt für gegebenes Datum und Datentyp einer Datei den passenden Speicherpfad und gibt diesen zurück
+    # "F:/.../19.02.01/Images"
     def getPath(self,date,type):
         path = self.path + "/" + date
         if type == "I":
@@ -65,32 +73,40 @@ class HDD:
             path += "/Videos"
         return path
 
+    #Gibt alle existirenden Tages-Ordner aus
     def printFolders(self):
         for folder in self.folders:
             out(folder)
 
+    #Gibt alle existirenden Tages-Ordner zurück
+    # ["19.02.01",...]
     def getDates(self):
         return self.folders
 
 
 class QUAX:
-    path_internal = None
-    path_external = None
-    files_internal = []
-    files_external = []
-    iteration = [0,0]
+    path_internal = None  #Speicherpfad des internen Dronen-Speichers
+    path_external = None  #Speicherpfad des externen Dronen-Speichers
+    files_internal = []   #Namen der Dateien im internen Dronen-Speicher ["DJI_067",...]
+    files_external = []   #Namen der Dateien im externen Dronen-Speicher ["DJI_067",...]
+    iteration = [0,0]     #Zählvariable für die getNextFile Methode.
+                          # Erste Stelle ist die Liste: 0 = intern 1 = extern
+                          # Zweite Stelle ist der Index in dieser Liste
 
     def init(self):
         if not self.serachQuax():
             return False
         return True
 
+    # Durchsucht alle verfügbaren Laufwerke nach der IDENT.Q_EXTERNAL.txt und IDENT.Q_INTERNAL.txt Datei
+    # und liest aus diesen die relativen Speicherorte aus. EXTERNAL muss nicht existieren
     def serachQuax(self):
         available_drives = ['%s:' % d for d in string.ascii_uppercase if os.path.exists('%s:' % d)]
         storages = 0
 
         for drive in available_drives:
             if os.path.exists(drive + "/IDENT.Q_EXTERNAL.txt"):
+                out("      External Storage is online")
                 EXTERNAL_config = open(drive+"/IDENT.Q_EXTERNAL.txt")
                 relative_path = EXTERNAL_config.readline()
                 self.path_external = drive + relative_path
@@ -99,6 +115,7 @@ class QUAX:
 
         for drive in available_drives:
             if os.path.exists(drive + "/IDENT.Q_INTERNAL.txt"):
+                out("      Internal Storage is online")
                 INTERNAL_config = open(drive + "/IDENT.Q_INTERNAL.txt")
                 relative_path = INTERNAL_config.readline()
                 self.path_internal = drive + relative_path
@@ -120,8 +137,8 @@ class QUAX:
         else:
             path = self.path_external
         date = self.convertTimeStamp(os.path.getctime(path+"/"+file))
-        out("[ "+str(self.iteration[0]*len(self.files_internal+self.iteration[1]+1))+" / "
-            +str(len(self.files_internal)+len(self.files_external)))
+        out("[ "+str(self.iteration[0]*len(self.files_internal)+self.iteration[1]+1)+" / "
+            +str(len(self.files_internal)+len(self.files_external))+" ]")
 
         self.iteration[1] += 1
         if self.iteration[1] >= len(files[self.iteration[0]]):
@@ -173,27 +190,26 @@ class CONTROL:
         out("Initalizing...")
         self.hdd = HDD()
         self.quax = QUAX()
-        out("Searching Storage...")
+        out("   Searching Storage...")
         while 1:
             if not self.hdd.init():
-                inp("HDD could not be found")
+                inp("      HDD could not be found")
             else:
                 break
-        out("Storage found")
+        out("      Storage is online")
+        out("")
 
-        out("Searching QUAX...")
+        out("   Searching QUAX...")
         while 1:
             storage_count = self.quax.init()
             if not storage_count:
-                inp("QUAX could not be found")
-            elif storage_count == 1:
-                out("Quax Internal Storage found")
+                inp("      QUAX could not be found")
+            else:
                 break
-            elif storage_count == 2:
-                out("Quax Internal and External Storage found")
 
-        if inp("Start Prozess? (y)") == "y":
-            self.copy_main()
+        out("")
+        inp("Start Prozess?")
+        self.copy_main()
 
     def convert_date(self,date):
         conv = date[0]+"."+date[1]+"."+date[2]
