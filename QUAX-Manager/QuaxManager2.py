@@ -1,0 +1,255 @@
+import os
+import string
+import time
+import shutil
+import datetime
+import tkinter
+
+
+gui = False
+
+
+def out(content):
+    if gui:
+        pass
+    else:
+        print(content)
+
+
+def inp(out_content):
+    if gui:
+        if out_content:
+            out(out_content)
+        pass
+    else:
+        cont = input(out_content)
+    return cont
+
+
+
+class HDD:
+    path = None
+    folders = []
+    dates = []
+
+    def init(self):
+        if not self.searchHDD():
+            return False
+        return True
+
+    def searchHDD(self):
+        available_drives = ['%s:' % d for d in string.ascii_uppercase if os.path.exists('%s:' % d)]
+        for drive in available_drives:
+            if os.path.exists(drive+"/IDENT.HDD.txt"):
+                HDD_config = open(drive+"/IDENT.HDD.txt")
+                relativ_path = HDD_config.readline()
+                self.path = drive+relativ_path
+                HDD_config.close()
+                return True
+        return False
+
+    def loadFolders(self):
+        self.folders = [folder.split(".") for folder in os.listdir(self.path)]
+
+
+    def createFolder(self,date):
+        os.mkdir(self.path+"/"+date)
+        os.mkdir(self.path+"/"+date+"/Images")
+        os.mkdir(self.path+"/"+date+"/Videos")
+
+    def getPath(self,date,type):
+        path = self.path + "/" + date
+        if type == "I":
+            path += "/Images"
+        elif type == "V":
+            path += "/Videos"
+        return path
+
+    def printFolders(self):
+        for folder in self.folders:
+            out(folder)
+
+    def getDates(self):
+        return self.folders
+
+
+class QUAX:
+    path_internal = None
+    path_external = None
+    files_internal = []
+    files_external = []
+    iteration = [0,0]
+
+    def init(self):
+        if not self.serachQuax():
+            return False
+        return True
+
+    def serachQuax(self):
+        available_drives = ['%s:' % d for d in string.ascii_uppercase if os.path.exists('%s:' % d)]
+        storages = 0
+
+        for drive in available_drives:
+            if os.path.exists(drive + "/IDENT.Q_EXTERNAL.txt"):
+                EXTERNAL_config = open(drive+"/IDENT.Q_EXTERNAL.txt")
+                relative_path = EXTERNAL_config.readline()
+                self.path_external = drive + relative_path
+                EXTERNAL_config.close()
+                storages += 1
+
+        for drive in available_drives:
+            if os.path.exists(drive + "/IDENT.Q_INTERNAL.txt"):
+                INTERNAL_config = open(drive + "/IDENT.Q_INTERNAL.txt")
+                relative_path = INTERNAL_config.readline()
+                self.path_internal = drive + relative_path
+                INTERNAL_config.close()
+                storages += 1
+
+        return storages
+
+    def loadFiles(self):
+        self.files_internal = os.listdir(self.path_internal)
+        if self.path_external:
+            self.files_external = os.listdir(self.path_external)
+
+    def getNextFile(self):
+        files = [self.files_internal,self.files_external]
+        file = files[self.iteration[0]][self.iteration[1]]
+        if self.iteration[0] == 0:
+            path = self.path_internal
+        else:
+            path = self.path_external
+        date = self.convertTimeStamp(os.path.getctime(path+"/"+file))
+        out("[ "+str(self.iteration[0]*len(self.files_internal+self.iteration[1]+1))+" / "
+            +str(len(self.files_internal)+len(self.files_external)))
+
+        self.iteration[1] += 1
+        if self.iteration[1] >= len(files[self.iteration[0]]):
+            self.iteration[1] = 0
+            self.iteration[0] += 1
+        if self.iteration[0] <= 1:
+            return file,path,date,True
+        else:
+            return file,path,date,False
+
+    def readDates(self):
+        dates = []
+        for file in self.files_internal:
+            file_date = self.convertTimeStamp(os.path.getctime(self.path_internal+"/"+file))
+            if file_date not in dates:
+                dates.append(file_date)
+
+        for file in self.files_external:
+            file_date = self.convertTimeStamp(os.path.getctime(self.path_external+"/"+file))
+            if file_date not in dates:
+                dates.append(file_date)
+        return dates
+
+    def convertTimeStamp(self,timestamp):
+        converted = str(datetime.datetime.fromtimestamp(timestamp))
+        date = converted.split()[0]
+        date_list = date.split("-")
+        date_list[0] = date_list[0][2:]
+        return date_list
+
+    def printFiles(self):
+        for file in self.files_external:
+            out(file)
+        for file in self.files_internal:
+            out(file)
+
+    def reset(self):
+        self.iteration = [0,0]
+
+
+class CONTROL:
+    hdd = None
+    quax = None
+
+
+    def __init__(self):
+        if not gui:
+            self.start_screen()
+        out("Initalizing...")
+        self.hdd = HDD()
+        self.quax = QUAX()
+        out("Searching Storage...")
+        while 1:
+            if not self.hdd.init():
+                inp("HDD could not be found")
+            else:
+                break
+        out("Storage found")
+
+        out("Searching QUAX...")
+        while 1:
+            storage_count = self.quax.init()
+            if not storage_count:
+                inp("QUAX could not be found")
+            elif storage_count == 1:
+                out("Quax Internal Storage found")
+                break
+            elif storage_count == 2:
+                out("Quax Internal and External Storage found")
+
+        if inp("Start Prozess? (y)") == "y":
+            self.copy_main()
+
+    def convert_date(self,date):
+        conv = date[0]+"."+date[1]+"."+date[2]
+        return conv
+
+    def copy_main(self):
+        self.hdd.loadFolders()
+        self.quax.loadFiles()
+        self.hdd.printFolders()
+        self.quax.printFiles()
+        missing_dates = [date for date in self.quax.readDates() if date not in self.hdd.getDates()]
+        out("--MISSING:")
+        out(missing_dates)
+        for date in missing_dates:
+            date = self.convert_date(date)
+            out("- CREATING "+date)
+            self.hdd.createFolder(date)
+
+        next = True
+        while next:
+            file,path,date,next = self.quax.getNextFile()
+            destination = self.hdd.getPath(self.convert_date(date),self.determine_type(file))
+            if not os.path.isfile(destination+"/"+file):
+                out("- COPYING  "+file)
+                out(" -"+path+" -> ")
+                out(" -"+destination)
+                shutil.copy2(path+"/"+file,destination+"/"+file)
+                out("")
+            else:
+                out("- file: "+file+" is already copied")
+        out("--FINISHED--")
+        self.quax.reset()
+
+
+    def determine_type(self,file):
+        image_endings = ["png","dng","jpg","jpeg"]
+        video_endings = ["avi","mp4","mpeg"]
+        ending = file.split(".")[-1].lower()
+        if ending in image_endings:
+            return "I"
+        elif ending in video_endings:
+            return "V"
+        else:
+            return None
+
+
+
+
+    def start_screen(self):
+        print("############################")
+        print("#-------QUAX-MANAGER-------#")
+        print("#--------Versin 2.0--------#")
+        print("#-----Benjamin  Schaab-----#")
+        print("############################")
+        print()
+        print()
+
+
+c = CONTROL()
