@@ -1,12 +1,28 @@
+# Importware
+import math # <3
 import random # Gott würfelt nicht
 from copy import deepcopy # copy aber deep
 
+# Definitionen der farbigen Outputs
 RED = '\033[91m'
 BLUE = '\033[94m'
 GREEN = '\033[92m'
 LILA = '\033[95m'
 END = '\033[0m'
 POINT = "●"
+
+# Defintion der Dimension des Spielbretts
+feldBreite = 4 # > 0
+feldHoehe = 4 # > 0
+
+# Start- und Zielpunkt
+if feldBreite % 2 == 0:
+    startingPos = [ math.floor(feldBreite/2)-1 , feldHoehe-1 ]
+    endingPos = [ math.floor(feldBreite/2) , 0 ]
+else:
+    startingPos = [math.floor(feldBreite / 2), feldHoehe - 1]
+    endingPos = [math.floor(feldBreite / 2), 0]
+
 
 # Gibt n Leerzeilen aus
 def newline(n):
@@ -30,28 +46,39 @@ def randomBool( p1 ):
     else:
         return 0
 
+# Bestimmt Inhalt einer Zelle
 def getZelle(matrix,pos):
     return matrix[pos[1]][pos[0]]
 
+# Setzt den Inhalt einer Zelle fest
 def setZelle(matrix,pos,content):
     matrix[pos[1]][pos[0]] = content
     return matrix
 
 # Generiert ein Level
 def generiereLevel( pSteine ):
-    Level = [[0 for _ in range(8)] for _ in range(8)]
-    for Zeile in Level:
+    level = [[0 for _ in range(feldBreite)] for _ in range(feldHoehe)]
+    for Zeile in level:
         for i in range(len(Zeile)):
             Zeile[i] = randomBool( pSteine )
 
-    return Level
+    # Start und Endposition
+    level = setZelle(level, startingPos, 0)
+    level = setZelle(level, endingPos, 0)
+
+    # Randstine an der Endposition
+    #level = setZelle(level, [4+1, 0], 0)
+    #level = setZelle(level, [4-1, 0], 0)
+
+    return level
 
 
+# Bestimmt die naechste erreichbare Position von einem bestimmten Punkt aus
 def laufen(level,pos,richtung):
     iRichtung = {"up":(0,-1),"down":(0,1),"left":(-1,0),"right":(1,0)}
     ix,iy = iRichtung[richtung]
     npos = [pos[0] + ix, pos[1] + iy]
-    if npos[0] not in range(8) or npos[1] not in range(8):
+    if npos[0] not in range(feldBreite) or npos[1] not in range(feldHoehe):
         return pos
     elif getZelle(level,npos) == 1:
         return pos
@@ -60,14 +87,11 @@ def laufen(level,pos,richtung):
 
 
 
-endingPos = None
 visitedNodes = None
 directions = ["up","down","left","right"]
 
 def startLevelTest(level):
-    global endingPos,visitedNodes
-    startingPos = [3,7]
-    endingPos = [4,0]
+    global visitedNodes
     visitedNodes = []
 
     levelBunt = deepcopy(level)
@@ -76,14 +100,16 @@ def startLevelTest(level):
         for pos in path:
             content = getZelle(level, pos)
             levelBunt = setZelle(levelBunt,pos, GREEN + str(content) + END)
-    newline(2)
-    printMatrix(levelBunt)
-    newline(1)
-    print(path)
-    newline(2)
+        for zeile in levelBunt:
+            for i in range(len(zeile)):
+                if zeile[i] == 1:
+                    zeile[i] = RED + "1" + END
+        newline(2)
+        printMatrix(levelBunt)
+        newline(1)
+        print(path)
+        newline(2)
     return path
-
-
 
 
 def testLevel(level,pos,path):
@@ -105,6 +131,9 @@ def testLevel(level,pos,path):
 
 
 
-while True:
-    pSteine = float(input(">>> "))
-    startLevelTest(generiereLevel(pSteine))
+
+pSteine = float(8.4)
+pSteine /= 100
+path = None
+while path == None:
+    path = startLevelTest(generiereLevel(pSteine))
