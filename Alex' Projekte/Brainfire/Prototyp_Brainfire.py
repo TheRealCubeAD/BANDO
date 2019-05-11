@@ -131,11 +131,14 @@ def zeichneLevelMitLoesung(level, path):
     content = getZelle(level, endingPos)
     levelBunt = setZelle(levelBunt, endingPos, LILA + str(content) + END)
 
-    newline(2)
+    newline(1)
     printMatrix(levelBunt)
     newline(1)
-    print(path)
-    newline(2)
+    s = ""
+    for i in path:
+        s += posAlsString(i) + " "
+    print(s)
+    newline(1)
 
 
 
@@ -190,6 +193,13 @@ def testLevel(level,pos):
 
 
 
+Buchstabenliste = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
+def posAlsString( tupel ):
+    x = Buchstabenliste[ tupel[0] ]
+    y = str( 8 - tupel[1] )
+    return x + y
+
+
 
 
 pSteine = float(8.4)
@@ -200,6 +210,8 @@ while path == None:
     level = generiereLevel(pSteine)
     path = startLevelTest(level)
     if path != None:
-        if len(path) <= (feldBreite + feldHoehe)*0.80:
+        if len(path) <= (feldBreite + feldHoehe)*pSteine*10:
             path = None
 zeichneLevelMitLoesung(level, path)
+print("Länge des Lösungspfads:",len(path))
+newline(1)
