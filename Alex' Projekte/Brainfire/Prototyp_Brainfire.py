@@ -1,5 +1,5 @@
-# Gott würfelt nicht
-import random
+import random # Gott würfelt nicht
+from copy import deepcopy # copy aber deep
 
 RED = '\033[91m'
 BLUE = '\033[94m'
