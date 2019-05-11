@@ -163,7 +163,11 @@ def testLevel(level,pos):
 
     # Wenn das Ergebniss schon mal ausgerechnet wurde, dann gib es wieder aus:
     if posExistiert(ergebnisse, pos):
-        return [pos] + posPfad(ergebnisse, pos)
+        pfad = posPfad(ergebnisse, pos)
+        if None in pfad:
+            return pfad
+        else:
+            return [pos] + posPfad(ergebnisse, pos)
 
     # Ansonsten rechne es aus und speichere es:
     moeglichePfade = []
@@ -196,6 +200,6 @@ while path == None:
     level = generiereLevel(pSteine)
     path = startLevelTest(level)
     if path != None:
-        if len(path) <= (feldBreite + feldHoehe)*0.75:
+        if len(path) <= (feldBreite + feldHoehe)*0.80:
             path = None
 zeichneLevelMitLoesung(level, path)
