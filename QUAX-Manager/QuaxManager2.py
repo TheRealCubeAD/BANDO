@@ -124,6 +124,14 @@ class QUAX:
 
         return storages
 
+    def deleteAll(self):
+        for file in self.files_internal:
+            out("--removing: "+file)
+            os.remove(self.path_internal+"/"+file)
+        for file in self.files_external:
+            out("--removing: "+file)
+            os.remove(self.path_external+"/"+file)
+
     def loadFiles(self):
         self.files_internal = os.listdir(self.path_internal)
         if self.path_external:
@@ -188,19 +196,23 @@ class CONTROL:
         if not gui:
             self.start_screen()
         out("Initalizing...")
+        time.sleep(2)
         self.hdd = HDD()
         self.quax = QUAX()
         out("   Searching Storage...")
         while 1:
+            time.sleep(1)
             if not self.hdd.init():
+
                 inp("      HDD could not be found")
             else:
                 break
         out("      Storage is online")
         out("")
-
+        time.sleep(2)
         out("   Searching QUAX...")
         while 1:
+            time.sleep(1)
             storage_count = self.quax.init()
             if not storage_count:
                 inp("      QUAX could not be found")
@@ -208,7 +220,9 @@ class CONTROL:
                 break
 
         out("")
+        time.sleep(2)
         inp("Start Prozess?")
+        time.sleep(1)
         self.copy_main()
 
     def convert_date(self,date):
@@ -241,7 +255,26 @@ class CONTROL:
             else:
                 out("- file: "+file+" is already copied")
         out("--FINISHED--")
+        out("")
         self.quax.reset()
+
+        if inp("Do you want to remove all files from the Drone? (y/n) >>>") == "y":
+            out("Please verify all copies before continuing")
+            time.sleep(2)
+            inp("Ready >>>")
+            out("")
+            time.sleep(1)
+            out("Starting in ")
+            time.sleep(1)
+            out("... 3")
+            time.sleep(1)
+            out("... 2")
+            time.sleep(1)
+            out("... 1")
+            time.sleep(1)
+            out("removing...")
+            self.quax.deleteAll()
+            out("--FINISHED--")
 
 
     def determine_type(self,file):
