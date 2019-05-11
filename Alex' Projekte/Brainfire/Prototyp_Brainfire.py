@@ -75,7 +75,7 @@ def testLevel(level,pos,path):
     visitedNodes.append(pos)
 
     for direction in directions:
-        statement = testLevel(level,laufen(level,pos,direction),[])
+        statement = testLevel(level,laufen(level,pos,direction),path+[])
         if statement != None:
             return statement
 
