@@ -1,6 +1,13 @@
 # Gott würfelt nicht
 import random
 
+RED = '\033[91m'
+BLUE = '\033[94m'
+GREEN = '\033[92m'
+LILA = '\033[95m'
+END = '\033[0m'
+POINT = "●"
+
 # Gibt n Leerzeilen aus
 def newline(n):
     for i in range(n):
