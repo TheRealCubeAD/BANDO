@@ -38,6 +38,7 @@ def generiereLevel( pSteine ):
     for Zeile in Level:
         for i in range(len(Zeile)):
             Zeile[i] = randomBool( pSteine )
+
     return Level
 
 endingPos = None
@@ -74,7 +75,7 @@ def testLevel(level,pos,path):
     visitedNodes.append(pos)
 
     for direction in directions:
-        statement = testLevel(level,laufen(level,pos,direction),path+[])
+        statement = testLevel(level,laufen(level,pos,direction),[])
         if statement != None:
             return statement
 
