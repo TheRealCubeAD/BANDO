@@ -33,7 +33,8 @@ Definiert ein paar nützliche Stringlisten.
 """
 Buchstabenliste = [x for x in string.ascii_lowercase]
 directions = ["up","down","left","right"]
-Inputs = directions + random.shuffle([0])
+Inputs = directions + random.shuffle([3])
+items = {0:"Elektromagnet",1:"Sprungstiefel",2:"Kraftband",3:"Hammer",4:"Schwimmreifen",5:"Bumerang"}
 
 
 """
