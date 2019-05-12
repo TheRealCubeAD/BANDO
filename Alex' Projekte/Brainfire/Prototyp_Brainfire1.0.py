@@ -346,7 +346,7 @@ Parameterauswahl
 pSteine = float(13/168) # Stein zu Fläche - Verhältnis
 versuchsZeit = 1 #Sekunden # Anzahl der Sekunden, die das Programm höchstens rechnen soll
 mindestlaengeLoesung = 11 # Mindestlänge des Lösungswegs
-setzeFeldgroesse(16,24) # Größe des Felds
+setzeFeldgroesse(8,8) # Größe des Felds
 
 
 """
