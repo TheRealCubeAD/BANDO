@@ -342,7 +342,7 @@ def testLevel(level,pos):
 """
 Parameterauswahl
 """
-# Das ist das Verhältnis zwischen Steine und Fläche aus dem Original-Pokemon-Spiel: 13/168
+# Das ist das Verhältnis zwischen Steine und Fläche aus dem Original-Pokemon-Spiel: 13/168 ~ 7,74%
 pSteine = float(13/168) # Stein zu Fläche - Verhältnis
 versuchsZeit = 1 #Sekunden # Anzahl der Sekunden, die das Programm höchstens rechnen soll
 mindestlaengeLoesung = 11 # Mindestlänge des Lösungswegs
