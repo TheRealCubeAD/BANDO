@@ -23,39 +23,94 @@ END = '\033[0m'
 POINT = "●"
 
 
-# Defintion der Dimension des Spielbretts
-feldBreite = None # > 0
-feldHoehe = None # > 0
-upPos = None
-downPos = None
-leftPos = None
-rightPos = None
-"""
-Setzt die Dimension des Spielbretts fest.
-Legt anschließend Start- und Endposition fest.
-"""
-def setzeFeldgroesse(nBreite, nHoehe):
-    global feldBreite, feldHoehe, upPos, downPos, leftPos, rightPos
 
-    # Defintion der Dimension des Spielbretts
-    feldBreite = nBreite  # > 0
-    feldHoehe = nHoehe  # > 0
+class Room:
 
-    # Definition von upPos und downPos
-    if feldBreite % 2 == 0:
-        upPos = [math.floor(feldBreite / 2) - 1, feldHoehe - 1]
-        downPos = [math.floor(feldBreite / 2), 0]
-    else:
-        upPos = [math.floor(feldBreite / 2), feldHoehe - 1]
-        downPos = [math.floor(feldBreite / 2), 0]
+    feldBreite = 0
+    feldHoehe = 0
+    Matrix = [ [-1 for _ in range(feldBreite)] for _ in range(feldHoehe) ]
+    upPos = [0,0]
+    downPos = [0,0]
+    leftPos = [0,0]
+    rightPos = [0,0]
 
-    # Definition von upPos und downPos
-    if feldHoehe % 2 == 0:
-        leftPos = [ 0, math.floor(feldHoehe / 2) - 1 ]
-        rightPos = [ feldBreite - 1, math.floor(feldHoehe / 2) ]
-    else:
-        leftPos = [0, math.floor(feldHoehe / 2)]
-        rightPos = [feldBreite - 1, math.floor(feldHoehe / 2)]
+    def __init__(self, feldBreite = 8, feldHoehe = 8, pSteine = float(13/168)):
+        self.setzeFeldgroesse(feldBreite, feldHoehe)
+        self.generiereLevel(pSteine)
+
+
+    """
+    Setzt die Dimension des Spielbretts fest.
+    Legt anschließend Start- und Endposition fest.
+    """
+    def setzeFeldgroesse(self, nBreite, nHoehe):
+
+        # Defintion der Dimension des Spielbretts
+        self.feldBreite = nBreite  # > 0
+        self.feldHoehe = nHoehe  # > 0
+
+        # Definition von upPos und downPos
+        if self.feldBreite % 2 == 0:
+            self.upPos = [math.floor(self.feldBreite / 2) - 1, self.feldHoehe - 1]
+            self.downPos = [math.floor(self.feldBreite / 2), 0]
+        else:
+            self.upPos = [math.floor(self.feldBreite / 2), self.feldHoehe - 1]
+            self.downPos = [math.floor(self.feldBreite / 2), 0]
+
+        # Definition von upPos und downPos
+        if self.feldHoehe % 2 == 0:
+            self.leftPos = [0, math.floor(self.feldHoehe / 2) - 1]
+            self.rightPos = [self.feldBreite - 1, math.floor(self.feldHoehe / 2)]
+        else:
+            self.leftPos = [0, math.floor(self.feldHoehe / 2)]
+            self.rightPos = [self.feldBreite - 1, math.floor(self.feldHoehe / 2)]
+
+
+    """
+    Generiert ein Feld mit einem "Stein zu Fläche"-Verhältnis von pSteine.
+    Dabei sind upPos, downPos, leftPos, rightPos freigehalten von Steinen.
+    """
+    def generiereLevel(self, pSteine):
+        self.Matrix = [[0 for _ in range(self.feldBreite)] for _ in range(self.feldHoehe)]
+        for Zeile in self.Matrix:
+            for i in range(len(Zeile)):
+                Zeile[i] = randomBool(pSteine)
+
+        # Start und Endposition
+        self.Matrix = setZelle(self.Matrix, upPos, 0)
+        self.Matrix = setZelle(self.Matrix, downPos, 0)
+        self.Matrix = setZelle(self.Matrix, leftPos, 0)
+        self.Matrix = setZelle(self.Matrix, rightPos, 0)
+
+
+    """
+    Bestimmt die naechste erreichbare Position von einem bestimmten Punkt in einem Level aus.
+    """
+    def laufen(self, pos, richtung):
+        iRichtung = {"up": (0, -1), "down": (0, 1), "left": (-1, 0), "right": (1, 0)}
+        ix, iy = iRichtung[richtung]
+        npos = [pos[0] + ix, pos[1] + iy]
+        if npos[0] not in range(self.feldBreite) or npos[1] not in range(self.feldHoehe):
+            return pos
+        elif getZelle(self.Matrix, npos) == 1:
+            return pos
+        else:
+            return laufen(npos, richtung)
+
+
+    """
+    Gibt den Inhalt einer Zelle in einer Matrix zurück.
+    """
+    def getZelle(matrix, pos):
+        return matrix[pos[1]][pos[0]]
+
+
+    """
+    Gibt eine Matrix zurück, die an der Position pos mit dem Wert content überschrieben wurde.
+    """
+    def setZelle(matrix, pos, content):
+        matrix[pos[1]][pos[0]] = content
+        return matrix
 
 
 """
@@ -87,56 +142,6 @@ def randomBool( p1 ):
         return 1
     else:
         return 0
-
-
-"""
-Gibt den Inhalt einer Zelle in einer Matrix zurück.
-"""
-def getZelle(matrix,pos):
-    return matrix[pos[1]][pos[0]]
-
-
-"""
-Gibt eine Matrix zurück, die an der Position pos mit dem Wert content überschrieben wurde.
-"""
-def setZelle(matrix,pos,content):
-    matrix[pos[1]][pos[0]] = content
-    return matrix
-
-
-"""
-Generiert ein Feld mit einem "Stein zu Fläche"-Verhältnis von pSteine.
-Dabei sind upPos, downPos, leftPos, rightPos freigehalten von Steinen.
-"""
-def generiereLevel( pSteine ):
-    level = [[0 for _ in range(feldBreite)] for _ in range(feldHoehe)]
-    for Zeile in level:
-        for i in range(len(Zeile)):
-            Zeile[i] = randomBool( pSteine )
-
-    # Start und Endposition
-    level = setZelle(level, upPos, 0)
-    level = setZelle(level, downPos, 0)
-    level = setZelle(level, leftPos, 0)
-    level = setZelle(level, rightPos, 0)
-
-    return level
-
-
-"""
-Bestimmt die naechste erreichbare Position von einem bestimmten Punkt in einem Level aus.
-"""
-def laufen(level,pos,richtung):
-    iRichtung = {"up":(0,-1),"down":(0,1),"left":(-1,0),"right":(1,0)}
-    ix,iy = iRichtung[richtung]
-    npos = [pos[0] + ix, pos[1] + iy]
-    if npos[0] not in range(feldBreite) or npos[1] not in range(feldHoehe):
-        return pos
-    elif getZelle(level,npos) == 1:
-        return pos
-    else:
-        return laufen(level,npos,richtung)
-
 
 
 """
