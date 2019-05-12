@@ -21,25 +21,36 @@ POINT = "●"
 # Defintion der Dimension des Spielbretts
 feldBreite = None # > 0
 feldHoehe = None # > 0
-startingPos = None
-endingPos = None
+upPos = None
+downPos = None
+leftPos = None
+rightPos = None
 """
 Setzt die Dimension des Spielbretts fest.
 Legt anschließend Start- und Endposition fest.
 """
 def setzeFeldgroesse(nBreite, nHoehe):
-    global feldBreite, feldHoehe, startingPos, endingPos
+    global feldBreite, feldHoehe, upPos, downPos, leftPos, rightPos
 
     # Defintion der Dimension des Spielbretts
     feldBreite = nBreite  # > 0
     feldHoehe = nHoehe  # > 0
 
+    # Definition von upPos und downPos
     if feldBreite % 2 == 0:
-        startingPos = [math.floor(feldBreite / 2) - 1, feldHoehe - 1]
-        endingPos = [math.floor(feldBreite / 2), 0]
+        upPos = [math.floor(feldBreite / 2) - 1, feldHoehe - 1]
+        downPos = [math.floor(feldBreite / 2), 0]
     else:
-        startingPos = [math.floor(feldBreite / 2), feldHoehe - 1]
-        endingPos = [math.floor(feldBreite / 2), 0]
+        upPos = [math.floor(feldBreite / 2), feldHoehe - 1]
+        downPos = [math.floor(feldBreite / 2), 0]
+
+    # Definition von upPos und downPos
+    if feldHoehe % 2 == 0:
+        leftPos = [ 0, math.floor(feldHoehe / 2) - 1 ]
+        rightPos = [ feldBreite - 1, math.floor(feldHoehe / 2) ]
+    else:
+        leftPos = [0, math.floor(feldHoehe / 2)]
+        rightPos = [feldBreite - 1, math.floor(feldHoehe / 2)]
 
 
 """
@@ -90,6 +101,7 @@ def setZelle(matrix,pos,content):
 
 """
 Generiert ein Feld mit einem "Stein zu Fläche"-Verhältnis von pSteine.
+Dabei sind upPos, downPos, leftPos, rightPos freigehalten von Steinen.
 """
 def generiereLevel( pSteine ):
     level = [[0 for _ in range(feldBreite)] for _ in range(feldHoehe)]
@@ -98,13 +110,10 @@ def generiereLevel( pSteine ):
             Zeile[i] = randomBool( pSteine )
 
     # Start und Endposition
-    level = setZelle(level, startingPos, 0)
-    level = setZelle(level, endingPos, 0)
-
-    # keine Randstine an der Endposition
-    #if feldBreite >= 3:
-        #level = setZelle(level, [endingPos[0]-1, 0], 0)
-        #level = setZelle(level, [endingPos[0]+1, 0], 0)
+    level = setZelle(level, upPos, 0)
+    level = setZelle(level, downPos, 0)
+    #level = setZelle(level, leftPos, 0)
+    #level = setZelle(level, rightPos, 0)
 
     return level
 
@@ -193,12 +202,15 @@ def zeichneLevel(level):
             if zeile[i] == 1:
                 zeile[i] = RED + "1" + END
 
-    # Färbt die Anfangsposition LILA
-    content = getZelle(level, startingPos)
-    levelBunt = setZelle(levelBunt, startingPos, LILA + str(content) + END)
-    # Färbt die Endposition LILA
-    content = getZelle(level, endingPos)
-    levelBunt = setZelle(levelBunt, endingPos, LILA + str(content) + END)
+    # Färbt upPos, downPos, leftPos, rightPos in LILA
+    content = getZelle(level, upPos)
+    levelBunt = setZelle(levelBunt, upPos, LILA + str(content) + END)
+    content = getZelle(level, downPos)
+    levelBunt = setZelle(levelBunt, downPos, LILA + str(content) + END)
+    #content = getZelle(level, leftPos)
+    #levelBunt = setZelle(levelBunt, leftPos, LILA + str(content) + END)
+    #content = getZelle(level, rightPos)
+    #levelBunt = setZelle(levelBunt, rightPos, LILA + str(content) + END)
 
     # Ausgabe der Matrix
     printMatrix(levelBunt)
@@ -229,12 +241,15 @@ def zeichneLevelMitLoesung(level, path):
             if zeile[i] == 1:
                 zeile[i] = RED + "1" + END
 
-    # Färbt die Anfangsposition LILA
-    content = getZelle(level, startingPos)
-    levelBunt = setZelle(levelBunt, startingPos, LILA + str(content) + END)
-    # Färbt die Endposition LILA
-    content = getZelle(level, endingPos)
-    levelBunt = setZelle(levelBunt, endingPos, LILA + str(content) + END)
+        # Färbt upPos, downPos, leftPos, rightPos in LILA
+        content = getZelle(level, upPos)
+        levelBunt = setZelle(levelBunt, upPos, LILA + str(content) + END)
+        content = getZelle(level, downPos)
+        levelBunt = setZelle(levelBunt, downPos, LILA + str(content) + END)
+        #content = getZelle(level, leftPos)
+        #levelBunt = setZelle(levelBunt, leftPos, LILA + str(content) + END)
+        #content = getZelle(level, rightPos)
+        #levelBunt = setZelle(levelBunt, rightPos, LILA + str(content) + END)
 
     # Ausgabe
     newline(1) # Leerzeile
@@ -260,10 +275,10 @@ def startLevelTest(level):
     # Setze die Startwerte auf Anfang
     global ergebnisse
     ergebnisse = []
-    ergebnisse.append([endingPos, []])
+    ergebnisse.append([downPos, []])
 
     # Rufe das Ergebnis auf und formatiere es
-    path = testLevel(level,startingPos) # Aufruf
+    path = testLevel(level,upPos) # Aufruf
 
     if None in path:
         path = None
@@ -313,7 +328,7 @@ Parameterauswahl
 # Das ist das Verhältnis zwischen Steine und Fläche aus dem Original-Pokemon-Spiel: 13/168
 pSteine = float(13/168) # Stein zu Fläche - Verhältnis
 versuchsZeit = 1 #Sekunden # Anzahl der Sekunden, die das Programm höchstens rechnen soll
-mindestlaengeLoesung = 11 # Mindestlänge des Lösungswegs
+mindestlaengeLoesung = 10 # Mindestlänge des Lösungswegs
 setzeFeldgroesse(8,8) # Größe des Felds
 
 
