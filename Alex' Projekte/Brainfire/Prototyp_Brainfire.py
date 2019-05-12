@@ -77,7 +77,6 @@ def generiereLevel( pSteine ):
 
     return level
 
-
 # Bestimmt die naechste erreichbare Position von einem bestimmten Punkt aus
 def laufen(level,pos,richtung):
     iRichtung = {"up":(0,-1),"down":(0,1),"left":(-1,0),"right":(1,0)}
@@ -89,7 +88,6 @@ def laufen(level,pos,richtung):
         return pos
     else:
         return laufen(level,npos,richtung)
-
 
 # Entfernt das Element einer Listenliste, das pos als erstes Element hat.
 def posEntfernen(liste, pos):
@@ -113,39 +111,97 @@ def posPfad(liste, pos):
             return Eintrag[1]
     return None
 
-def zeichneLevelMitLoesung(level, path):
+"""
+Wandelt ein Koordinatentupel in die im Schach übliche Notation um.
+"""
+Buchstabenliste = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
+def schachnotation( tupel ):
+    x = Buchstabenliste[ tupel[0] ]
+    y = str( feldHoehe - tupel[1] )
+    return x + y
 
+
+"""
+Zeichnet ein Level in die Konsole.
+Die Methode ist dazu da, um die lösbaren Rätsel selbst auszuprobieren.
+Folgende Visualierungsprozesse werden durchgeführt:
+- Färbung aller Steine in ROT
+- Färbung der Anfangs- und Endposition in LILA
+"""
+def zeichneLevel(level):
+
+    # Legt eine Kopie des Levels zur Bearbeitung an
     levelBunt = deepcopy(level)
 
-    for pos in path:
-        content = getZelle(level, pos)
-        levelBunt = setZelle(levelBunt,pos, GREEN + str(content) + END)
-
+    # Färbt die Steine ROT
     for zeile in levelBunt:
         for i in range(len(zeile)):
             if zeile[i] == 1:
                 zeile[i] = RED + "1" + END
 
+    # Färbt die Anfangsposition LILA
     content = getZelle(level, startingPos)
     levelBunt = setZelle(levelBunt, startingPos, LILA + str(content) + END)
+    # Färbt die Endposition LILA
     content = getZelle(level, endingPos)
     levelBunt = setZelle(levelBunt, endingPos, LILA + str(content) + END)
 
-    newline(1)
+    # Ausgabe der Matrix
     printMatrix(levelBunt)
-    newline(1)
-    s = ""
-    for i in path:
-        s += posAlsString(i) + " "
-    print(s)
-    newline(1)
+
+
+"""
+Zeichnet ein Level inklusive Lösung in die Konsole.
+Die Methode ist dazu da, um die Lösung eines Rätsels zu visualisieren.
+Folgende Visualierungsprozesse werden durchgeführt:
+- Färbung aller Steine in ROT
+- Färbung des Lösungswegs in GRÜN
+- Färbung der Anfangs- und Endposition in LILA
+- Ausgabe der Lösung in Schachnotation
+"""
+def zeichneLevelMitLoesung(level, path):
+
+    # Legt eine Kopie des Levels zur Bearbeitung an
+    levelBunt = deepcopy(level)
+
+    # Färbt die im Lösungspfad besuchten Felder GRÜN
+    for pos in path:
+        content = getZelle(level, pos)
+        levelBunt = setZelle(levelBunt,pos, GREEN + str(content) + END)
+
+    # Färbt die Steine ROT
+    for zeile in levelBunt:
+        for i in range(len(zeile)):
+            if zeile[i] == 1:
+                zeile[i] = RED + "1" + END
+
+    # Färbt die Anfangsposition LILA
+    content = getZelle(level, startingPos)
+    levelBunt = setZelle(levelBunt, startingPos, LILA + str(content) + END)
+    # Färbt die Endposition LILA
+    content = getZelle(level, endingPos)
+    levelBunt = setZelle(levelBunt, endingPos, LILA + str(content) + END)
+
+    # Ausgabe
+    newline(1) # Leerzeile
+    printMatrix(levelBunt) # Level
+    # Generierung der Lösungsangabe
+    if feldBreite <= 26:
+        s = ""
+        for i in path:
+            s += schachnotation(i) + " "
+    else:
+        s = ""
+        for i in path:
+            s += str(i) + " "
+    print(s) # Ausgabe der Lösung
+    newline(1) # Leerzeile
 
 
 
 
 directions = ["up","down","left","right"]
 ergebnisse = []
-
 def startLevelTest(level):
     # Setze die Startwerte auf Anfang
     global ergebnisse
@@ -181,7 +237,7 @@ def testLevel(level,pos):
         moeglichePfade.append( mPfad )
     besterPfad = [None for _ in range(feldBreite*feldHoehe)]
     for pfad in moeglichePfade:
-        if len(pfad) <= len(besterPfad):
+        if len(pfad) <= len(besterPfad) and None not in pfad:
             besterPfad = pfad
 
     posEntfernen( ergebnisse, pos ) # Arbeit abgeschlossen
@@ -192,26 +248,16 @@ def testLevel(level,pos):
         return [pos] + besterPfad
 
 
-
-Buchstabenliste = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
-def posAlsString( tupel ):
-    x = Buchstabenliste[ tupel[0] ]
-    y = str( 8 - tupel[1] )
-    return x + y
-
-
-
-
-pSteine = float(8.4)
-pSteine /= 100
+# Das ist das Verhältnis zwischen Steine und Fläche aus dem Original-Pokemon-Spiel: 13/168
+pSteine = float(13/168)
 
 path = None
 while path == None:
     level = generiereLevel(pSteine)
     path = startLevelTest(level)
     if path != None:
-        if len(path) <= (feldBreite + feldHoehe)*pSteine*10:
+        if len(path) < (feldBreite + feldHoehe):
             path = None
 zeichneLevelMitLoesung(level, path)
-print("Länge des Lösungspfads:",len(path))
+print("Länge des (kürzesten) Lösungspfads:",len(path))
 newline(1)
