@@ -23,8 +23,39 @@ END = '\033[0m'
 POINT = "●"
 
 
+class POS:
+    x = 0
+    y = 0
 
-class Room:
+    def __init__(self,nX,nY):
+        self.x = nX
+        self.y = nY
+
+
+class MATRIX:
+    matrix = [[]]
+    breite = 0
+    hoehe = 0
+
+    def __init__(self, nBreite, nHoehe):
+        self.matrix = [[-1 for _ in range(nBreite)] for _ in range(nHoehe)]
+        self.breite = nBreite
+        self.hoehe = nHoehe
+
+    def getBreite(self):
+        return self.breite
+
+    def getHoehe(self):
+        return self.hoehe
+
+    def getZelle(self,pos):
+        return self.matrix[pos.y][pos.x]
+
+    def setZelle(self,pos):
+        self.matrix[pos.y][pos.x]
+
+
+class ROOM:
 
     feldBreite = 0
     feldHoehe = 0
@@ -77,10 +108,10 @@ class Room:
                 Zeile[i] = randomBool(pSteine)
 
         # Start und Endposition
-        self.Matrix = setZelle(self.Matrix, upPos, 0)
-        self.Matrix = setZelle(self.Matrix, downPos, 0)
-        self.Matrix = setZelle(self.Matrix, leftPos, 0)
-        self.Matrix = setZelle(self.Matrix, rightPos, 0)
+        self.setZelle(upPos, 0)
+        self.setZelle(downPos, 0)
+        self.setZelle(leftPos, 0)
+        self.setZelle(rightPos, 0)
 
 
     """
@@ -92,26 +123,102 @@ class Room:
         npos = [pos[0] + ix, pos[1] + iy]
         if npos[0] not in range(self.feldBreite) or npos[1] not in range(self.feldHoehe):
             return pos
-        elif getZelle(self.Matrix, npos) == 1:
+        elif self.getZelle(npos) == 1:
             return pos
         else:
-            return laufen(npos, richtung)
+            return self.laufen(npos, richtung)
 
 
     """
     Gibt den Inhalt einer Zelle in einer Matrix zurück.
     """
-    def getZelle(matrix, pos):
-        return matrix[pos[1]][pos[0]]
+    def getZelle(self, pos):
+        return self.matrix[pos[1]][pos[0]]
 
 
     """
     Gibt eine Matrix zurück, die an der Position pos mit dem Wert content überschrieben wurde.
     """
-    def setZelle(matrix, pos, content):
-        matrix[pos[1]][pos[0]] = content
-        return matrix
+    def setZelle(self, pos, content):
+        self.matrix[pos[1]][pos[0]] = content
 
+    """
+    Zeichnet ein Level in die Konsole.
+    Die Methode ist dazu da, um die lösbaren Rätsel selbst auszuprobieren.
+    Folgende Visualierungsprozesse werden durchgeführt:
+    - Färbung aller Steine in ROT
+    - Färbung der Anfangs- und Endposition in LILA
+    """
+
+    def zeichneRaum(self):
+
+        # Legt eine Kopie des Levels zur Bearbeitung an
+        levelBunt = deepcopy(self.Matrix)
+
+        # Färbt die Steine ROT
+        for zeile in levelBunt:
+            for i in range(len(zeile)):
+                if zeile[i] == 1:
+                    zeile[i] = RED + "1" + END
+
+        # Färbt upPos, downPos, leftPos, rightPos in LILA
+        for pos in [self.upPos,self.downPos,self.leftPos,self.rightPos]:
+            content = self.getZelle(pos)
+            levelBunt[pos[1]][pos[0]] = LILA + str(content) + END
+
+        # Ausgabe der Matrix
+        printMatrix(levelBunt)
+
+    """
+    Zeichnet ein Level inklusive Lösung in die Konsole.
+    Die Methode ist dazu da, um die Lösung eines Rätsels zu visualisieren.
+    Folgende Visualierungsprozesse werden durchgeführt:
+    - Färbung aller Steine in ROT
+    - Färbung des Lösungswegs in GRÜN
+    - Färbung der Anfangs- und Endposition in LILA
+    - Ausgabe der Lösung in Schachnotation
+    """
+
+    def zeichneRaumMitLoesung(self, path):
+
+        # Legt eine Kopie des Levels zur Bearbeitung an
+        levelBunt = deepcopy(self.Matrix)
+
+        # Färbt die im Lösungspfad besuchten Felder GRÜN
+        for pos in path:
+            content = getZelle(level, pos)
+            levelBunt = setZelle(levelBunt, pos, GREEN + str(content) + END)
+
+        # Färbt die Steine ROT
+        for zeile in levelBunt:
+            for i in range(len(zeile)):
+                if zeile[i] == 1:
+                    zeile[i] = RED + "1" + END
+
+            # Färbt upPos, downPos, leftPos, rightPos in LILA
+            content = getZelle(level, upPos)
+            levelBunt = setZelle(levelBunt, upPos, LILA + str(content) + END)
+            content = getZelle(level, downPos)
+            levelBunt = setZelle(levelBunt, downPos, LILA + str(content) + END)
+            content = getZelle(level, leftPos)
+            levelBunt = setZelle(levelBunt, leftPos, LILA + str(content) + END)
+            content = getZelle(level, rightPos)
+            levelBunt = setZelle(levelBunt, rightPos, LILA + str(content) + END)
+
+        # Ausgabe
+        newline(1)  # Leerzeile
+        printMatrix(levelBunt)  # Level
+        # Generierung der Lösungsangabe
+        if feldBreite <= 26:
+            s = ""
+            for i in path:
+                s += schachnotation(i) + " "
+        else:
+            s = ""
+            for i in path:
+                s += str(i) + " "
+        print(s)  # Ausgabe der Lösung
+        newline(1)  # Leerzeile
 
 """
 Gibt n Leerzeile in der Konsole aus.
@@ -194,87 +301,8 @@ def schachnotation( tupel ):
     return x + y
 
 
-"""
-Zeichnet ein Level in die Konsole.
-Die Methode ist dazu da, um die lösbaren Rätsel selbst auszuprobieren.
-Folgende Visualierungsprozesse werden durchgeführt:
-- Färbung aller Steine in ROT
-- Färbung der Anfangs- und Endposition in LILA
-"""
-def zeichneLevel(level):
-
-    # Legt eine Kopie des Levels zur Bearbeitung an
-    levelBunt = deepcopy(level)
-
-    # Färbt die Steine ROT
-    for zeile in levelBunt:
-        for i in range(len(zeile)):
-            if zeile[i] == 1:
-                zeile[i] = RED + "1" + END
-
-    # Färbt upPos, downPos, leftPos, rightPos in LILA
-    content = getZelle(level, upPos)
-    levelBunt = setZelle(levelBunt, upPos, LILA + str(content) + END)
-    content = getZelle(level, downPos)
-    levelBunt = setZelle(levelBunt, downPos, LILA + str(content) + END)
-    content = getZelle(level, leftPos)
-    levelBunt = setZelle(levelBunt, leftPos, LILA + str(content) + END)
-    content = getZelle(level, rightPos)
-    levelBunt = setZelle(levelBunt, rightPos, LILA + str(content) + END)
-
-    # Ausgabe der Matrix
-    printMatrix(levelBunt)
 
 
-"""
-Zeichnet ein Level inklusive Lösung in die Konsole.
-Die Methode ist dazu da, um die Lösung eines Rätsels zu visualisieren.
-Folgende Visualierungsprozesse werden durchgeführt:
-- Färbung aller Steine in ROT
-- Färbung des Lösungswegs in GRÜN
-- Färbung der Anfangs- und Endposition in LILA
-- Ausgabe der Lösung in Schachnotation
-"""
-def zeichneLevelMitLoesung(level, path):
-
-    # Legt eine Kopie des Levels zur Bearbeitung an
-    levelBunt = deepcopy(level)
-
-    # Färbt die im Lösungspfad besuchten Felder GRÜN
-    for pos in path:
-        content = getZelle(level, pos)
-        levelBunt = setZelle(levelBunt,pos, GREEN + str(content) + END)
-
-    # Färbt die Steine ROT
-    for zeile in levelBunt:
-        for i in range(len(zeile)):
-            if zeile[i] == 1:
-                zeile[i] = RED + "1" + END
-
-        # Färbt upPos, downPos, leftPos, rightPos in LILA
-        content = getZelle(level, upPos)
-        levelBunt = setZelle(levelBunt, upPos, LILA + str(content) + END)
-        content = getZelle(level, downPos)
-        levelBunt = setZelle(levelBunt, downPos, LILA + str(content) + END)
-        content = getZelle(level, leftPos)
-        levelBunt = setZelle(levelBunt, leftPos, LILA + str(content) + END)
-        content = getZelle(level, rightPos)
-        levelBunt = setZelle(levelBunt, rightPos, LILA + str(content) + END)
-
-    # Ausgabe
-    newline(1) # Leerzeile
-    printMatrix(levelBunt) # Level
-    # Generierung der Lösungsangabe
-    if feldBreite <= 26:
-        s = ""
-        for i in path:
-            s += schachnotation(i) + " "
-    else:
-        s = ""
-        for i in path:
-            s += str(i) + " "
-    print(s) # Ausgabe der Lösung
-    newline(1) # Leerzeile
 
 
 
