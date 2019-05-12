@@ -129,6 +129,7 @@ class ROOM:
     leftPos = None
     rightPos = None
     ebene = None
+    loesungsMatrix = None
 
     def __init__(self, feldBreite = 8, feldHoehe = 8, pSteine = float(13/168), ebene = 0):
         self.setzeFeldgroesse(feldBreite, feldHoehe)
@@ -177,6 +178,7 @@ class ROOM:
         self.Matrix.setZelle(downPos, 0)
         self.Matrix.setZelle(leftPos, 0)
         self.Matrix.setZelle(rightPos, 0)
+
 
 
     """
@@ -281,6 +283,12 @@ class ROOM:
 
 
 
+    def starteBacktracking(self, startPos):
+        pass
+
+    def backtracking(self):
+        pass
+
 
 
 
@@ -330,6 +338,7 @@ def testLevel(level,pos):
         return [None for _ in range(feldBreite*feldHoehe)]
     else:
         return [pos] + besterPfad
+
 
 
 """
