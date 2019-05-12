@@ -76,6 +76,10 @@ class POS:
     def __add__(self, other):
         return POS(x+other.x,y+other.y)
 
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+
+
 class MATRIX:
 
     matrix = [[]]
@@ -86,6 +90,9 @@ class MATRIX:
         self.matrix = [[standardwert for _ in range(nBreite)] for _ in range(nHoehe)]
         self.breite = nBreite
         self.hoehe = nHoehe
+
+    def __eq__(self, other):
+        return self.matrix == other.getMatrix()
 
     def getBreite(self):
         return self.breite
@@ -119,6 +126,31 @@ class MATRIX:
             print(s)
         newline(1)
 
+
+class PFAD:
+
+    posListe = None
+    matrixListe = None
+    laenge = 0
+
+    def __init__(self):
+        self.posListe = []
+        self.matrixListe = []
+        self.laenge = 0
+
+    def append(self, pos, matrix):
+        self.posListe.append(pos)
+        self.matrixListe.append(matrix)
+        self.laenge += 1
+
+    def exists(self, pos, matrix):
+        for i in range(laenge):
+            if self.posListe[i] == pos and self.matrixListe[i] == matrix:
+                return True
+        return False
+
+
+
 class ROOM:
 
     feldBreite = None
@@ -129,6 +161,9 @@ class ROOM:
     leftPos = None
     rightPos = None
     ebene = None
+
+    PfadeOhneItems = None
+    PfadeMitItems = None
     loesungsMatrix = None
 
     def __init__(self, feldBreite = 8, feldHoehe = 8, pSteine = float(13/168), ebene = 0):
