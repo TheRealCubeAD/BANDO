@@ -370,6 +370,6 @@ if path == None:
     print(None)
 else:
     zeichneLevelMitLoesung(level, path)
-    print("Länge des (kürzesten) Lösungspfads:", len(path))
+    print("Länge des (evt. kürzesten) Lösungspfads:", len(path))
     print("Zeit zur Generierung:", vergangeneZeit(startTime))
 newline(1)
