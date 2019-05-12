@@ -117,8 +117,8 @@ def generiereLevel( pSteine ):
     # Start und Endposition
     level = setZelle(level, upPos, 0)
     level = setZelle(level, downPos, 0)
-    #level = setZelle(level, leftPos, 0)
-    #level = setZelle(level, rightPos, 0)
+    level = setZelle(level, leftPos, 0)
+    level = setZelle(level, rightPos, 0)
 
     return level
 
@@ -212,10 +212,10 @@ def zeichneLevel(level):
     levelBunt = setZelle(levelBunt, upPos, LILA + str(content) + END)
     content = getZelle(level, downPos)
     levelBunt = setZelle(levelBunt, downPos, LILA + str(content) + END)
-    #content = getZelle(level, leftPos)
-    #levelBunt = setZelle(levelBunt, leftPos, LILA + str(content) + END)
-    #content = getZelle(level, rightPos)
-    #levelBunt = setZelle(levelBunt, rightPos, LILA + str(content) + END)
+    content = getZelle(level, leftPos)
+    levelBunt = setZelle(levelBunt, leftPos, LILA + str(content) + END)
+    content = getZelle(level, rightPos)
+    levelBunt = setZelle(levelBunt, rightPos, LILA + str(content) + END)
 
     # Ausgabe der Matrix
     printMatrix(levelBunt)
@@ -251,10 +251,10 @@ def zeichneLevelMitLoesung(level, path):
         levelBunt = setZelle(levelBunt, upPos, LILA + str(content) + END)
         content = getZelle(level, downPos)
         levelBunt = setZelle(levelBunt, downPos, LILA + str(content) + END)
-        #content = getZelle(level, leftPos)
-        #levelBunt = setZelle(levelBunt, leftPos, LILA + str(content) + END)
-        #content = getZelle(level, rightPos)
-        #levelBunt = setZelle(levelBunt, rightPos, LILA + str(content) + END)
+        content = getZelle(level, leftPos)
+        levelBunt = setZelle(levelBunt, leftPos, LILA + str(content) + END)
+        content = getZelle(level, rightPos)
+        levelBunt = setZelle(levelBunt, rightPos, LILA + str(content) + END)
 
     # Ausgabe
     newline(1) # Leerzeile
