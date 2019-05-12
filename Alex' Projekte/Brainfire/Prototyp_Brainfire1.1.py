@@ -29,9 +29,10 @@ END = '\033[0m'
 POINT = "●"
 
 """
-Definiert die Menge aller Kleinbuchstaben.
+Definiert ein paar nützliche Stringlisten.
 """
 Buchstabenliste = [x for x in string.ascii_lowercase]
+directions = ["up","down","left","right"]
 
 
 
@@ -191,6 +192,7 @@ class ROOM:
         # Ausgabe der Matrix
         levelBunt.printMatrix()
 
+
     """
     Zeichnet ein Level inklusive Lösung in die Konsole.
     Die Methode ist dazu da, um die Lösung eines Rätsels zu visualisieren.
@@ -248,6 +250,8 @@ class ROOM:
         return x + y
 
 
+
+
 """
 Gibt n Leerzeile in der Konsole aus.
 """
@@ -267,40 +271,6 @@ def randomBool( p1 ):
 
 
 """
-Ergebnislisten-Bearbeitung:
-Entfernt das Element einer Listenliste, das pos als erstes Element hat.
-"""
-def posEntfernen(liste, pos):
-    for Eintrag in liste:
-        if Eintrag[0] == pos:
-            liste.remove(Eintrag)
-            return liste
-    return liste
-
-
-"""
-Ergebnislisten-Bearbeitung:
-Überprüft, ob ein Element in einer Listenliste pos als erstes Element hat.
-"""
-def posExistiert(liste, pos):
-    for Eintrag in liste:
-        if Eintrag[0] == pos:
-            return True
-    return False
-
-
-"""
-Ergebnislisten-Bearbeitung:
-Gibt das zweite Element eines Elements einer Listenliste aus, das als erstes Element pos hat.
-"""
-def posPfad(liste, pos):
-    for Eintrag in liste:
-        if Eintrag[0] == pos:
-            return Eintrag[1]
-    return None
-
-
-"""
 Gibt die seit dem angegebenen Zeitpunkt vergangene Zeit zurück.
 """
 def vergangeneZeit(zeitpunkt):
@@ -310,7 +280,7 @@ def vergangeneZeit(zeitpunkt):
 
 
 
-directions = ["up","down","left","right"]
+
 ergebnisse = []
 def startLevelTest(level):
     # Setze die Startwerte auf Anfang
