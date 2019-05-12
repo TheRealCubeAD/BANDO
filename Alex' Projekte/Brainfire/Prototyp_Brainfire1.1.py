@@ -27,6 +27,10 @@ LILA = '\033[95m'
 END = '\033[0m'
 POINT = "●"
 
+"""
+Definiert die Menge aller Kleinbuchstaben.
+"""
+Buchstabenliste = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
 
 
 
@@ -42,14 +46,13 @@ class POS:
     def __add__(self, other):
         return POS(x+other.x,y+other.y)
 
-
 class MATRIX:
 
     matrix = [[]]
     breite = 0
     hoehe = 0
 
-    def __init__(self, nBreite, nHoehe, standardwert = -1):
+    def __init__(self, nBreite = 1, nHoehe = 1, standardwert = -1):
         self.matrix = [[standardwert for _ in range(nBreite)] for _ in range(nHoehe)]
         self.breite = nBreite
         self.hoehe = nHoehe
@@ -71,7 +74,20 @@ class MATRIX:
 
     def copyMatrix(self, nMatrix):
         self.matrix = deepcopy(nMatrix.getMatrix())
+        self.breite = nMatrix.getBreite()
+        self.hoehe = nMatrix.getHoehe()
 
+    """
+    Gibt eine Matrix "schön" in der Konsole aus.
+    """
+    def printMatrix(self):
+        newline(1)
+        for reihe in self.matrix:
+            s = ""
+            for i in range(len(reihe)):
+                s += str(reihe[i]) + " "
+            print(s)
+        newline(1)
 
 class ROOM:
 
@@ -85,7 +101,7 @@ class ROOM:
 
     def __init__(self, feldBreite = 8, feldHoehe = 8, pSteine = float(13/168)):
         self.setzeFeldgroesse(feldBreite, feldHoehe)
-        self.Matrix = MATRIX(self.feldBreite, self.feldHoehe, standardwert=0)
+        self.Matrix = MATRIX(nBreite = self.feldBreite, nHoehe = self.feldHoehe, standardwert = 0)
 
     """
     Setzt die Dimension des Spielbretts fest.
@@ -153,25 +169,26 @@ class ROOM:
     - Färbung aller Steine in ROT
     - Färbung der Anfangs- und Endposition in LILA
     """
-
     def zeichneRaum(self):
 
         # Legt eine Kopie des Levels zur Bearbeitung an
-        levelBunt = deepcopy(self.Matrix)
+        levelBunt = MATRIX()
+        levelBunt.copyMatrix(self.Matrix)
 
         # Färbt die Steine ROT
-        for zeile in levelBunt:
-            for i in range(len(zeile)):
-                if zeile[i] == 1:
-                    zeile[i] = RED + "1" + END
+        for x in range(levelBunt.getBreite()):
+            for y in range(levelBunt.getHoehe()):
+                pos = POS(x,y)
+                if levelBunt.getZelle(pos) == 1:
+                    levelBunt.setZelle( pos, RED + "1" + END )
 
         # Färbt upPos, downPos, leftPos, rightPos in LILA
         for pos in [self.upPos,self.downPos,self.leftPos,self.rightPos]:
             content = self.getZelle(pos)
-            levelBunt[pos[1]][pos[0]] = LILA + str(content) + END
+            levelBunt.setZelle(pos, LILA + str(content) + END )
 
         # Ausgabe der Matrix
-        printMatrix(levelBunt)
+        levelBunt.printMatrix()
 
     """
     Zeichnet ein Level inklusive Lösung in die Konsole.
@@ -182,41 +199,37 @@ class ROOM:
     - Färbung der Anfangs- und Endposition in LILA
     - Ausgabe der Lösung in Schachnotation
     """
-
     def zeichneRaumMitLoesung(self, path):
 
         # Legt eine Kopie des Levels zur Bearbeitung an
-        levelBunt = deepcopy(self.Matrix)
+        levelBunt = MATRIX()
+        levelBunt.copyMatrix(self.Matrix)
 
         # Färbt die im Lösungspfad besuchten Felder GRÜN
         for pos in path:
-            content = getZelle(level, pos)
-            levelBunt = setZelle(levelBunt, pos, GREEN + str(content) + END)
+            content = levelBunt.getZelle(pos)
+            levelBunt.setZelle(pos, GREEN + str(content) + END)
 
         # Färbt die Steine ROT
-        for zeile in levelBunt:
-            for i in range(len(zeile)):
-                if zeile[i] == 1:
-                    zeile[i] = RED + "1" + END
+        for x in range(levelBunt.getBreite()):
+            for y in range(levelBunt.getHoehe()):
+                pos = POS(x, y)
+                if levelBunt.getZelle(pos) == 1:
+                    levelBunt.setZelle(pos, RED + "1" + END)
 
-            # Färbt upPos, downPos, leftPos, rightPos in LILA
-            content = getZelle(level, upPos)
-            levelBunt = setZelle(levelBunt, upPos, LILA + str(content) + END)
-            content = getZelle(level, downPos)
-            levelBunt = setZelle(levelBunt, downPos, LILA + str(content) + END)
-            content = getZelle(level, leftPos)
-            levelBunt = setZelle(levelBunt, leftPos, LILA + str(content) + END)
-            content = getZelle(level, rightPos)
-            levelBunt = setZelle(levelBunt, rightPos, LILA + str(content) + END)
+        # Färbt upPos, downPos, leftPos, rightPos in LILA
+        for pos in [self.upPos,self.downPos,self.leftPos,self.rightPos]:
+            content = self.getZelle(pos)
+            levelBunt.setZelle(pos, LILA + str(content) + END )
 
         # Ausgabe
         newline(1)  # Leerzeile
-        printMatrix(levelBunt)  # Level
+        levelBunt.printMatrix()  # Level
         # Generierung der Lösungsangabe
-        if feldBreite <= 26:
+        if self.feldBreite <= 26:
             s = ""
             for i in path:
-                s += schachnotation(i) + " "
+                s += self.schachnotation(i) + " "
         else:
             s = ""
             for i in path:
@@ -224,25 +237,22 @@ class ROOM:
         print(s)  # Ausgabe der Lösung
         newline(1)  # Leerzeile
 
+
+    """
+    Wandelt ein POS-Objekt in die im Schach übliche Notation um.
+    """
+    def schachnotation(self, pos):
+        x = Buchstabenliste[pos.x]
+        y = str(self.feldHoehe - pos.y)
+        return x + y
+
+
 """
 Gibt n Leerzeile in der Konsole aus.
 """
 def newline(n):
     for i in range(n):
         print()
-
-
-"""
-Gibt eine Matrix "schön" in der Konsole aus.
-"""
-def printMatrix( matrix ):
-    newline(1)
-    for reihe in matrix:
-        s = ""
-        for i in range(len(reihe)):
-            s += str(reihe[i]) + " "
-        print(s)
-    newline(1)
 
 
 """
@@ -266,6 +276,7 @@ def posEntfernen(liste, pos):
             return liste
     return liste
 
+
 """
 Ergebnislisten-Bearbeitung:
 Überprüft, ob ein Element in einer Listenliste pos als erstes Element hat.
@@ -275,6 +286,7 @@ def posExistiert(liste, pos):
         if Eintrag[0] == pos:
             return True
     return False
+
 
 """
 Ergebnislisten-Bearbeitung:
@@ -287,25 +299,11 @@ def posPfad(liste, pos):
     return None
 
 
-
 """
 Gibt die seit dem angegebenen Zeitpunkt vergangene Zeit zurück.
 """
 def vergangeneZeit(zeitpunkt):
     return time.time() - zeitpunkt
-
-
-Buchstabenliste = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
-"""
-Wandelt ein Koordinatentupel in die im Schach übliche Notation um.
-"""
-def schachnotation( tupel ):
-    x = Buchstabenliste[ tupel[0] ]
-    y = str( feldHoehe - tupel[1] )
-    return x + y
-
-
-
 
 
 
