@@ -1,4 +1,21 @@
 """
+DEVELOPER-NOTICE:
+Prytotyp_Brainfire.py, Verison: 1.0
+
+Diese Version kann:
+- Rätsel generieren, die mindestens eine Lösung haben.
+- Die Parameter können zum Testen beliebig manipuliert werden.
+
+Bekannte Probleme:
+- Die gezeigte Lösung ist nicht unbedingt die kürzeste
+- Der Lösungsalgorithmus ist für den weiteren Verlauf des Projekts nicht erweiterbar.
+
+Besonderen Dank an:
+- mich
+"""
+
+
+"""
 Importware
 """
 import math # <3
@@ -328,7 +345,7 @@ Parameterauswahl
 # Das ist das Verhältnis zwischen Steine und Fläche aus dem Original-Pokemon-Spiel: 13/168
 pSteine = float(13/168) # Stein zu Fläche - Verhältnis
 versuchsZeit = 1 #Sekunden # Anzahl der Sekunden, die das Programm höchstens rechnen soll
-mindestlaengeLoesung = 10 # Mindestlänge des Lösungswegs
+mindestlaengeLoesung = 11 # Mindestlänge des Lösungswegs
 setzeFeldgroesse(8,8) # Größe des Felds
 
 
