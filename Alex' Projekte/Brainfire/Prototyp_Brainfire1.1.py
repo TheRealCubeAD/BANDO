@@ -33,6 +33,33 @@ Definiert ein paar nützliche Stringlisten.
 """
 Buchstabenliste = [x for x in string.ascii_lowercase]
 directions = ["up","down","left","right"]
+Inputs = directions + random.shuffle([0])
+
+
+"""
+Gibt n Leerzeile in der Konsole aus.
+"""
+def newline(n):
+    for i in range(n):
+        print()
+
+
+"""
+Gibt mit einer Wahrscheinlichkeit von p1 den Wert 1 zurück, ansonsten 0.
+"""
+def randomBool( p1 ):
+    if random.random() < p1:
+        return 1
+    else:
+        return 0
+
+
+"""
+Gibt die seit dem angegebenen Zeitpunkt vergangene Zeit zurück.
+"""
+def vergangeneZeit(zeitpunkt):
+    return time.time() - zeitpunkt
+
 
 
 
@@ -100,10 +127,12 @@ class ROOM:
     downPos = None
     leftPos = None
     rightPos = None
+    ebene = None
 
-    def __init__(self, feldBreite = 8, feldHoehe = 8, pSteine = float(13/168)):
+    def __init__(self, feldBreite = 8, feldHoehe = 8, pSteine = float(13/168), ebene = 0):
         self.setzeFeldgroesse(feldBreite, feldHoehe)
         self.Matrix = MATRIX(nBreite = self.feldBreite, nHoehe = self.feldHoehe, standardwert = 0)
+        self.ebene = 0
 
     """
     Setzt die Dimension des Spielbretts fest.
@@ -249,32 +278,6 @@ class ROOM:
         y = str(self.feldHoehe - pos.y)
         return x + y
 
-
-
-
-"""
-Gibt n Leerzeile in der Konsole aus.
-"""
-def newline(n):
-    for i in range(n):
-        print()
-
-
-"""
-Gibt mit einer Wahrscheinlichkeit von p1 den Wert 1 zurück, ansonsten 0.
-"""
-def randomBool( p1 ):
-    if random.random() < p1:
-        return 1
-    else:
-        return 0
-
-
-"""
-Gibt die seit dem angegebenen Zeitpunkt vergangene Zeit zurück.
-"""
-def vergangeneZeit(zeitpunkt):
-    return time.time() - zeitpunkt
 
 
 
