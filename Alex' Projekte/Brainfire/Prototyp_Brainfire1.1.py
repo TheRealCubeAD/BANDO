@@ -39,6 +39,9 @@ class POS:
         self.x = nX
         self.y = nY
 
+    def __add__(self, other):
+        return POS(x+other.x,y+other.y)
+
 
 class MATRIX:
 
@@ -133,9 +136,9 @@ class ROOM:
     """
     def laufen(self, pos, richtung):
         iRichtung = {"up": POS(0, -1), "down": POS(0, 1), "left": POS(-1, 0), "right": POS(1, 0)}
-        ix, iy = iRichtung[richtung]
-        npos = POS(pos.x + ix, pos.y + iy)
-        if npos[0] not in range(self.feldBreite) or npos[1] not in range(self.feldHoehe):
+        vektor = iRichtung[richtung]
+        npos = pos + vektor
+        if npos.x not in range(self.feldBreite) or npos.y not in range(self.feldHoehe):
             return pos
         elif self.getZelle(npos) == 1:
             return pos
