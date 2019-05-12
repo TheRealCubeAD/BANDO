@@ -1,4 +1,9 @@
 """
+DEVELOPER-NOTICE:
+Prytotyp_Brainfire.py, Verison: 1.1
+
+Diese Version kann:
+- Das Projekt durch Einsatz von Klassen ernstnehmen
 
 """
 
@@ -23,7 +28,10 @@ END = '\033[0m'
 POINT = "●"
 
 
+
+
 class POS:
+
     x = 0
     y = 0
 
@@ -33,12 +41,13 @@ class POS:
 
 
 class MATRIX:
+
     matrix = [[]]
     breite = 0
     hoehe = 0
 
-    def __init__(self, nBreite, nHoehe):
-        self.matrix = [[-1 for _ in range(nBreite)] for _ in range(nHoehe)]
+    def __init__(self, nBreite, nHoehe, standardwert = -1):
+        self.matrix = [[standardwert for _ in range(nBreite)] for _ in range(nHoehe)]
         self.breite = nBreite
         self.hoehe = nHoehe
 
@@ -51,24 +60,29 @@ class MATRIX:
     def getZelle(self,pos):
         return self.matrix[pos.y][pos.x]
 
-    def setZelle(self,pos):
-        self.matrix[pos.y][pos.x]
+    def setZelle(self,pos,content):
+        self.matrix[pos.y][pos.x] = content
+
+    def getMatrix(self):
+        return self.matrix
+
+    def copyMatrix(self, nMatrix):
+        self.matrix = deepcopy(nMatrix.getMatrix())
 
 
 class ROOM:
 
-    feldBreite = 0
-    feldHoehe = 0
-    Matrix = [ [-1 for _ in range(feldBreite)] for _ in range(feldHoehe) ]
-    upPos = [0,0]
-    downPos = [0,0]
-    leftPos = [0,0]
-    rightPos = [0,0]
+    feldBreite = None
+    feldHoehe = None
+    Matrix = None
+    upPos = None
+    downPos = None
+    leftPos = None
+    rightPos = None
 
     def __init__(self, feldBreite = 8, feldHoehe = 8, pSteine = float(13/168)):
         self.setzeFeldgroesse(feldBreite, feldHoehe)
-        self.generiereLevel(pSteine)
-
+        self.Matrix = MATRIX(self.feldBreite, self.feldHoehe, standardwert=0)
 
     """
     Setzt die Dimension des Spielbretts fest.
@@ -82,19 +96,19 @@ class ROOM:
 
         # Definition von upPos und downPos
         if self.feldBreite % 2 == 0:
-            self.upPos = [math.floor(self.feldBreite / 2) - 1, self.feldHoehe - 1]
-            self.downPos = [math.floor(self.feldBreite / 2), 0]
+            self.upPos = POS(math.floor(self.feldBreite / 2) - 1, self.feldHoehe - 1)
+            self.downPos = POS(math.floor(self.feldBreite / 2), 0)
         else:
-            self.upPos = [math.floor(self.feldBreite / 2), self.feldHoehe - 1]
-            self.downPos = [math.floor(self.feldBreite / 2), 0]
+            self.upPos = POS(math.floor(self.feldBreite / 2), self.feldHoehe - 1)
+            self.downPos = POS(math.floor(self.feldBreite / 2), 0)
 
         # Definition von upPos und downPos
         if self.feldHoehe % 2 == 0:
-            self.leftPos = [0, math.floor(self.feldHoehe / 2) - 1]
-            self.rightPos = [self.feldBreite - 1, math.floor(self.feldHoehe / 2)]
+            self.leftPos = POS(0, math.floor(self.feldHoehe / 2) - 1)
+            self.rightPos = POS(self.feldBreite - 1, math.floor(self.feldHoehe / 2))
         else:
-            self.leftPos = [0, math.floor(self.feldHoehe / 2)]
-            self.rightPos = [self.feldBreite - 1, math.floor(self.feldHoehe / 2)]
+            self.leftPos = POS(0, math.floor(self.feldHoehe / 2))
+            self.rightPos = POS(self.feldBreite - 1, math.floor(self.feldHoehe / 2))
 
 
     """
@@ -102,25 +116,25 @@ class ROOM:
     Dabei sind upPos, downPos, leftPos, rightPos freigehalten von Steinen.
     """
     def generiereLevel(self, pSteine):
-        self.Matrix = [[0 for _ in range(self.feldBreite)] for _ in range(self.feldHoehe)]
-        for Zeile in self.Matrix:
-            for i in range(len(Zeile)):
-                Zeile[i] = randomBool(pSteine)
+
+        for x in range(self.Matrix.getBreite()):
+            for y in range(self.Matrix.getHoehe()):
+                self.Matrix.setZelle( POS(x,y), randomBool(pSteine) )
 
         # Start und Endposition
-        self.setZelle(upPos, 0)
-        self.setZelle(downPos, 0)
-        self.setZelle(leftPos, 0)
-        self.setZelle(rightPos, 0)
+        self.Matrix.setZelle(upPos, 0)
+        self.Matrix.setZelle(downPos, 0)
+        self.Matrix.setZelle(leftPos, 0)
+        self.Matrix.setZelle(rightPos, 0)
 
 
     """
     Bestimmt die naechste erreichbare Position von einem bestimmten Punkt in einem Level aus.
     """
     def laufen(self, pos, richtung):
-        iRichtung = {"up": (0, -1), "down": (0, 1), "left": (-1, 0), "right": (1, 0)}
+        iRichtung = {"up": POS(0, -1), "down": POS(0, 1), "left": POS(-1, 0), "right": POS(1, 0)}
         ix, iy = iRichtung[richtung]
-        npos = [pos[0] + ix, pos[1] + iy]
+        npos = POS(pos.x + ix, pos.y + iy)
         if npos[0] not in range(self.feldBreite) or npos[1] not in range(self.feldHoehe):
             return pos
         elif self.getZelle(npos) == 1:
@@ -128,19 +142,6 @@ class ROOM:
         else:
             return self.laufen(npos, richtung)
 
-
-    """
-    Gibt den Inhalt einer Zelle in einer Matrix zurück.
-    """
-    def getZelle(self, pos):
-        return self.matrix[pos[1]][pos[0]]
-
-
-    """
-    Gibt eine Matrix zurück, die an der Position pos mit dem Wert content überschrieben wurde.
-    """
-    def setZelle(self, pos, content):
-        self.matrix[pos[1]][pos[0]] = content
 
     """
     Zeichnet ein Level in die Konsole.
