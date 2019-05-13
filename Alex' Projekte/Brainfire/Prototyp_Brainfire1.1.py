@@ -33,10 +33,10 @@ Definiert ein paar nützliche Stringlisten.
 """
 Buchstabenliste = [x for x in string.ascii_lowercase]
 directions = ["up","down","left","right"]
-itemList = [3]
+itemList = [4]
 random.shuffle(itemList)
-Inputs = directions + itemList
-items = {0:"Elektromagnet",1:"Sprungstiefel",2:"Kraftband",3:"Hammer",4:"Schwimmreifen",5:"Bumerang"}
+Inputs = [0] + itemList
+items = {1:"Elektromagnet",2:"Sprungstiefel",3:"Kraftband",4:"Hammer",5:"Schwimmreifen",6:"Bumerang"}
 
 
 """
@@ -64,6 +64,23 @@ def vergangeneZeit(zeitpunkt):
     return time.time() - zeitpunkt
 
 
+def gehen(pos,dir,matrix):
+    npos = pos + dir
+    if not matrix.inMatrix(npos):
+        return pos, matrix
+    elif matrix.getZelle(npos) > 0:
+        return pos, matrix
+    else:
+        return gehen(npos,dir,matrix)
+
+def hammer(pos,dir,matrix):
+    attacPos = pos + dir
+    if matrix.inMatrix(attacPos):
+        matrix.setZelle(attacPos,0)
+    return pos,matrix
+
+
+itemMethods = [gehen,None,None,None,hammer]
 
 
 class POS:
@@ -76,7 +93,7 @@ class POS:
         self.y = nY
 
     def __add__(self, other):
-        return POS(x+other.x,y+other.y)
+        return POS(self.x+other.x,self.y+other.y)
 
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y
@@ -108,6 +125,9 @@ class MATRIX:
     def setZelle(self,pos,content):
         self.matrix[pos.y][pos.x] = content
 
+    def inMatrix(self,pos):
+        return pos.x in range(self.getBreite()) and pos.y in range(self.getHoehe())
+
     def getMatrix(self):
         return self.matrix
 
@@ -134,6 +154,7 @@ class PFAD:
     posListe = None
     matrixListe = None
     laenge = 0
+    itemsUsed = False
 
     def __init__(self):
         self.posListe = []
@@ -146,7 +167,7 @@ class PFAD:
         self.laenge += 1
 
     def exists(self, pos, matrix):
-        for i in range(laenge):
+        for i in range(self.laenge):
             if self.posListe[i] == pos and self.matrixListe[i] == matrix:
                 return True
         return False
@@ -163,15 +184,16 @@ class ROOM:
     leftPos = None
     rightPos = None
     ebene = None
+    inputs = None
 
-    PfadeOhneItems = None
-    PfadeMitItems = None
     loesungsMatrix = None
+    backtrackingPfade = None
 
-    def __init__(self, feldBreite = 8, feldHoehe = 8, pSteine = float(13/168), ebene = 0):
+    def __init__(self, feldBreite = 8, feldHoehe = 8, pSteine = float(13/168), nEbene = 0):
         self.setzeFeldgroesse(feldBreite, feldHoehe)
         self.Matrix = MATRIX(nBreite = self.feldBreite, nHoehe = self.feldHoehe, standardwert = 0)
-        self.ebene = 0
+        self.ebene = nEbene
+        self.inputs = Inputs[:(1+nEbene)]
 
     """
     Setzt die Dimension des Spielbretts fest.
@@ -211,10 +233,10 @@ class ROOM:
                 self.Matrix.setZelle( POS(x,y), randomBool(pSteine) )
 
         # Start und Endposition
-        self.Matrix.setZelle(upPos, 0)
-        self.Matrix.setZelle(downPos, 0)
-        self.Matrix.setZelle(leftPos, 0)
-        self.Matrix.setZelle(rightPos, 0)
+        self.Matrix.setZelle(self.upPos, 0)
+        self.Matrix.setZelle(self.downPos, 0)
+        self.Matrix.setZelle(self.leftPos, 0)
+        self.Matrix.setZelle(self.rightPos, 0)
 
 
 
@@ -320,11 +342,48 @@ class ROOM:
 
 
 
-    def starteBacktracking(self, startPos):
-        pass
+    def starteBacktracking(self):
+        self.backtrackingPfade = [[[],[],[]],[[],[],[]],[[],[],[]],[[],[],[]]]
+        startPositions = [self.upPos,self.downPos,self.leftPos,self.rightPos]
+        for Ipos in range(len(startPositions)):
+            pos = startPositions[Ipos]
+            endingPositions = deepcopy(startPositions)
+            del(endingPositions[endingPositions.index(pos)])
+            self.backtracking(pos,deepcopy(self.Matrix),PFAD(),endingPositions,Ipos)
 
-    def backtracking(self):
-        pass
+        for i in range(4):
+            print("START: ",startPositions[i].x," , ",startPositions[i].y," :")
+            newline(1)
+            for e in range(3):
+                newline(1)
+                print("    ENDE: ",e)
+                for p in self.backtrackingPfade[i][e]:
+                    newline(1)
+                    print("        PFAD: ",[(pos.x,pos.y) for pos in p.posListe])
+                    print("        Items used: ",p.itemsUsed)
+
+
+    def backtracking(self,pos,matrix,pfad,endingPositions,Ispos):
+        if pfad.exists(pos,matrix):
+            return
+        else:
+            pfad.append(deepcopy(pos),deepcopy(matrix))
+
+        for Iepos in range(len(endingPositions)):
+            if pos == endingPositions[Iepos]:
+                print("Ende gefunden")
+                self.backtrackingPfade[Ispos][Iepos].append(deepcopy(pfad))
+
+        for input in self.inputs:
+            for dir in [POS(0,1),POS(0,-1),POS(1,0),POS(-1,0)]:
+                nPos, nMatrix = itemMethods[input](deepcopy(pos),deepcopy(dir),deepcopy(matrix))
+                nPfad = deepcopy(pfad)
+                if input > 0:
+                    nPfad.itemsUsed = True
+                self.backtracking(nPos,nMatrix,nPfad,endingPositions,Ispos)
+
+
+
 
 
 
@@ -383,37 +442,6 @@ def testLevel(level,pos):
 """
 
 
-"""
-Parameterauswahl
-"""
-# Das ist das Verhältnis zwischen Steine und Fläche aus dem Original-Pokemon-Spiel: 13/168 ~ 7,74%
-pSteine = float(13/168) # Stein zu Fläche - Verhältnis
-versuchsZeit = 1 #Sekunden # Anzahl der Sekunden, die das Programm höchstens rechnen soll
-mindestlaengeLoesung = 11 # Mindestlänge des Lösungswegs
-setzeFeldgroesse(8,8) # Größe des Felds
-
-
-"""
-Versuchsdurchführung
-"""
-startTime = time.time() # Setze den Timer auf
-path = None
-while path == None and vergangeneZeit(startTime) < versuchsZeit:
-    level = generiereLevel(pSteine)
-    path = startLevelTest(level)
-    if path != None:
-        if len(path) < mindestlaengeLoesung:
-            path = None
-
-
-"""
-Ergebnisausgabe
-"""
-newline(1)
-if path == None:
-    print(None)
-else:
-    zeichneLevelMitLoesung(level, path)
-    print("Länge des (kürzesten) Lösungspfads:", len(path))
-    print("Zeit zur Generierung:", vergangeneZeit(startTime))
-newline(1)
+r1 = ROOM()
+r1.generiereLevel(0.2)
+r1.starteBacktracking()
