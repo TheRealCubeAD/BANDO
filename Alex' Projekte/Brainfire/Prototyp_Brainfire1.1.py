@@ -193,7 +193,7 @@ class ROOM:
         self.setzeFeldgroesse(feldBreite, feldHoehe)
         self.Matrix = MATRIX(nBreite = self.feldBreite, nHoehe = self.feldHoehe, standardwert = 0)
         self.ebene = nEbene
-        self.inputs = Inputs[:(1+nEbene)]
+        self.inputs = Inputs[:(2+nEbene)]
 
     """
     Setzt die Dimension des Spielbretts fest.
@@ -346,6 +346,7 @@ class ROOM:
         self.backtrackingPfade = [[[],[],[]],[[],[],[]],[[],[],[]],[[],[],[]]]
         startPositions = [self.upPos,self.downPos,self.leftPos,self.rightPos]
         for Ipos in range(len(startPositions)):
+            print(Ipos)
             pos = startPositions[Ipos]
             endingPositions = deepcopy(startPositions)
             del(endingPositions[endingPositions.index(pos)])
@@ -354,9 +355,11 @@ class ROOM:
         for i in range(4):
             print("START: ",startPositions[i].x," , ",startPositions[i].y," :")
             newline(1)
+            ePosi = deepcopy(startPositions)
+            del(ePosi[i])
             for e in range(3):
                 newline(1)
-                print("    ENDE: ",e)
+                print("    ENDE: ",ePosi[e].x," , ",ePosi[e].y)
                 for p in self.backtrackingPfade[i][e]:
                     newline(1)
                     print("        PFAD: ",[(pos.x,pos.y) for pos in p.posListe])
@@ -443,5 +446,5 @@ def testLevel(level,pos):
 
 
 r1 = ROOM()
-r1.generiereLevel(0.2)
+r1.generiereLevel(0.1)
 r1.starteBacktracking()
