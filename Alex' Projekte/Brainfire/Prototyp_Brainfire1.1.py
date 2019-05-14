@@ -341,18 +341,22 @@ class ROOM:
         return x + y
 
 
-
+    """
+    Berechnet die schnellsten Pfade von jedem Eingan zu jeden Ausgang
+    """
     def starteBacktracking(self):
-        self.backtrackingPfade = [[[],[],[]],[[],[],[]],[[],[],[]],[[],[],[]]]
+        self.backtrackingPfade = [[[],[],[]],[[],[],[]],[[],[],[]],[[],[],[]]]  #Ebene 1: 4 Listen für jeden Startpunk
+                                                                                #Ebene 2: 3 Listen für jeden Endpunkt
+                                                                                #Ebene 3: Alle Pfade (PATH)
         startPositions = [self.upPos,self.downPos,self.leftPos,self.rightPos]
-        for Ipos in range(len(startPositions)):
+        for Ipos in range(len(startPositions)):                                 #Starte backtracking für jeden Start
             print(Ipos)
             pos = startPositions[Ipos]
             endingPositions = deepcopy(startPositions)
             del(endingPositions[endingPositions.index(pos)])
             self.backtracking(pos,deepcopy(self.Matrix),PFAD(),endingPositions,Ipos)
 
-        for i in range(4):
+        for i in range(4): # Ausgabe der Ergebnisse
             print("START: ",startPositions[i].x," , ",startPositions[i].y," :")
             newline(1)
             ePosi = deepcopy(startPositions)
@@ -366,24 +370,29 @@ class ROOM:
                     print("        Items used: ",p.itemsUsed)
 
 
+    """"
+    Rekursiver Backtrackinalgorithmus 
+        - Betrachtet alle möglichen Eingabekombinationen
+        - Speichert einen Pfad der zu einem Ausgang führt in backtrackingPfade
+    """
     def backtracking(self,pos,matrix,pfad,endingPositions,Ispos):
-        if pfad.exists(pos,matrix):
+        if pfad.exists(pos,matrix):  #Abbruch wenn der Zustand bereits behandelt wurde
             return
         else:
-            pfad.append(deepcopy(pos),deepcopy(matrix))
+            pfad.append(deepcopy(pos),deepcopy(matrix))  #Zustand dem Pfad hinzufügen
 
-        for Iepos in range(len(endingPositions)):
+        for Iepos in range(len(endingPositions)):  #Prüft ob einer der Ausgänge erreicht wurde
             if pos == endingPositions[Iepos]:
                 print("Ende gefunden")
-                self.backtrackingPfade[Ispos][Iepos].append(deepcopy(pfad))
-
-        for input in self.inputs:
-            for dir in [POS(0,1),POS(0,-1),POS(1,0),POS(-1,0)]:
+                self.backtrackingPfade[Ispos][Iepos].append(deepcopy(pfad))  #Fügt den aktuellen Pfad
+                                                                                # den Ergebnissen hinzu
+        for input in self.inputs:  #Probiert alle Aktionen ausgehend von dem aktuellem Zustand
+            for dir in [POS(0,1),POS(0,-1),POS(1,0),POS(-1,0)]:  #Wendet gewählte Aktion auf alle Richtungen an
                 nPos, nMatrix = itemMethods[input](deepcopy(pos),deepcopy(dir),deepcopy(matrix))
                 nPfad = deepcopy(pfad)
                 if input > 0:
-                    nPfad.itemsUsed = True
-                self.backtracking(nPos,nMatrix,nPfad,endingPositions,Ispos)
+                    nPfad.itemsUsed = True  #Markiert im Pfad, dass ein Item verwendet wurde
+                self.backtracking(nPos,nMatrix,nPfad,endingPositions,Ispos)  #Rekursiver Aufruf
 
 
 
