@@ -194,7 +194,7 @@ class ROOM:
         self.setzeFeldgroesse(feldBreite, feldHoehe)
         self.Matrix = MATRIX(nBreite = self.feldBreite, nHoehe = self.feldHoehe, standardwert = 0)
         self.ebene = nEbene
-        self.inputs = Inputs[:(2+nEbene)]
+        self.inputs = Inputs[:(1+nEbene)]
 
     """
     Setzt die Dimension des Spielbretts fest.
@@ -301,7 +301,7 @@ class ROOM:
         levelBunt.copyMatrix(self.Matrix)
 
         # Färbt die im Lösungspfad besuchten Felder GRÜN
-        for pos in path:
+        for pos in path.posListe:
             content = levelBunt.getZelle(pos)
             levelBunt.setZelle(pos, GREEN + str(content) + END)
 
@@ -314,7 +314,7 @@ class ROOM:
 
         # Färbt upPos, downPos, leftPos, rightPos in LILA
         for pos in [self.upPos,self.downPos,self.leftPos,self.rightPos]:
-            content = self.getZelle(pos)
+            content = self.Matrix.getZelle(pos)
             levelBunt.setZelle(pos, LILA + str(content) + END )
 
         # Ausgabe
@@ -323,7 +323,7 @@ class ROOM:
         # Generierung der Lösungsangabe
         if self.feldBreite <= 26:
             s = ""
-            for i in path:
+            for i in path.posListe:
                 s += self.schachnotation(i) + " "
         else:
             s = ""
@@ -399,7 +399,7 @@ class ROOM:
                 tab = "    "
                 print(2*tab, "ENDE:", self.schachnotation(ePosi[e]) )
                 for p in self.backtrackingPfade[i][e]:
-                    zeichneRaumMitLoesung(self, posListe)
+                    self.zeichneRaumMitLoesung(p)
                     print(2*tab, "Items used:", p.itemsUsed)
 
 
