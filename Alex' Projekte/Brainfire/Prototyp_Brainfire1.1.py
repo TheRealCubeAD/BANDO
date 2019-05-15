@@ -170,6 +170,11 @@ class PFAD:
                 return True
         return False
 
+    def getLaenge(self):
+        return self.laenge
+
+    def getItemsUsed(self):
+        return self.itemsUsed
 
 
 class ROOM:
@@ -348,7 +353,8 @@ class ROOM:
 
         print("Lösungsalgorithmus gestartet.")
 
-        self.backtrackingPfade = [ [ [],[],[] ],[ [],[],[] ],[ [],[],[] ],[ [],[],[] ] ]                                  #Ebene 1: 4 Listen für jeden Startpunkt
+        self.backtrackingPfade = [ [ [],[],[] ],[ [],[],[] ],[ [],[],[] ],[ [],[],[] ] ]
+                                                                                #Ebene 1: 4 Listen für jeden Startpunkt
                                                                                 #Ebene 2: 3 Pfade für jeden Endpunkt
         startPositions = [self.upPos,self.downPos,self.leftPos,self.rightPos]
         for Ipos in range(len(startPositions)):                                 #Starte backtracking für jeden Start
@@ -400,10 +406,27 @@ class ROOM:
             del(ePosi[i])
             for e in range(3):
                 newline(1)
-                print(2*tab, "ENDE:", self.schachnotation(ePosi[e]) )
-                for p in self.backtrackingPfade[i][e]:
-                    self.zeichneRaumMitLoesung(p)
-                    print("Items used:", p.itemsUsed)
+                print(len(tab)*"-", "ENDE:", self.schachnotation(ePosi[e]) )
+
+                if self.backtrackingPfade[i][e] == []:
+                    print(None)
+                else:
+                    # Finde besten Pfad
+                    bestLaenge = float("inf")
+                    bestPath = None
+                    bestItemUse = True
+                    for p in self.backtrackingPfade[i][e]:
+                        pItemUse = p.getItemsUsed()
+                        pLaenge = p.getLaenge()
+                        if bestItemUse == False and pItemUse == True:
+                            pass
+                        elif bestLaenge > pLaenge:
+                            bestPath = p
+                            bestLaenge = pLaenge
+                            bestItemUse = pItemUse
+
+                    self.zeichneRaumMitLoesung(bestPath)
+                    print("Items used:", bestPath.itemsUsed)
                     newline(2)
 
 
@@ -418,4 +441,5 @@ r1.generiereLevel(float(13/168))
 r1.zeichneRaum()
 r1.starteBacktracking()
 r1.alleLoesungenAusgabe()
+
 newline(5)
