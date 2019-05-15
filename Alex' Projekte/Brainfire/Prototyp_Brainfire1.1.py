@@ -27,6 +27,7 @@ GREEN = '\033[92m'
 LILA = '\033[95m'
 END = '\033[0m'
 POINT = "●"
+tab = "    "
 
 """
 Definiert ein paar nützliche Stringlisten.
@@ -189,7 +190,7 @@ class ROOM:
     loesungsMatrix = None
     backtrackingPfade = None
 
-    def __init__(self, feldBreite = 8, feldHoehe = 8, pSteine = float(13/168), nEbene = 0):
+    def __init__(self, feldBreite = 8, feldHoehe = 8, nEbene = 0):
         self.setzeFeldgroesse(feldBreite, feldHoehe)
         self.Matrix = MATRIX(nBreite = self.feldBreite, nHoehe = self.feldHoehe, standardwert = 0)
         self.ebene = nEbene
@@ -345,7 +346,7 @@ class ROOM:
     Berechnet die schnellsten Pfade von jedem Eingan zu jeden Ausgang
     """
     def starteBacktracking(self):
-        self.backtrackingPfade = [[[],[],[]],[[],[],[]],[[],[],[]],[[],[],[]]]  #Ebene 1: 4 Listen für jeden Startpunk
+        self.backtrackingPfade = [[[],[],[]],[[],[],[]],[[],[],[]],[[],[],[]]]  #Ebene 1: 4 Listen für jeden Startpunkt
                                                                                 #Ebene 2: 3 Listen für jeden Endpunkt
                                                                                 #Ebene 3: Alle Pfade (PATH)
         startPositions = [self.upPos,self.downPos,self.leftPos,self.rightPos]
@@ -355,19 +356,6 @@ class ROOM:
             endingPositions = deepcopy(startPositions)
             del(endingPositions[endingPositions.index(pos)])
             self.backtracking(pos,deepcopy(self.Matrix),PFAD(),endingPositions,Ipos)
-
-        for i in range(4): # Ausgabe der Ergebnisse
-            print("START: ",startPositions[i].x," , ",startPositions[i].y," :")
-            newline(1)
-            ePosi = deepcopy(startPositions)
-            del(ePosi[i])
-            for e in range(3):
-                newline(1)
-                print("    ENDE: ",ePosi[e].x," , ",ePosi[e].y)
-                for p in self.backtrackingPfade[i][e]:
-                    newline(1)
-                    print("        PFAD: ",[(pos.x,pos.y) for pos in p.posListe])
-                    print("        Items used: ",p.itemsUsed)
 
 
     """"
@@ -394,6 +382,25 @@ class ROOM:
                     nPfad.itemsUsed = True  #Markiert im Pfad, dass ein Item verwendet wurde
                 self.backtracking(nPos,nMatrix,nPfad,endingPositions,Ispos)  #Rekursiver Aufruf
 
+
+
+
+    def alleLoesungenAusgabe(self):
+
+        startPositions = [self.upPos, self.downPos, self.leftPos, self.rightPos]
+
+        for i in range(4): # Ausgabe der Ergebnisse
+            print("START:", self.schachnotation(startPositions[i]) )
+            newline(1)
+            ePosi = deepcopy(startPositions)
+            del(ePosi[i])
+            for e in range(3):
+                newline(1)
+                tab = "    "
+                print(2*tab, "ENDE:", self.schachnotation(ePosi[e]) )
+                for p in self.backtrackingPfade[i][e]:
+                    zeichneRaumMitLoesung(self, posListe)
+                    print(2*tab, "Items used:", p.itemsUsed)
 
 
 
@@ -455,5 +462,6 @@ def testLevel(level,pos):
 
 
 r1 = ROOM()
-r1.generiereLevel(0.1)
+r1.generiereLevel(float(13/168))
 r1.starteBacktracking()
+r1.alleLoesungenAusgabe()
