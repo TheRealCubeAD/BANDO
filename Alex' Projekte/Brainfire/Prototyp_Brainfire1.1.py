@@ -436,7 +436,7 @@ class ROOM:
 """
 
 
-r1 = ROOM()
+r1 = ROOM(feldBreite=8,feldHoehe=8)
 r1.generiereLevel(float(13/168))
 r1.zeichneRaum()
 r1.starteBacktracking()
