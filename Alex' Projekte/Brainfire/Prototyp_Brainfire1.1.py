@@ -47,7 +47,6 @@ def newline(n):
     for i in range(n):
         print()
 
-
 """
 Gibt mit einer Wahrscheinlichkeit von p1 den Wert 1 zurück, ansonsten 0.
 """
@@ -57,13 +56,11 @@ def randomBool( p1 ):
     else:
         return 0
 
-
 """
 Gibt die seit dem angegebenen Zeitpunkt vergangene Zeit zurück.
 """
 def vergangeneZeit(zeitpunkt):
     return time.time() - zeitpunkt
-
 
 def gehen(pos,dir,matrix):
     npos = pos + dir
@@ -173,6 +170,11 @@ class PFAD:
                 return True
         return False
 
+    def getLaenge(self):
+        return self.laenge
+
+    def getItemsUsed(self):
+        return self.itemsUsed
 
 
 class ROOM:
@@ -272,17 +274,19 @@ class ROOM:
         # Färbt die Steine ROT
         for x in range(levelBunt.getBreite()):
             for y in range(levelBunt.getHoehe()):
-                pos = POS(x,y)
+                pos = POS(x, y)
                 if levelBunt.getZelle(pos) == 1:
-                    levelBunt.setZelle( pos, RED + "1" + END )
+                    levelBunt.setZelle(pos, RED + "1" + END)
 
         # Färbt upPos, downPos, leftPos, rightPos in LILA
         for pos in [self.upPos,self.downPos,self.leftPos,self.rightPos]:
-            content = self.getZelle(pos)
+            content = self.Matrix.getZelle(pos)
             levelBunt.setZelle(pos, LILA + str(content) + END )
 
-        # Ausgabe der Matrix
-        levelBunt.printMatrix()
+        # Ausgabe
+        newline(1)  # Leerzeile
+        levelBunt.printMatrix()  # Level
+        newline(1)  # Leerzeile
 
 
     """
@@ -346,16 +350,20 @@ class ROOM:
     Berechnet die schnellsten Pfade von jedem Eingan zu jeden Ausgang
     """
     def starteBacktracking(self):
-        self.backtrackingPfade = [[[],[],[]],[[],[],[]],[[],[],[]],[[],[],[]]]  #Ebene 1: 4 Listen für jeden Startpunkt
-                                                                                #Ebene 2: 3 Listen für jeden Endpunkt
-                                                                                #Ebene 3: Alle Pfade (PATH)
+
+        print("Lösungsalgorithmus gestartet.")
+
+        self.backtrackingPfade = [ [ [],[],[] ],[ [],[],[] ],[ [],[],[] ],[ [],[],[] ] ]
+                                                                                #Ebene 1: 4 Listen für jeden Startpunkt
+                                                                                #Ebene 2: 3 Pfade für jeden Endpunkt
         startPositions = [self.upPos,self.downPos,self.leftPos,self.rightPos]
         for Ipos in range(len(startPositions)):                                 #Starte backtracking für jeden Start
-            print(Ipos)
+            print("Fortschritt:", str(Ipos*25) + "%" )
             pos = startPositions[Ipos]
             endingPositions = deepcopy(startPositions)
-            del(endingPositions[endingPositions.index(pos)])
+            del(endingPositions[Ipos])
             self.backtracking(pos,deepcopy(self.Matrix),PFAD(),endingPositions,Ipos)
+        print("Fortschritt:", str(100) + "%")
 
 
     """"
@@ -371,7 +379,6 @@ class ROOM:
 
         for Iepos in range(len(endingPositions)):  #Prüft ob einer der Ausgänge erreicht wurde
             if pos == endingPositions[Iepos]:
-                print("Ende gefunden")
                 self.backtrackingPfade[Ispos][Iepos].append(deepcopy(pfad))  #Fügt den aktuellen Pfad
                                                                                 # den Ergebnissen hinzu
         for input in self.inputs:  #Probiert alle Aktionen ausgehend von dem aktuellem Zustand
@@ -387,72 +394,40 @@ class ROOM:
 
     def alleLoesungenAusgabe(self):
 
+        newline(2)
+
         startPositions = [self.upPos, self.downPos, self.leftPos, self.rightPos]
 
         for i in range(4): # Ausgabe der Ergebnisse
+            newline(4)
             print("START:", self.schachnotation(startPositions[i]) )
             newline(1)
             ePosi = deepcopy(startPositions)
             del(ePosi[i])
             for e in range(3):
                 newline(1)
-                tab = "    "
-                print(2*tab, "ENDE:", self.schachnotation(ePosi[e]) )
-                for p in self.backtrackingPfade[i][e]:
-                    self.zeichneRaumMitLoesung(p)
-                    print(2*tab, "Items used:", p.itemsUsed)
+                print(len(tab)*"-", "ENDE:", self.schachnotation(ePosi[e]) )
 
+                if self.backtrackingPfade[i][e] == []:
+                    print(None)
+                else:
+                    # Finde besten Pfad
+                    bestLaenge = float("inf")
+                    bestPath = None
+                    bestItemUse = True
+                    for p in self.backtrackingPfade[i][e]:
+                        pItemUse = p.getItemsUsed()
+                        pLaenge = p.getLaenge()
+                        if bestItemUse == False and pItemUse == True:
+                            pass
+                        elif bestLaenge > pLaenge:
+                            bestPath = p
+                            bestLaenge = pLaenge
+                            bestItemUse = pItemUse
 
-
-
-
-
-
-ergebnisse = []
-def startLevelTest(level):
-    # Setze die Startwerte auf Anfang
-    global ergebnisse
-    ergebnisse = []
-    ergebnisse.append([downPos, []])
-
-    # Rufe das Ergebnis auf und formatiere es
-    path = testLevel(level,upPos) # Aufruf
-
-    if None in path:
-        path = None
-
-    return path
-
-
-def testLevel(level,pos):
-    global ergebnisse
-
-    # Wenn das Ergebniss schon mal ausgerechnet wurde, dann gib es wieder aus:
-    if posExistiert(ergebnisse, pos):
-        pfad = posPfad(ergebnisse, pos)
-        if None in pfad:
-            return pfad
-        else:
-            return [pos] + posPfad(ergebnisse, pos)
-
-    # Ansonsten rechne es aus und speichere es:
-    moeglichePfade = []
-    ergebnisse.append( [ pos, [None for _ in range(feldBreite*feldHoehe)] ] ) # Eintrag in Arbeit
-
-    for direction in directions:
-        mPfad = testLevel( level, laufen(level, pos, direction) )
-        moeglichePfade.append( mPfad )
-    besterPfad = [None for _ in range(feldBreite*feldHoehe)]
-    for pfad in moeglichePfade:
-        if len(pfad) <= len(besterPfad) and None not in pfad:
-            besterPfad = pfad
-
-    posEntfernen( ergebnisse, pos ) # Arbeit abgeschlossen
-    ergebnisse.append( [pos, besterPfad] ) # Arbeit speichern
-    if None in besterPfad:
-        return [None for _ in range(feldBreite*feldHoehe)]
-    else:
-        return [pos] + besterPfad
+                    self.zeichneRaumMitLoesung(bestPath)
+                    print("Items used:", bestPath.itemsUsed)
+                    newline(2)
 
 
 
@@ -461,7 +436,10 @@ def testLevel(level,pos):
 """
 
 
-r1 = ROOM()
+r1 = ROOM(feldBreite=8,feldHoehe=8)
 r1.generiereLevel(float(13/168))
+r1.zeichneRaum()
 r1.starteBacktracking()
 r1.alleLoesungenAusgabe()
+
+newline(5)
