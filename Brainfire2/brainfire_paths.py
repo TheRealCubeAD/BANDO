@@ -167,12 +167,20 @@ def stringArray(Array):
 
 
 newline(3)
-print("Wie viele Felder ist der Raum hoch?")
+print("Wie viele Felder ist der Raum breit?")
 hoehe = intIntervallChoice(2, float("inf"))
 newline(1)
-print("Wie viele Felder ist der Raum breit?")
+print("Wie viele Felder ist der Raum hoch?")
 breite = intIntervallChoice(2, float("inf"))
 newline(1)
 
 
+Matrix = [[" " for y in range(breite)] for x in range(hoehe)]
+Matrix[1][0] = "S"
+Matrix[ hoehe - 1 - 1 ][ breite - 1 ] = "Z"
 
+# printMatrixRaum(Matrix)
+
+
+
+# - Pathfinding - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
