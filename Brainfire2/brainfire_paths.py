@@ -128,23 +128,41 @@ titlescreen("Pathfinder for Brainfire","by Alex Duca")
 # - Ausgabemethoden - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
+
 def printLeererRaum(breite, hoehe):
 
-    ersteZeile = "╔═══" +  "╦═══" * (breite-1) + "╗"
-    lueckenZeile = "║   " + "║   " * (breite-1) + "║"
-    mittlereZeile = "╠═══" +  "╬═══" * (breite-1) + "╣"
-    letzteTeile = "╚═══" +  "╩═══" * (breite-1) + "╝"
+    Matrix = [[" " for y in range(hoehe)] for x in range(breite)]
+    printMatrixRaum(Matrix)
+
+
+
+def printMatrixRaum(Matrix):
+
+    hoehe = len(Matrix)
+    breite = len(Matrix[0])
+
+    ersteZeile = "╔═══" + "╦═══" * (breite - 1) + "╗"
+    mittlereZeile = "╠═══" + "╬═══" * (breite - 1) + "╣"
+    letzteZeile = "╚═══" + "╩═══" * (breite - 1) + "╝"
 
     newline(1)
     print(ersteZeile)
-    print(lueckenZeile)
+    print(stringArray(Matrix[0]))
     for i in range(hoehe-1):
         print(mittlereZeile)
-        print(lueckenZeile)
-    print(letzteTeile)
+        print(stringArray(Matrix[i+1]))
+    print(letzteZeile)
     newline(1)
 
 
+
+def stringArray(Array):
+    string = "║"
+    for i in Array:
+        string += " "
+        string += i
+        string += " ║"
+    return string
 
 
 
@@ -157,4 +175,5 @@ print("Wie viele Felder ist der Raum breit?")
 breite = int(input(">>> "))
 newline(1)
 
-printLeererRaum(breite,hoehe)
+
+printMatrixRaum(Matrix)
