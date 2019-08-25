@@ -166,14 +166,13 @@ def stringArray(Array):
 
 
 
-
 newline(3)
 print("Wie viele Felder ist der Raum hoch?")
-hoehe = int(input(">>> "))
+hoehe = intIntervallChoice(2, float("inf"))
 newline(1)
 print("Wie viele Felder ist der Raum breit?")
-breite = int(input(">>> "))
+breite = intIntervallChoice(2, float("inf"))
 newline(1)
 
 
-printMatrixRaum(Matrix)
+
