@@ -281,6 +281,7 @@ def backtracking(Matrix, eigenePos, letzteRichtung):
 
     # Sind wir schon am Ziel?
     if eigenePos == endPos:
+        backupKopieMatrix[endPos[0]][endPos[1]] = "Z"
         alleRaeume.append(backupKopieMatrix)
 
     else:
