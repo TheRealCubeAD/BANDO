@@ -167,18 +167,22 @@ def stringArray(Array):
 
 
 newline(3)
-print("Wie viele Felder ist der Raum breit?")
-hoehe = intIntervallChoice(2, float("inf"))
-newline(1)
 print("Wie viele Felder ist der Raum hoch?")
-breite = intIntervallChoice(2, float("inf"))
+hoehe = intIntervallChoice(1, float("inf"))
+newline(1)
+print("Wie viele Felder ist der Raum breit?")
+breite = intIntervallChoice(1, float("inf"))
 newline(1)
 
 
 Matrix = [[" " for y in range(breite)] for x in range(hoehe)]
 
-startPos = (1,0)
-endPos = ( hoehe - 1 - 1, breite - 1 )
+if hoehe == 1:
+    startPos = (0,0)
+    endPos = (0, breite - 1)
+else:
+    startPos = (1,0)
+    endPos = (hoehe - 1 - 1, breite - 1)
 
 Matrix[startPos[0]][startPos[1]] = "S"
 # Matrix[endPos[0]][endPos[1]] = "Z"
@@ -338,7 +342,7 @@ def backtracking(Matrix, eigenePos, letzteRichtung):
 
 
 
-
+4
 
 
 startBacktracking(Matrix)
