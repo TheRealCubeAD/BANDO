@@ -199,6 +199,13 @@ def pfeil(richtung):
     elif richtung == (0,-1):
         return "←"
 
+def inRange(pos):
+    global hoehe, breite
+    if 0 <= pos[0] <= (hoehe-1) and 0 <= pos[1] <= (breite-1):
+        return True
+    else:
+        return False
+
 
 
 
@@ -225,12 +232,10 @@ def startBacktracking(Matrix):
             altePos = neuePos
 
             # Probiere einen Schritt nach vorne
-            try:
-                neuePos = ( altePos[0] + richtung[0], altePos[1] + richtung[1] )
-                test = Matrix[ neuePos[0] ][ neuePos[1] ]
+            neuePos = ( altePos[0] + richtung[0], altePos[1] + richtung[1] )
 
             # Wenn du gegen eine Wand stoesst
-            except IndexError:
+            if not inRange(neuePos):
                 MatrixKopie = deepcopy(Matrix)
                 backtracking(MatrixKopie, neuePos, richtung)
                 # Wir sind dann auch fertig fuer die Richtung
@@ -239,9 +244,11 @@ def startBacktracking(Matrix):
             # Lege einen Pfeil auf dem Boden in aktuelle Laufrichtung
             Matrix[neuePos[0]][neuePos[1]] = pfeil(richtung)
 
+
             # Versuche einen Stein vor die neue Position zu legen und starte Backtracking
-            try:
-                stein = ( neuePos[0] + richtung[0], neuePos[1] + richtung[1] )
+            stein = ( neuePos[0] + richtung[0], neuePos[1] + richtung[1] )
+            if inRange(stein):
+
                 Matrix[ stein[0] ][ stein[1] ] = "●"
                 MatrixKopie = deepcopy(Matrix)
                 backtracking(MatrixKopie, neuePos, richtung)
@@ -249,15 +256,13 @@ def startBacktracking(Matrix):
                 # Nach erfolgreihem Steinelegen, nimm ihn wieder weg und lauf weiter in die Richtung
                 Matrix[ stein[0] ][ stein[1] ] = " "
 
-            # Wenn das nicht geht, dann ist dort eine Wand.
-            except IndexError:
-                pass
+
+
 
     for Raum in alleRaeume:
-        newline(3)
         printMatrixRaum(Raum)
-        newline(3)
 
+    print(len(alleRaeume))
 
 def backtracking(Matrix, eigenePos, letzteRichtung):
 
