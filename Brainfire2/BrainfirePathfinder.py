@@ -180,6 +180,9 @@ Matrix = [[" " for y in range(breite)] for x in range(hoehe)]
 startPos = (1,0)
 endPos = ( hoehe - 1 - 1, breite - 1 )
 
+Matrix[startPos[0]][startPos[1]] = "S"
+# Matrix[endPos[0]][endPos[1]] = "Z"
+
 # printMatrixRaum(Matrix)
 
 
@@ -198,6 +201,16 @@ def pfeil(richtung):
         return "↑"
     elif richtung == (0,-1):
         return "←"
+
+
+
+def senkrechte(richtung):
+    if richtung == (1,0) or richtung == (-1,0):
+        return [ (0,1), (0,-1) ]
+    else:
+        return [ (1,0), (-1,0) ]
+
+
 
 def inRange(pos):
     global hoehe, breite
@@ -234,9 +247,9 @@ def startBacktracking(Matrix):
 
             # Wenn du gegen eine Wand stoesst
             if not inRange(neuePos):
-                MatrixKopie = deepcopy(Matrix)
-                altePosKopie = deepcopy(altePos)
-                backtracking(MatrixKopie, altePosKopie, richtung)
+                # Wenn diese Wand nicht gleich am Anfang ist, dann backtracke
+                if altePos != startPos:
+                    backtracking(Matrix, altePos, richtung)
                 # Wir sind dann auch fertig fuer die Richtung
                 break
 
@@ -249,32 +262,85 @@ def startBacktracking(Matrix):
             if inRange(stein):
 
                 Matrix[ stein[0] ][ stein[1] ] = "●"
-                MatrixKopie = deepcopy(Matrix)
-                neuePosKopie = deepcopy(neuePos)
-                backtracking(MatrixKopie, neuePosKopie, richtung)
+                backtracking(Matrix, neuePos, richtung)
 
                 # Nach erfolgreihem Steinelegen, nimm ihn wieder weg und lauf weiter in die Richtung
                 Matrix[ stein[0] ][ stein[1] ] = " "
 
 
-
-
     for Raum in alleRaeume:
         printMatrixRaum(Raum)
-
     print(len(alleRaeume))
+
 
 def backtracking(Matrix, eigenePos, letzteRichtung):
 
     # Globale Informationen
     global alleRaeume
+    backupKopieMatrix = deepcopy(Matrix)
 
-    Matrix[startPos[0]][startPos[1]] = "S"
-    Matrix[endPos[0]][endPos[1]] = "Z"
+    # Sind wir schon am Ziel?
+    if eigenePos == endPos:
+        alleRaeume.append(backupKopieMatrix)
 
-    if not eigenePos == startPos:
-        MatrixKopie = deepcopy(Matrix)
-        alleRaeume.append(MatrixKopie)
+    else:
+        # lauf nur links oder rechts
+        Senkrechten = senkrechte(letzteRichtung)
+        for richtung in Senkrechten:
+
+            neuePos = eigenePos
+            Matrix = deepcopy(backupKopieMatrix)
+
+            while True:
+
+                altePos = neuePos
+
+                # Probiere einen Schritt nach vorne
+                neuePos = (altePos[0] + richtung[0], altePos[1] + richtung[1])
+
+                # Ist da eine Wand?
+                if not inRange(neuePos):
+                    # Wir koennen hier aufhoeren
+                    break
+
+                # Liegt da ein Stein?
+                elif Matrix[ neuePos[0] ][ neuePos[1] ] == "●":
+                    # Wir koennen hier aufhoeren
+                    break
+
+                # Ist der Boden NICHT mit einem Pfeil markiert?
+                elif Matrix[ neuePos[0] ][ neuePos[1] ] == " ":
+
+                    # Markiere den Boden mit einem Pfeil
+                    Matrix[neuePos[0]][neuePos[1]] = pfeil(richtung)
+
+                    # Potentielle Abbiegung gefunden!
+                    stein = (neuePos[0] + richtung[0], neuePos[1] + richtung[1])
+
+                    # Ist dort, wo der Stein liegen sollte, schon eine Wand?
+                    if not inRange(stein):
+                        # Wenn Ja, dann kann man von der Wand aus abbiegen
+                        backtracking(Matrix, neuePos, richtung)
+
+                    # Wenn Nein, liegt dort schon ein Stein?
+                    elif Matrix[ stein[0] ][ stein[1] ] == "●":
+                        # Wenn Ja, dann kann man von dem Stein aus abbiegen
+                        backtracking(Matrix, neuePos, richtung)
+
+                    # Wenn Nein, ist die Flaeche frei fuer ein Stein?
+                    elif Matrix[ stein[0] ][ stein[1] ] == " ":
+                        # Platziere einen Stein und biege ab!
+                        Matrix[stein[0]][stein[1]] = "●"
+                        backtracking(Matrix, neuePos, richtung)
+                        # Und lege ihn danach wieder weg
+                        Matrix[stein[0]][stein[1]] = " "
+
+
+
+
 
 
 startBacktracking(Matrix)
+
+newline(2)
+print("Laufzeit:", str(time.process_time()), "s")
