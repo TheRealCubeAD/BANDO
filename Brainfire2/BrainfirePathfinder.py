@@ -218,12 +218,11 @@ def startBacktracking(Matrix):
         neuePos = startPos
         Matrix = deepcopy(backupKopieMatrix)
 
+
+
         while True:
 
             altePos = neuePos
-
-            # Lege einen Pfeil auf dem Boden in aktuelle Laufrichtung
-            Matrix[altePos[0]][altePos[1]] = pfeil(richtung)
 
             # Probiere einen Schritt nach vorne
             try:
@@ -236,6 +235,9 @@ def startBacktracking(Matrix):
                 backtracking(MatrixKopie, neuePos, richtung)
                 # Wir sind dann auch fertig fuer die Richtung
                 break
+
+            # Lege einen Pfeil auf dem Boden in aktuelle Laufrichtung
+            Matrix[neuePos[0]][neuePos[1]] = pfeil(richtung)
 
             # Versuche einen Stein vor die neue Position zu legen und starte Backtracking
             try:
