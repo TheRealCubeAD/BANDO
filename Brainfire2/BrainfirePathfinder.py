@@ -176,11 +176,98 @@ newline(1)
 
 
 Matrix = [[" " for y in range(breite)] for x in range(hoehe)]
-Matrix[1][0] = "S"
-Matrix[ hoehe - 1 - 1 ][ breite - 1 ] = "Z"
+
+startPos = (1,0)
+endPos = ( hoehe - 1 - 1, breite - 1 )
 
 # printMatrixRaum(Matrix)
 
 
 
+
+
 # - Pathfinding - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+def pfeil(richtung):
+    if richtung == (1,0):
+        return "↓"
+    elif richtung == (0,1):
+        return "→"
+    elif richtung == (-1,0):
+        return "↑"
+    elif richtung == (0,-1):
+        return "←"
+
+
+
+
+alleRaeume = []
+Richtungen = [ (1,0), (0,1), (-1,0), (0,-1) ]
+
+def startBacktracking(Matrix):
+
+    # Globale Informationen
+    global alleRaeume, Richtungen, hoehe, breite, startPos, endPos
+    alleRaeume = []
+    backupKopieMatrix = deepcopy(Matrix)
+
+    # Probiere in alle Richtungen
+    for richtung in Richtungen:
+
+        neuePos = startPos
+        Matrix = deepcopy(backupKopieMatrix)
+
+        while True:
+
+            altePos = neuePos
+
+            # Lege einen Pfeil auf dem Boden in aktuelle Laufrichtung
+            Matrix[altePos[0]][altePos[1]] = pfeil(richtung)
+
+            # Probiere einen Schritt nach vorne
+            try:
+                neuePos = ( altePos[0] + richtung[0], altePos[1] + richtung[1] )
+                test = Matrix[ neuePos[0] ][ neuePos[1] ]
+
+            # Wenn du gegen eine Wand stoesst
+            except IndexError:
+                MatrixKopie = deepcopy(Matrix)
+                backtracking(MatrixKopie, neuePos, richtung)
+                # Wir sind dann auch fertig fuer die Richtung
+                break
+
+            # Versuche einen Stein vor die neue Position zu legen und starte Backtracking
+            try:
+                stein = ( neuePos[0] + richtung[0], neuePos[1] + richtung[1] )
+                Matrix[ stein[0] ][ stein[1] ] = "●"
+                MatrixKopie = deepcopy(Matrix)
+                backtracking(MatrixKopie, neuePos, richtung)
+
+                # Nach erfolgreihem Steinelegen, nimm ihn wieder weg und lauf weiter in die Richtung
+                Matrix[ stein[0] ][ stein[1] ] = " "
+
+            # Wenn das nicht geht, dann ist dort eine Wand.
+            except IndexError:
+                pass
+
+    for Raum in alleRaeume:
+        newline(3)
+        printMatrixRaum(Raum)
+        newline(3)
+
+
+def backtracking(Matrix, eigenePos, letzteRichtung):
+
+    # Globale Informationen
+    global alleRaeume, Richtungen, hoehe, breite, startPos, endPos
+
+    Matrix[startPos[0]][startPos[1]] = "S"
+    Matrix[endPos[0]][endPos[1]] = "Z"
+
+    MatrixKopie = deepcopy(Matrix)
+
+    alleRaeume.append(MatrixKopie)
+
+
+startBacktracking(Matrix)
