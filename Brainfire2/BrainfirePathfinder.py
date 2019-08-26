@@ -215,7 +215,7 @@ Richtungen = [ (1,0), (0,1), (-1,0), (0,-1) ]
 def startBacktracking(Matrix):
 
     # Globale Informationen
-    global alleRaeume, Richtungen, hoehe, breite, startPos, endPos
+    global alleRaeume
     alleRaeume = []
     backupKopieMatrix = deepcopy(Matrix)
 
@@ -224,8 +224,6 @@ def startBacktracking(Matrix):
 
         neuePos = startPos
         Matrix = deepcopy(backupKopieMatrix)
-
-
 
         while True:
 
@@ -237,7 +235,8 @@ def startBacktracking(Matrix):
             # Wenn du gegen eine Wand stoesst
             if not inRange(neuePos):
                 MatrixKopie = deepcopy(Matrix)
-                backtracking(MatrixKopie, neuePos, richtung)
+                altePosKopie = deepcopy(altePos)
+                backtracking(MatrixKopie, altePosKopie, richtung)
                 # Wir sind dann auch fertig fuer die Richtung
                 break
 
@@ -251,7 +250,8 @@ def startBacktracking(Matrix):
 
                 Matrix[ stein[0] ][ stein[1] ] = "●"
                 MatrixKopie = deepcopy(Matrix)
-                backtracking(MatrixKopie, neuePos, richtung)
+                neuePosKopie = deepcopy(neuePos)
+                backtracking(MatrixKopie, neuePosKopie, richtung)
 
                 # Nach erfolgreihem Steinelegen, nimm ihn wieder weg und lauf weiter in die Richtung
                 Matrix[ stein[0] ][ stein[1] ] = " "
@@ -267,14 +267,14 @@ def startBacktracking(Matrix):
 def backtracking(Matrix, eigenePos, letzteRichtung):
 
     # Globale Informationen
-    global alleRaeume, Richtungen, hoehe, breite, startPos, endPos
+    global alleRaeume
 
     Matrix[startPos[0]][startPos[1]] = "S"
     Matrix[endPos[0]][endPos[1]] = "Z"
 
-    MatrixKopie = deepcopy(Matrix)
-
-    alleRaeume.append(MatrixKopie)
+    if not eigenePos == startPos:
+        MatrixKopie = deepcopy(Matrix)
+        alleRaeume.append(MatrixKopie)
 
 
 startBacktracking(Matrix)
