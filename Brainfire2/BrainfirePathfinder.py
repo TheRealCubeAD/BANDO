@@ -269,7 +269,7 @@ def backtracking(Matrix, eigenePos, letzteRichtung):
     # Globale Informationen
     global alleRaeume, Richtungen, hoehe, breite, startPos, endPos
 
-    # Matrix[startPos[0]][startPos[1]] = "S"
+    Matrix[startPos[0]][startPos[1]] = "S"
     Matrix[endPos[0]][endPos[1]] = "Z"
 
     MatrixKopie = deepcopy(Matrix)
