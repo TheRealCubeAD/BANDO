@@ -4,7 +4,7 @@
 \contentsline {subsection}{\numberline {1.2}Umsetzbarkeit}{1}{subsection.1.2}% 
 \contentsline {subsection}{\numberline {1.3}Beispiel}{3}{subsection.1.3}% 
 \contentsline {subsection}{\numberline {1.4}Quellcodeausschnitt}{3}{subsection.1.4}% 
-\contentsline {section}{\numberline {2}Gestaltung des Hintergrundmusik}{6}{section.2}% 
+\contentsline {section}{\numberline {2}Gestaltung der Hintergrundmusik}{6}{section.2}% 
 \contentsline {subsection}{\numberline {2.1}Inspirationsquellen}{6}{subsection.2.1}% 
 \contentsline {subsubsection}{\numberline {2.1.1}The Legend of Zelda: Ocarina of Time}{6}{subsubsection.2.1.1}% 
 \contentsline {subsubsection}{\numberline {2.1.2}The Legend of Zelda: Majora's Mask}{6}{subsubsection.2.1.2}% 
