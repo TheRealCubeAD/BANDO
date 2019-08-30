@@ -160,7 +160,7 @@ def stringArray(Array):
     string = "║"
     for i in Array:
         string += " "
-        string += i
+        string += str(i)
         string += " ║"
     return string
 
@@ -272,9 +272,9 @@ def startBacktracking(Matrix):
                 Matrix[ stein[0] ][ stein[1] ] = " "
 
 
-    for Raum in alleRaeume:
-        printMatrixRaum(Raum)
-    print(len(alleRaeume))
+    #for Raum in alleRaeume:
+        #printMatrixRaum(Raum)
+    print("Anzahl der Pfade ohne Selektion:", len(alleRaeume))
 
 
 def backtracking(Matrix, eigenePos, letzteRichtung):
@@ -341,11 +341,146 @@ def backtracking(Matrix, eigenePos, letzteRichtung):
                         Matrix[stein[0]][stein[1]] = " "
 
 
-
-4
-
-
 startBacktracking(Matrix)
+
+
+
+
+
+# - Formatierung - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+def raumFormatieren(Raum):
+
+    Ergebnis = [[-1 for x in range(breite)] for y in range(hoehe)]
+
+    for x in range(breite):
+        for y in range(hoehe):
+
+            # Wenn das Feld frei waehlbar ist:
+            if Raum[y][x] == " ":
+                Ergebnis[y][x] = 2
+
+            # Wenn das Feld ein Stein ist:
+            elif Raum[y][x] == "●":
+                Ergebnis[y][x] = 1
+
+            # Wenn das Feld mit einem Pfeil, mit S, mit Z markiert ist
+            else:
+                Ergebnis[y][x] = 0
+
+    return Ergebnis
+
+
+formatierteRaeume = []
+for Raum in alleRaeume:
+    formatierteRaeume.append(raumFormatieren(Raum))
+
+#for Raum in formatierteRaeume:
+    #printMatrixRaum(Raum)
+
+
+
+
+# - Selektion - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+
+rutschFelder = []
+
+def starteRutschen(Matrix, pos, richtung):
+
+    global rutschFelder
+    rutschFelder = []
+
+    neuePos = rutschen(Matrix, pos, richtung)
+    alleFelder = deepcopy(rutschFelder)
+
+    return ( neuePos, alleFelder )
+
+
+def rutschen(Matrix, pos, richtung):
+
+    global rutschFelder
+
+    neuePos = ( pos[0] + richtung[0], pos[1] + richtung[1] )
+
+    # Feld?
+    if inRange(neuePos):
+
+        # Ist es frei?
+        if Matrix[ neuePos[0] ][ neuePos[1] ] == 0:
+
+            # rutsch von dort weiter
+            rutschFelder.append(pos)
+            return rutschen(Matrix, neuePos, richtung)
+
+    # sonst bleib stehen
+    return pos
+
+
+
+
+alleLoesungen = []
+
+def startSelektierenBacktracking(Matrix):
+
+    global alleLoesungen
+
+    for richtung in Richtungen:
+        ergebnis = starteRutschen(Matrix, startPos, richtung)
+        selektierenBacktracking(Matrix, ergebnis[0], richtung, ergebnis[1] + [startPos])
+
+    anzahlLeererFelder = 0
+    for Zeile in Matrix:
+        for Feld in Zeile:
+            if Feld == 0:
+                anzahlLeererFelder += 1
+
+    for Loesung in alleLoesungen:
+        bLoesung = deepcopy(Loesung)
+        for Feld in bLoesung:
+            if bLoesung.count(Feld) > 1:
+                bLoesung.remove(Feld)
+        if len(bLoesung) < anzahlLeererFelder:
+            return True
+
+    return False
+
+
+
+
+def selektierenBacktracking(Matrix, eigenePos, letzteRichtung, besuchteFelder):
+
+    global alleLoesungen
+
+    # Brich ab, wenn du am Ziel stehst
+    if eigenePos == endPos:
+        alleLoesungen.append( besuchteFelder + [eigenePos] )
+        return None
+
+    # Brich ab, wenn du die Stelle schon besucht hast
+    if eigenePos in besuchteFelder:
+        return None
+
+    # Biege links und rechts ab
+    for richtung in senkrechte(letzteRichtung):
+        ergebnis = starteRutschen(Matrix, eigenePos, richtung)
+        selektierenBacktracking(Matrix, ergebnis[0], richtung, ergebnis[1] + besuchteFelder + [eigenePos])
+
+
+
+selektierteRaeume = []
+for Raum in formatierteRaeume:
+    if not startSelektierenBacktracking(Raum):
+        selektierteRaeume.append(Raum)
+
+
+for Raum in selektierteRaeume:
+    printMatrixRaum(Raum)
+print(len(selektierteRaeume))
+
+
 
 newline(2)
 print("Laufzeit:", str(time.process_time()), "s")
