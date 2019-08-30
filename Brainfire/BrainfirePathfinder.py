@@ -376,15 +376,15 @@ formatierteRaeume = []
 for Raum in alleRaeume:
     formatierteRaeume.append(raumFormatieren(Raum))
 
-#for Raum in formatierteRaeume:
-    #printMatrixRaum(Raum)
+for Raum in formatierteRaeume:
+    printMatrixRaum(Raum)
 
 
 
 
 # - Selektion - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-
+"""
 
 rutschFelder = []
 
@@ -480,7 +480,7 @@ for Raum in selektierteRaeume:
     printMatrixRaum(Raum)
 print(len(selektierteRaeume))
 
-
+"""
 
 newline(2)
 print("Laufzeit:", str(time.process_time()), "s")
