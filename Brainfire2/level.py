@@ -1,6 +1,7 @@
 import time
 import random
-import raum
+from Brainfire2 import raum
+
 
 class PSEUDOROOM:
     z = None
