@@ -71,7 +71,7 @@ class ROOM:  #Raum beinhaltet die Matrix, alle Eingänge, und ob diese miteinand
     def __init__(self):
         self.sx = 16
         self.sy = 16
-        self.random_tresh = 0.2
+        self.random_tresh = 0.18
         self.IO = all_doors
         self.connections = [[False for _ in range(len(self.IO))] for __ in range(len(self.IO))]
                                                                       #Setzt alle Werte dieser Matrix auf Falsch
@@ -226,21 +226,27 @@ def test():                  #Testablauf:
     l.printPaths()           #Pfade ausgeben
 
 
-def massProduction():
+def massProduction(ammount):
     pool = Pool(cpu_count())
-    time.clock()
-
-    rooms = pool.map(createRoom,range(1000))
-
-    print(time.clock())
+    return pool.map(createRoom,range(ammount))
 
 
-def massProduction_old():
-    time.clock()
+
+def massProduction_old(ammount):
     rooms = []
-    for i in range(1000):
+    for i in range(ammount):
         rooms.append(createRoom(i))
-    print(time.clock())
+
+
+def verteilung(ammount):
+    results = [0 for _ in range(13)]
+
+    rooms = massProduction(ammount)
+
+    for r in rooms:
+        results[r.conAmmount()] += 1
+
+    print(results)
 
 
 def createRoom(i):
@@ -252,5 +258,8 @@ def createRoom(i):
 
 
 if __name__ == '__main__':
+    tresh = 0
     freeze_support()
-    test()
+    time.clock()
+    verteilung(10000)
+    print(time.clock())
