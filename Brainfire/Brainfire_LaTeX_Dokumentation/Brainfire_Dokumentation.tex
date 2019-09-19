@@ -234,7 +234,58 @@
 								Matrix[stein[0]][stein[1]] = " "
 		\end{lstlisting}
 
+
+
+
+
+	\newpage
+	\section{Spray 'n' Pray}
 	
+		\subsection{Grundidee}
+		
+			Im Vordergrund steht die Entwicklung eines sehr effizienten Algorithmus, der in kürzester Zeit bestimmt, von welcher Tür welche andere Tür erreicht werden kann. Das restliche Verfahren wird in zwei Teilschritte unterteilt:
+			
+			\begin{itemize}
+				\item \textbf{Spray}: Es werden zufällig Steine auf dem Boden verteilt. Die Wahrscheinlichkeit, dass auf einer Fläche ein Stein liegt.
+				\item \textbf{Pray}: Berechne mit dem Algorithmus die existenten Pfade und hoffe, dass der Raum brauchbar ist.
+			\end{itemize}
+	
+			Auf diese Weise wird eine Riesenzahl \(N\) an Räumen erstellt und auf ihre Eigenschaften überprüft. Das daraus entstandene Repertoire an Räumen bildet die Auswahl für die Erstellung des Dungeons.
+
+
+		\subsection{Umsetzung}
+
+			Als Lösungsalgorithmus wird die Breitensuche verwendet, die über die Laufzeitkomplexität \(O(n^2)\) verfügt, wobei die Problemgröße \(n\) die Anzahl der Knoten in dem Suchbaum beschreibt. Da die Knoten durch die Felder des zu untersuchenden Raums bestimmt sind, hat der gesamte Lösungsalgorithmus eine Laufzeit von \( O( (a \cdot b)^2 ) \), wobei \(a,b\) die Seitenlängen des untersuchten Raums beschreiben. Bei einem quadratischen Raum der Seitenlänge \(n\) entspricht das Laufzeitverhalten also \( O(n^4) \). Im direkten Vergleich zum Backtracking-Algorithmus mit \( O(2^n) \) ist der Breitensuche-Algorithmus ein großer Erfolg.
+			
+			Mit Hilfe von Multiprocessing, ein Verfahren, das alle Computer-Kerne gleichzeitig belastet, lässt sich der Algorithmus zusätzlich um einen Linearfaktor beschleunigen.
+			
+		
+		\subsection{Wahl der Parameter}
+
+			Eine noch zu beantwortende Frage ist die Wahl des Parameters, der beschreibt, wie wahrscheinlich es ist, dass auf einem Feld ein Stein liegt: P(Stein). Mit Hilfe einer empirischen Untersuchung, die durch die folgende Tabelle festgehalten wurde, wird eine Antwort auf dieses Problem gegeben:
+			
+			\begin{figure}[h!]
+				\begin{center}
+					\includegraphics[width=0.75\textwidth]{pStein1.png}
+					\caption{Betrachtet wird ein 16x16-Feld. Die y-Achse beschreibt P(Stein), die x-Achse beschreibt die Anzahl der Tür-Tupel (A,B), für die gilt, dass von Tür A aus Tür B erreichbar ist.}
+				\end{center}
+			\end{figure}
+		
+		\newpage
+
+
+			Einen etwas detaillierteren Eindruck gibt die folgende Tabelle, die den Bereich  P(Stein) \( \in [12\%, 22\% ] \) betrachtet:
+			
+			\begin{figure}[h!]
+				\begin{center}
+					\includegraphics[width=0.75\textwidth]{pStein2.png}
+					\caption{Betrachtet wird ein 16x16-Feld. Die y-Achse beschreibt P(Stein), die x-Achse beschreibt die Anzahl der Tür-Tupel (A,B), für die gilt, dass von Tür A aus Tür B erreichbar ist.}
+				\end{center}
+			\end{figure}
+		
+			Auf Grund der Homogenität dieses kleineren Suchbereichs lassen sich keine signifikante Aussagen über die ideale Wahl des Parameters P(Stein) machen. Der Durchschnittswert \( 18 \% \) ist gut geeignet, um die Wahrscheinlichkeit der Sackgassen-Räume (\( x  = 0 \)) möglichst zu minimieren.
+
+
 	\newpage
 	\section{Gestaltung der Hintergrundmusik}
 	
