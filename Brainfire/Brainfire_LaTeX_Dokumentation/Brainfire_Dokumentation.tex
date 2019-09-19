@@ -7,7 +7,7 @@
 % Die nächsten drei Felder bitte anpassen:
 \newcommand{\Name}{BANDO} % Teamname oder eigenen Namen angeben
 % \newcommand{\TeamId}{}
-\newcommand{\Aufgabe}{Brainfire: \LaTeX-Dokumentation}
+\newcommand{\Aufgabe}{Brainfire: Dokumentation}
 
 % Kopf- und Fußzeilen
 \usepackage{scrlayer-scrpage}
@@ -110,129 +110,6 @@
 					\caption{Menge aller Lösungen in einem 2x3-Raum}
 				\end{center}
 			\end{figure}
-		
-		\subsection{Quellcodeausschnitt}
-		
-		Methode, die das Backtracken in Gang setzt.
-		
-		\begin{lstlisting}[language=Python]
-			alleRaeume = []
-			Richtungen = [ (1,0), (0,1), (-1,0), (0,-1) ]
-			
-			def startBacktracking(Matrix):
-			
-				# Globale Informationen
-				global alleRaeume
-				alleRaeume = []
-				backupKopieMatrix = deepcopy(Matrix)
-				
-				# Probiere in alle Richtungen
-				for richtung in Richtungen:
-				
-					neuePos = startPos
-					Matrix = deepcopy(backupKopieMatrix)
-					
-					while True:
-					
-						altePos = neuePos
-						
-						# Probiere einen Schritt nach vorne
-						neuePos = ( altePos[0] + richtung[0], altePos[1] + richtung[1] )
-						
-						# Wenn du gegen eine Wand stoesst
-						if not inRange(neuePos):
-							# Wenn diese Wand nicht gleich am Anfang ist, dann backtracke
-							if altePos != startPos:
-								backtracking(Matrix, altePos, richtung)
-								# Wir sind dann auch fertig fuer die Richtung
-								break
-						
-						# Lege einen Pfeil auf dem Boden in aktuelle Laufrichtung
-						Matrix[neuePos[0]][neuePos[1]] = pfeil(richtung)
-						
-						
-						# Versuche einen Stein vor die neue Position zu legen und starte Backtracking
-						stein = ( neuePos[0] + richtung[0], neuePos[1] + richtung[1] )
-						if inRange(stein):
-						
-							Matrix[ stein[0] ][ stein[1] ] = "O"
-							backtracking(Matrix, neuePos, richtung)
-							
-							# Nach erfolgreichem Steinelegen, nimm ihn wieder weg und lauf weiter in die Richtung
-							Matrix[ stein[0] ][ stein[1] ] = " "
-				
-				
-				for Raum in alleRaeume:
-				printMatrixRaum(Raum)
-				print(len(alleRaeume))
-		\end{lstlisting}
-		
-		Methode, die beim Backtracking rekursiv aufgerufen wird.
-		
-		\begin{lstlisting}[language=Python]
-			def backtracking(Matrix, eigenePos, letzteRichtung):
-			
-			# Globale Informationen
-			global alleRaeume
-			backupKopieMatrix = deepcopy(Matrix)
-			
-			# Sind wir schon am Ziel?
-			if eigenePos == endPos:
-				backupKopieMatrix[endPos[0]][endPos[1]] = "Z"
-				alleRaeume.append(backupKopieMatrix)
-			
-			else:
-				# lauf nur links oder rechts
-				Senkrechten = senkrechte(letzteRichtung)
-				for richtung in Senkrechten:
-					
-					neuePos = eigenePos
-					Matrix = deepcopy(backupKopieMatrix)
-					
-					while True:
-					
-						altePos = neuePos
-						
-						# Probiere einen Schritt nach vorne
-						neuePos = (altePos[0] + richtung[0], altePos[1] + richtung[1])
-						
-						# Ist da eine Wand?
-						if not inRange(neuePos):
-							# Wir koennen hier aufhoeren
-							break
-						
-						# Liegt da ein Stein?
-						elif Matrix[ neuePos[0] ][ neuePos[1] ] == "O":
-							# Wir koennen hier aufhoeren
-							break
-						
-						# Ist der Boden NICHT mit einem Pfeil markiert?
-						elif Matrix[ neuePos[0] ][ neuePos[1] ] == " ":
-						
-							# Markiere den Boden mit einem Pfeil
-							Matrix[neuePos[0]][neuePos[1]] = pfeil(richtung)
-							
-							# Potentielle Abbiegung gefunden!
-							stein = (neuePos[0] + richtung[0], neuePos[1] + richtung[1])
-							
-							# Ist dort, wo der Stein liegen sollte, schon eine Wand?
-							if not inRange(stein):
-								# Wenn Ja, dann kann man von der Wand aus abbiegen
-								backtracking(Matrix, neuePos, richtung)
-							
-							# Wenn Nein, liegt dort schon ein Stein?
-							elif Matrix[ stein[0] ][ stein[1] ] == "O":
-								# Wenn Ja, dann kann man von dem Stein aus abbiegen
-								backtracking(Matrix, neuePos, richtung)
-							
-							# Wenn Nein, ist die Flaeche frei fuer ein Stein?
-							elif Matrix[ stein[0] ][ stein[1] ] == " ":
-								# Platziere einen Stein und biege ab!
-								Matrix[stein[0]][stein[1]] = "O"
-								backtracking(Matrix, neuePos, richtung)
-								# Und lege ihn danach wieder weg
-								Matrix[stein[0]][stein[1]] = " "
-		\end{lstlisting}
 
 
 
@@ -246,7 +123,7 @@
 			Im Vordergrund steht die Entwicklung eines sehr effizienten Algorithmus, der in kürzester Zeit bestimmt, von welcher Tür welche andere Tür erreicht werden kann. Das restliche Verfahren wird in zwei Teilschritte unterteilt:
 			
 			\begin{itemize}
-				\item \textbf{Spray}: Es werden zufällig Steine auf dem Boden verteilt. Die Wahrscheinlichkeit, dass auf einer Fläche ein Stein liegt.
+				\item \textbf{Spray}: Es werden zufällig Steine auf dem Boden verteilt. Die Wahrscheinlichkeit, dass auf einer Fläche ein Stein liegt, wird im Folgenden bestimmt.
 				\item \textbf{Pray}: Berechne mit dem Algorithmus die existenten Pfade und hoffe, dass der Raum brauchbar ist.
 			\end{itemize}
 	
