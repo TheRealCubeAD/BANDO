@@ -1,6 +1,6 @@
 import time
 import random
-
+from multiprocessing import freeze_support, Pool, cpu_count
 
 #VORSICHT: Im gesamten Programm wird immer ERST Y DANN X angegeben, da damit leichter zu rechnen ist.
 
@@ -94,8 +94,8 @@ class ROOM:  #Raum beinhaltet die Matrix, alle Eingänge, und ob diese miteinand
 
 
     def addConn(self,start,end): #Fügt eine Verbindung hinzu. Wird von der Breitensuche aufgerufen
-        startIndex = self.IOindex(start.pos)
-        endIndex = self.IOindex(end.pos)
+        startIndex = self.IO.index(start.pos)
+        endIndex = self.IO.index(end.pos)
 
         if not self.connections[startIndex][endIndex]:  #Prüfen ob bereits eine Verbindung existiert
             self.connections[startIndex][endIndex] = True  #Verbindung hinzufügen
@@ -104,12 +104,6 @@ class ROOM:  #Raum beinhaltet die Matrix, alle Eingänge, und ob diese miteinand
 
         return False
 
-
-    def IOindex(self,pos):  #Sucht den Index eines Eingangs aus der IO-Liste raus
-        for i in range(len(self.IO)):
-            if pos == self.IO[i]:
-                return i
-        return None
 
     def get(self,pos):  #Gibt den Wert der übergebenen POS in der Matrix zurück
         if pos.y in range(self.sy) and pos.x in range(self.sx):
@@ -154,14 +148,17 @@ class ROOM:  #Raum beinhaltet die Matrix, alle Eingänge, und ob diese miteinand
                     print(row)
 
 
+    def conAmmount(self):
+        return sum([sum(i) for i in self.connections]) - len(self.IO)
+
+
+
 class TRACKER:  #Diese Klasse übernimmt die Breitensuche. (Letzendlich füllt sie nur die Verbindungs-Matrix in ROOM aus)
     room = None  #Der zu behandelnde Raum
-    matrix = None  #Kopie der Matrix des Raums, damit schneller darauf zugegriffen werden kann
 
 
     def __init__(self,nroom):  #Der zu behandelnde Raum wird übergeben
         self.room = nroom
-        self.matrix = self.room.matrix
 
 
     def startTracking(self):  #Ruft den tracker für jede Starposition in IO auf
@@ -179,9 +176,8 @@ class TRACKER:  #Diese Klasse übernimmt die Breitensuche. (Letzendlich füllt s
             if not curZst in visited:  #wenn der Zustand noch nicht besucht wurde
                 visited.append(curZst)  #als besucht makieren
                 if curZst.pos in self.room.IO:  #wenn die Position ein Ausgang ist
-                    finish = self.room.addConn(start,curZst)  #wird die entsprechende Verbindung hinzugefügt
-                    if finish:  #Abbruch wenn bereits alle Ausgänge gefunden wurden
-                        return
+                    if self.room.addConn(start,curZst):  #wird die entsprechende Verbindung hinzugefügt
+                        return #Abbruch wenn bereits alle Ausgänge gefunden wurden
                 #Füge alle von dieser Position zu erreichenden Positionen der Schlange hinzu
                 for dir in curZst.goToos:  #Für alle Richtungen die im Zustand angegeben sind
                     newPos = self.run(curZst.pos,dir)  #Neue Position berechnen
@@ -212,7 +208,7 @@ door_down = POS(15,8)
 door_right = POS(7,15)
 door_middle = POS(6,9)
 
-all_doors = [door_left,door_right,door_up,door_down,door_middle]
+all_doors = [door_left,door_right,door_up,door_down]
 
 
 def test():                  #Testablauf:
@@ -228,3 +224,33 @@ def test():                  #Testablauf:
     l.printConnections()     #Verbindungen ausgeben
     print()
     l.printPaths()           #Pfade ausgeben
+
+
+def massProduction():
+    pool = Pool(cpu_count())
+    time.clock()
+
+    rooms = pool.map(createRoom,range(1000))
+
+    print(time.clock())
+
+
+def massProduction_old():
+    time.clock()
+    rooms = []
+    for i in range(1000):
+        rooms.append(createRoom(i))
+    print(time.clock())
+
+
+def createRoom(i):
+    r = ROOM()
+    r.createMatrix()
+    t = TRACKER(r)
+    t.startTracking()
+    return r
+
+
+if __name__ == '__main__':
+    freeze_support()
+    test()
