@@ -163,6 +163,49 @@
 			Auf Grund der Homogenität dieses kleineren Suchbereichs lassen sich keine signifikante Aussagen über die ideale Wahl des Parameters P(Stein) machen. Der Durchschnittswert \( 18 \% \) ist gut geeignet, um die Wahrscheinlichkeit der Sackgassen-Räume (\( x  = 0 \)) möglichst zu minimieren.
 
 
+
+
+
+
+	\newpage
+	\section{Spray 'n' Pray: Dungeonlayout}
+	
+		\subsection{Grundidee}
+		
+			Aus den zuvor generierten und untersuchten Räumen wird eine zufällige Teilmenge gewählt und in einem Raster ausgelegt, sodass ein ganzer Dungeon entsteht. Als Ankerpunkte, die der Spieler der Reihe nach besucht, werden die Türen erachtet, die zwei aneinanderliegende Räume miteinander verbinden. Folgende Skizze veranschaulicht die Überlegung:
+			
+			\begin{figure}[h!]
+				\begin{center}
+					\includegraphics[width=0.5\textwidth]{tueren.png}
+					\caption{Dungeon-Layout mit Breite \(b\) und Höhe \(h\). Die Kreuze stellen Türen dar.}
+				\end{center}
+			\end{figure}
+			
+			Relevant ist vor allem die Tatsache, dass der Spieler durch eine Ungeschickte Auswahl an Bewegungsfolgen in eine Sackgasse innerhalb eines Raums gelangen kann. Eine Reset-Funktion, die den Spieler zu der zuletzt besuchten Tür bringt, ist notwendig.
+			
+			Um also Sackgassen innerhalb des gesamten Dungeons zu verhindern und Lösbarkeit zu garantieren, müssen zwei Eigenschaften erfüllt sein:
+			
+			\begin{itemize}
+				\item Die Starttür ist von jeder Tür aus erreichbar, die von der Starttür aus erreichbar ist. \\ (\textbf{"You Can Allways Go Home Again."})
+				\item Die Endtür ist von der Starttür aus erreichbar. \\ (\textbf{"You Can Reach The Goal From Where You Start."})
+			\end{itemize}
+			
+			Die Ausführung ist zuletzt analog wie im letzten Kapitel:
+			
+			\begin{itemize}
+				\item \textbf{Spray}: Es werden zufällig Räume in einem Dungeon-Raster verteilt.
+				\item \textbf{Pray}: Bestimme, ob die obigen Eigenschaften erfüllt sind.
+			\end{itemize}
+		
+		\subsection{Umsetzung}
+		
+			Eine mathematische Funktion mit konstanter Laufzeit \( O(1) \) ist notwendig, um zu bestimmen, welche Räume sich welche Türen teilen. Der gesamte Dungeon wird dafür in ein Koordinatensystem getaucht, wobei die Ecke oben links die Koordinate \( (0,0) \) und die Ecke unten rechts die Koordinate \( (b,h) \) hat.
+			
+			Ein Raum, der in der Dungeon-Matrix die Koordinaten \( (x,y) \) hat, hat in dem Koordinatensystem den Raummittelpunkt \( (2x+1,2y+1) \). Alle Türen haben ebenfalls eine eindeutige Koordinate, die durch die Raummittelpunkte leicht erreichbar sind.
+			
+			
+			
+
 	\newpage
 	\section{Gestaltung der Hintergrundmusik}
 	
