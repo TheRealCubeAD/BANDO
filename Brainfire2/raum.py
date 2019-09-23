@@ -78,7 +78,7 @@ class ROOM:  #Raum beinhaltet die Matrix, alle Eingänge, und ob diese miteinand
         self.paths = [[None for _ in range(len(self.IO))] for __ in range(len(self.IO))]
         # Setzt alle Werte dieser Matrix auf Falsch
 
-    def createMatrix(self):  #Generiert eine zufällige Map (den Schmarn kennst du ja)
+    def createMatrix(self):  #Generiert eine zufällige Map
         self.matrix = []
         for y in range(self.sy):
             cur = []
@@ -153,7 +153,7 @@ class ROOM:  #Raum beinhaltet die Matrix, alle Eingänge, und ob diese miteinand
 
 
 
-class TRACKER:  #Diese Klasse übernimmt die Breitensuche. (Letzendlich füllt sie nur die Verbindungs-Matrix in ROOM aus)
+class ROOM_SOLVER:#Diese Klasse übernimmt die Breitensuche. Letzendlich füllt sie nur die Verbindungs-Matrix in ROOM aus
     room = None  #Der zu behandelnde Raum
 
 
@@ -167,9 +167,9 @@ class TRACKER:  #Diese Klasse übernimmt die Breitensuche. (Letzendlich füllt s
             self.track(z)
 
 
-    def track(self,start):  #Breitensuche !nicht rekursiv!
+    def track(self,start):  #Breitensuche
         visited = []  #Besuchte Positionen
-        snake = [start]  #Warteschlange (snake lol) der zu bearbeitenden Zustände
+        snake = [start]  #Warteschlange der zu bearbeitenden Zustände
         while snake:  #Solange die Warteschlange nicht leer ist
             curZst = snake[0]  #Nimmt den ersten Zustand der Schlange
             del (snake[0])     #und löscht ihn aus der Schlange
@@ -215,7 +215,7 @@ def test():                  #Testablauf:
     l = ROOM()               #Raum initialisieren
     l.createMatrix()         #Raum generieren
     l.printMatrix()          #Raum ausgeben
-    t = TRACKER(l)           #Breitensuche initialisieren
+    t = ROOM_SOLVER(l)       #Breitensuche initialisieren
     time.clock()             #Uhr starten
     t.startTracking()        #Breitensuche starten
     print()
@@ -228,7 +228,9 @@ def test():                  #Testablauf:
 
 def massProduction(ammount):
     pool = Pool(cpu_count())
-    return pool.map(createRoom,range(ammount))
+    res = pool.map(createRoom,range(ammount))
+    print(len(res))
+    return res
 
 
 
@@ -252,7 +254,7 @@ def verteilung(ammount):
 def createRoom(i):
     r = ROOM()
     r.createMatrix()
-    t = TRACKER(r)
+    t = ROOM_SOLVER(r)
     t.startTracking()
     return r
 
