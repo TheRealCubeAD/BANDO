@@ -5,8 +5,6 @@ from multiprocessing import freeze_support, Pool, cpu_count
 #VORSICHT: Im gesamten Programm wird immer ERST Y DANN X angegeben, da damit leichter zu rechnen ist.
 
 class POS:  #Speicher y,x ein einem Objekt. Kann leicht für mehrere Dimensionen ausgebaut werden.
-    y = None
-    x = None
 
     def __init__(self,ny,nx):
         self.y = ny
@@ -23,12 +21,6 @@ class POS:  #Speicher y,x ein einem Objekt. Kann leicht für mehrere Dimensionen
 
 
 class ZUSTAND:  #Hilfsstruktur für die Breitensuche. Könnte für die Benutzung von Items erweitert werden
-    pos = None  #Position POS des Zustands
-
-    depht = None  #Tiefe des Zustands in der Breitensuche
-    mother = None  #Vorgänger-Zustand
-
-    goToos = None  #Richtungen, die von diesem Zustand aus probiert werden sollen
 
     def __init__(self,npos,nmother,ngoToos):
         self.pos = npos
@@ -55,18 +47,6 @@ class ZUSTAND:  #Hilfsstruktur für die Breitensuche. Könnte für die Benutzung
 
 
 class ROOM:  #Raum beinhaltet die Matrix, alle Eingänge, und ob diese miteinander verbunden sind
-    matrix = None  #2-Dimensionale Map  0 -> Eis   1 -> Fels
-    IO = None  #Liste aller Ein/Ausgänge. Diese werden als POS gespeichert
-    connections = None  #Boolean-Matrix die angibt, welche Eingänge verbunden sind.
-                    #Der Index eines Eingangs in dieser Matrix in y und x Richtung ist gleich dem Index in der IO-Liste
-                    #Diese Matrix ist nicht vorgegeben sondern wird später generiert
-
-    paths = None
-
-    sy = None  #Grösse der Map in y
-    sx = None  #Grösse der Map in x
-
-    random_tresh = None  #Wahrscheinlichkeit für einen Felsen bei der Generierung der Map
 
     def __init__(self):
         self.sx = 16
@@ -154,8 +134,6 @@ class ROOM:  #Raum beinhaltet die Matrix, alle Eingänge, und ob diese miteinand
 
 
 class ROOM_SOLVER:#Diese Klasse übernimmt die Breitensuche. Letzendlich füllt sie nur die Verbindungs-Matrix in ROOM aus
-    room = None  #Der zu behandelnde Raum
-
 
     def __init__(self,nroom):  #Der zu behandelnde Raum wird übergeben
         self.room = nroom
@@ -264,5 +242,5 @@ if __name__ == '__main__':
     tresh = 0
     freeze_support()
     time.clock()
-    massProduction_old(10000)
+    massProduction_old(1000)
     print(time.clock())
