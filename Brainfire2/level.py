@@ -1,7 +1,8 @@
 import random
 import time
 import raum
-
+import weakref
+import copy
 
 class DOOR:  #Hilfsklasse für die Breitensuche
     y = None
@@ -16,13 +17,22 @@ class DOOR:  #Hilfsklasse für die Breitensuche
     def __init__(self,ny,nx):
         self.y = ny
         self.x = nx
+        p(self.successors)
 
+    def __del__(self):
+        print("Door is deleted")
 
     def append_suc(self, neighbour):  #neuen nachfolger anfügen
-        self.successors.append(neighbour)
+        if self.successors != None:
+            self.successors.append(neighbour)
 
     def append_pre(self,predecessor):  #neuen vorgänger anfügen
-        self.predecessors.append(predecessor)
+        if self.predecessors != None:
+            self.predecessors.append(predecessor)
+
+    def destroy(self):
+        self.successors = None
+        self.predecessors = None
 
 
 
@@ -33,14 +43,18 @@ class LEVEL:
     matrix = None  #Matrix aus Räumen
 
     def __init__(self,nsy=6,nsx=6):
+        p("Initializing Level")
         self.sy = nsy
         self.sx = nsx
 
-        rooms = raum.massProduction(self.sy*self.sx)  #Fordere sy*sx räume aus raum.py an
+        p(" getting rooms")
+        rooms = raum.massProduction_old(self.sy*self.sx)  #Fordere sy*sx räume aus raum.py an
 
         self.matrix = [rooms[i:i + self.sx] for i in range(0,len(rooms),self.sx)]  #Konvertiere die Liste in eine Matrix
+        p("done")
 
-
+    def __del__(self):
+        print("Level is deleted")
 
 class LEVEL_SOLVER:  #Prüft ob ein Level brauchbar ist:
                 # - Der Endpunkt muss vom Startpunkt aus erreichbar sein
@@ -50,16 +64,34 @@ class LEVEL_SOLVER:  #Prüft ob ein Level brauchbar ist:
     sy = None  #Grösse in y
     sx = None  #Grösse in x
 
+    i = None
+
     doors = []  #Liste aller Türen
 
     def __init__(self,nlevel):
+        p("initializing Solver")
+        self.doors = []
+        p(self.doors)
         self.level = nlevel
         self.sy = self.level.sy
         self.sx = self.level.sx
+        #self.i = i
+
         for i in range(2*self.sx*self.sy-self.sx-self.sy):  #Erstelle alle benötigten Türen mit den entsprechenden y,x
+            p("creating door")
             y, x = self.hash_pos(i)
             self.doors.append(DOOR(y, x))
+        p("done")
 
+
+    def __del__(self):
+        print("Level solver is deleted")
+
+    def terminate(self):
+        for door in self.doors:
+            door.destroy()
+        for door in self.doors:
+            del(door)
 
     def hash_index(self,y,x):  #Nimmt eine Position. Gibt den Index in doors der entsprechenden Tür zurück
         if not y % 2:
@@ -86,6 +118,7 @@ class LEVEL_SOLVER:  #Prüft ob ein Level brauchbar ist:
 
 
     def build_graph(self):  #Füllt die Adjazenzmatrizen der Türen aus
+        p("building graph")
         for y in range(len(self.level.matrix)):
             for x in range(len(self.level.matrix[y])):
                 room = self.level.matrix[y][x]  #Durchlaufe jeden Raum
@@ -110,26 +143,35 @@ class LEVEL_SOLVER:  #Prüft ob ein Level brauchbar ist:
                             if room.connections[room.IO.index(d2[2])][room.IO.index(d1[2])]:
                                 self.doors[self.hash_index(d1[0],d1[1])].append_pre(
                                     self.doors[self.hash_index(d2[0],d2[1])])
+        p("graph done")
 
 
     def forward_check(self):  #Durchlaufe den Graph in einer Breitensuche und:
                                 # - Makiere alle Knoten die vom Start aus erreichbar sind
                                 # - Prüfe, ob das Ende vom Start aus erreichbar ist
+        p("checking foward")
+        p(self.i)
         visited = []
         snake = [self.doors[0]]
+
+
+        print(snake)
 
         got_to_end = False
 
         while snake:
             item = snake[0]
             del(snake[0])
+            print(item)
             if not item in visited:
                 visited.append(item)
                 item.reachable = True
                 if item == self.doors[-1]:
                     got_to_end = True
+                p(snake)
+                p(item.successors)
                 snake += item.successors
-
+        p("forward done")
         return got_to_end
 
 
@@ -137,6 +179,7 @@ class LEVEL_SOLVER:  #Prüft ob ein Level brauchbar ist:
                                 # - Makiere alle Knoten von denen aus der Startpunkt erreichbar ist
                                 # - Prüfe dann, ob von allen Knoten aus, die vom Startpunkt aus erreichbar sind,
                                 #   der Startpunkt erreichbar ist
+        p("checking retreat")
         visited = []
         snake = [self.doors[0]]
 
@@ -151,8 +194,9 @@ class LEVEL_SOLVER:  #Prüft ob ein Level brauchbar ist:
         for door in self.doors:
             if door.reachable:
                 if not door.retreatable:
+                    p("retreat wrong")
                     return False
-
+        p("retreat right")
         return True
 
 
@@ -172,13 +216,39 @@ class LEVEL_SOLVER:  #Prüft ob ein Level brauchbar ist:
             print("Retreat does not work")
             return False
 
+debug = False
+def p(statement):
+    if debug:
+        print(statement)
 
+def generate_level():
+    l = LEVEL(nsy=4, nsx=4)
+    s = LEVEL_SOLVER(l)
+    res = s.solve_room()
+    if res:
+        res_l = copy.deepcopy(l)
+    else:
+        res_l = False
+    s.terminate()
+    del(s)
+    del(l)
+    return res_l
 
 if __name__ == '__main__':
+    debug = True
     time.clock()
     while 1:
-        l = LEVEL(nsy=6, nsx=6)
+        l = None
+        s = None
+        l = LEVEL(nsy=4, nsx=4)
         s = LEVEL_SOLVER(l)
         if s.solve_room():
             print(time.clock())
             exit()
+        s.terminate()
+        del(l)
+        del(s)
+        print()
+        time.sleep(2)
+        print("retry")
+        print()

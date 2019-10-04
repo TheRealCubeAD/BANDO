@@ -238,6 +238,7 @@ def massProduction_old(ammount):
     rooms = []
     for i in range(ammount):
         rooms.append(createRoom(i))
+    return rooms
 
 
 def verteilung(ammount):
@@ -263,5 +264,5 @@ if __name__ == '__main__':
     tresh = 0
     freeze_support()
     time.clock()
-    verteilung(10000)
+    massProduction_old(10000)
     print(time.clock())
