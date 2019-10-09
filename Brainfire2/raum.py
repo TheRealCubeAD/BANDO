@@ -49,8 +49,10 @@ class ZUSTAND:  #Hilfsstruktur für die Breitensuche. Könnte für die Benutzung
 class ROOM:  #Raum beinhaltet die Matrix, alle Eingänge, und ob diese miteinander verbunden sind
 
     def __init__(self):
-        self.sx = 16
+        self.y = None
+        self.x = None
         self.sy = 16
+        self.sx = 16
         self.random_tresh = 0.18
         self.IO = all_doors
         self.connections = [[False for _ in range(len(self.IO))] for __ in range(len(self.IO))]
@@ -207,7 +209,6 @@ def test():                  #Testablauf:
 def massProduction(ammount):
     pool = Pool(cpu_count())
     res = pool.map(createRoom,range(ammount))
-    print(len(res))
     return res
 
 
