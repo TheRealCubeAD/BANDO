@@ -9,7 +9,7 @@ class LED:
     p = None #GPIO pin fuer din
     NP = None #NeoPixel-Control
 
-    def __init__(self,aLEDs = 90,GPIO = 5):
+    def __init__(self,aLEDs = 90,GPIO = 4):
         self.n = aLEDs
         self.p = GPIO
 
