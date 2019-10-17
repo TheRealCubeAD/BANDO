@@ -21,12 +21,12 @@ class template:
 
 class LEVEL:
 
-    def __init__(self,nsy=8,nsx=8):
+    def __init__(self,nsy=6,nsx=6):
         self.sy = nsy
         self.sx = nsx
         self.matrix = [[None for _ in range(self.sx)] for __ in range(self.sy)]
         self.startPos = POS(0,0)
-        self.endPos = None
+        self.endPos = POS(random.randint(int(nsy/2),nsy),random.randint(int(nsx/2),nsx))
         self.pathLenght = None
 
 
@@ -42,6 +42,8 @@ class LEVEL_SOLVER:
             self.tpl_mtx.append(row)
 
         self.storage = [[],[],[],[]]
+        self.path = None
+
 
 
     def solve(self):
@@ -123,12 +125,45 @@ class LEVEL_SOLVER:
                     break
 
 
+    def determine_path(self):
+        return self.make_path([],self.level.startPos)
+
+
+    def make_path(self,path,pos):
+        if pos.y not in range(self.level.sy) or pos.x not in range(self.level.sx):
+            return None
+        if pos in path:
+            return None
+
+        path.append(pos)
+        if pos == self.level.endPos:
+            return path
+
+        if len(path) > int((self.level.sy + self.level.sx)*1.5):
+            return None
+
+
+        cur_dirs = copy.deepcopy(dirs)
+        random.shuffle(cur_dirs)
+
+        for dir in cur_dirs:
+            res = self.make_path(copy.deepcopy(path),pos + dir)
+            if res:
+                return res
+        return None
+
+
 dirs = [POS(0,-1),POS(0,1),POS(-1,0),POS(1,0)]
 
+
+def create_level():
+    l = LEVEL()
+    s = LEVEL_SOLVER(l)
+    s.solve()
+    print("p")
+    s.path = s.determine_path()
+    print(len(s.path))
+
+
 if __name__ == '__main__':
-    time.clock()
-    L = LEVEL()
-    S = LEVEL_SOLVER(L)
-    S.solve()
-    print(time.clock())
-    pprint.pprint(L.matrix)
+    create_level()
