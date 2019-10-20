@@ -5,8 +5,6 @@ from multiprocessing import freeze_support, Pool, cpu_count
 #VORSICHT: Im gesamten Programm wird immer ERST Y DANN X angegeben, da damit leichter zu rechnen ist.
 
 class POS:  #Speicher y,x ein einem Objekt. Kann leicht für mehrere Dimensionen ausgebaut werden.
-    y = None
-    x = None
 
     def __init__(self,ny,nx):
         self.y = ny
@@ -23,12 +21,6 @@ class POS:  #Speicher y,x ein einem Objekt. Kann leicht für mehrere Dimensionen
 
 
 class ZUSTAND:  #Hilfsstruktur für die Breitensuche. Könnte für die Benutzung von Items erweitert werden
-    pos = None  #Position POS des Zustands
-
-    depht = None  #Tiefe des Zustands in der Breitensuche
-    mother = None  #Vorgänger-Zustand
-
-    goToos = None  #Richtungen, die von diesem Zustand aus probiert werden sollen
 
     def __init__(self,npos,nmother,ngoToos):
         self.pos = npos
@@ -55,22 +47,12 @@ class ZUSTAND:  #Hilfsstruktur für die Breitensuche. Könnte für die Benutzung
 
 
 class ROOM:  #Raum beinhaltet die Matrix, alle Eingänge, und ob diese miteinander verbunden sind
-    matrix = None  #2-Dimensionale Map  0 -> Eis   1 -> Fels
-    IO = None  #Liste aller Ein/Ausgänge. Diese werden als POS gespeichert
-    connections = None  #Boolean-Matrix die angibt, welche Eingänge verbunden sind.
-                    #Der Index eines Eingangs in dieser Matrix in y und x Richtung ist gleich dem Index in der IO-Liste
-                    #Diese Matrix ist nicht vorgegeben sondern wird später generiert
-
-    paths = None
-
-    sy = None  #Grösse der Map in y
-    sx = None  #Grösse der Map in x
-
-    random_tresh = None  #Wahrscheinlichkeit für einen Felsen bei der Generierung der Map
 
     def __init__(self):
-        self.sx = 16
+        self.y = None
+        self.x = None
         self.sy = 16
+        self.sx = 16
         self.random_tresh = 0.18
         self.IO = all_doors
         self.connections = [[False for _ in range(len(self.IO))] for __ in range(len(self.IO))]
@@ -78,7 +60,7 @@ class ROOM:  #Raum beinhaltet die Matrix, alle Eingänge, und ob diese miteinand
         self.paths = [[None for _ in range(len(self.IO))] for __ in range(len(self.IO))]
         # Setzt alle Werte dieser Matrix auf Falsch
 
-    def createMatrix(self):  #Generiert eine zufällige Map (den Schmarn kennst du ja)
+    def createMatrix(self):  #Generiert eine zufällige Map
         self.matrix = []
         for y in range(self.sy):
             cur = []
@@ -153,9 +135,7 @@ class ROOM:  #Raum beinhaltet die Matrix, alle Eingänge, und ob diese miteinand
 
 
 
-class TRACKER:  #Diese Klasse übernimmt die Breitensuche. (Letzendlich füllt sie nur die Verbindungs-Matrix in ROOM aus)
-    room = None  #Der zu behandelnde Raum
-
+class ROOM_SOLVER:#Diese Klasse übernimmt die Breitensuche. Letzendlich füllt sie nur die Verbindungs-Matrix in ROOM aus
 
     def __init__(self,nroom):  #Der zu behandelnde Raum wird übergeben
         self.room = nroom
@@ -167,9 +147,9 @@ class TRACKER:  #Diese Klasse übernimmt die Breitensuche. (Letzendlich füllt s
             self.track(z)
 
 
-    def track(self,start):  #Breitensuche !nicht rekursiv!
+    def track(self,start):  #Breitensuche
         visited = []  #Besuchte Positionen
-        snake = [start]  #Warteschlange (snake lol) der zu bearbeitenden Zustände
+        snake = [start]  #Warteschlange der zu bearbeitenden Zustände
         while snake:  #Solange die Warteschlange nicht leer ist
             curZst = snake[0]  #Nimmt den ersten Zustand der Schlange
             del (snake[0])     #und löscht ihn aus der Schlange
@@ -215,7 +195,7 @@ def test():                  #Testablauf:
     l = ROOM()               #Raum initialisieren
     l.createMatrix()         #Raum generieren
     l.printMatrix()          #Raum ausgeben
-    t = TRACKER(l)           #Breitensuche initialisieren
+    t = ROOM_SOLVER(l)       #Breitensuche initialisieren
     time.clock()             #Uhr starten
     t.startTracking()        #Breitensuche starten
     print()
@@ -228,7 +208,8 @@ def test():                  #Testablauf:
 
 def massProduction(ammount):
     pool = Pool(cpu_count())
-    return pool.map(createRoom,range(ammount))
+    res = pool.map(createRoom,range(ammount))
+    return res
 
 
 
@@ -236,6 +217,7 @@ def massProduction_old(ammount):
     rooms = []
     for i in range(ammount):
         rooms.append(createRoom(i))
+    return rooms
 
 
 def verteilung(ammount):
@@ -252,7 +234,7 @@ def verteilung(ammount):
 def createRoom(i):
     r = ROOM()
     r.createMatrix()
-    t = TRACKER(r)
+    t = ROOM_SOLVER(r)
     t.startTracking()
     return r
 
@@ -261,5 +243,5 @@ if __name__ == '__main__':
     tresh = 0
     freeze_support()
     time.clock()
-    verteilung(10000)
+    massProduction_old(1000)
     print(time.clock())
