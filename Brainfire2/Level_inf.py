@@ -12,21 +12,33 @@ class template:
         self.y = ny
         self.x = nx
         self.infected = False
+        self.conns = [[False for _ in range(4)]for __ in range(4)]
 
     def __eq__(self, other):
         return self.y == other.y and self.x == other.x
+
+    def add_conn(self,start,end):
+        self.conns[dirs.index(start)][dirs.index(end)]
+
+    def check(self,room):
+        for y in range(4):
+            for x in range(4):
+                if self.conns[y][x]:
+                    if not room.connections[y][x]:
+                        return False
+        return True
 
 
 
 
 class LEVEL:
 
-    def __init__(self,nsy=6,nsx=6):
+    def __init__(self,nsy=8,nsx=8):
         self.sy = nsy
         self.sx = nsx
         self.matrix = [[None for _ in range(self.sx)] for __ in range(self.sy)]
         self.startPos = POS(0,0)
-        self.endPos = POS(random.randint(int(nsy/2),nsy),random.randint(int(nsx/2),nsx))
+        self.endPos = POS(nsy-1,nsx-1)
         self.pathLenght = None
 
 
@@ -43,6 +55,7 @@ class LEVEL_SOLVER:
 
         self.storage = [[],[],[],[]]
         self.path = None
+        self.count = 0
 
 
 
@@ -62,7 +75,7 @@ class LEVEL_SOLVER:
             snake.remove(R)
             P = self.get_rand_inf_neighbour(R)
             diff = POS(P.y-R.y,P.x-R.x)
-            self.place_room(R,diff)
+            self.place_conns(R, diff)
             R.infected = True
             not_infected.remove(R)
             snake += self.get_neighbours(R,snake)
@@ -99,37 +112,22 @@ class LEVEL_SOLVER:
         return random.choice(res)
 
 
-
-    def place_room(self,tpl,dir):
+    def place_conns(self, tpl, dir):
         dir_index = dirs.index(dir)
-        while not self.storage[dir_index]:
-            self.call_rooms()
-        room = self.storage[dir_index][0]
-        del(self.storage[dir_index][0])
-        self.level.matrix[tpl.y][tpl.x] = room
-
-
-    def check_room(self,room,dir_index):
-        for row in room.connections:
-            if not row[dir_index]:
-                return False
-
-        return True
-
-    def call_rooms(self):
-        rooms = raum.massProduction(100)
-        for room in rooms:
-            for i in range(4):
-                if self.check_room(room,i):
-                    self.storage[i].append(room)
-                    break
+        for i in range(4):
+            tpl.conns[i][dir_index] = True
 
 
     def determine_path(self):
+        self.count = 0
         return self.make_path([],self.level.startPos)
 
 
     def make_path(self,path,pos):
+        self.count += 1
+        if self.count > 1000:
+            return
+        print(self.count)
         if pos.y not in range(self.level.sy) or pos.x not in range(self.level.sx):
             return None
         if pos in path:
@@ -140,17 +138,42 @@ class LEVEL_SOLVER:
             return path
 
         if len(path) > int((self.level.sy + self.level.sx)*1.5):
-            return None
-
+            #return None
+            pass
 
         cur_dirs = copy.deepcopy(dirs)
         random.shuffle(cur_dirs)
 
         for dir in cur_dirs:
-            res = self.make_path(copy.deepcopy(path),pos + dir)
+            res = self.make_path(copy.deepcopy(path), pos + dir)
             if res:
                 return res
         return None
+
+    def place_rooms(self):
+        snake = []
+        for row in self.tpl_mtx:
+            snake += row
+
+        while snake:
+            rooms = raum.massProduction(1000)
+            for room in rooms:
+                for tpl in snake:
+                    if tpl.check(room):
+                        self.level.matrix[tpl.y][tpl.x] = room
+                        snake.remove(tpl)
+
+
+    def place_path(self):
+        last_dif = POS(1,0)
+        for i in range(len(self.path)-1):
+            cur_pos = self.path[i]
+            next_pos = self.path[i+1]
+            cur_tpl = self.tpl_mtx[cur_pos.y][cur_pos.x]
+            dif = next_pos - cur_pos
+            cur_tpl.add_conn(last_dif,dif)
+            last_dif = dif.invert()
+
 
 
 dirs = [POS(0,-1),POS(0,1),POS(-1,0),POS(1,0)]
@@ -161,8 +184,11 @@ def create_level():
     s = LEVEL_SOLVER(l)
     s.solve()
     print("p")
-    s.path = s.determine_path()
+    while not s.path:
+        s.path = s.determine_path()
     print(len(s.path))
+    s.place_path()
+    s.place_rooms()
 
 
 if __name__ == '__main__':

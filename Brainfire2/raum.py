@@ -16,6 +16,12 @@ class POS:  #Speicher y,x ein einem Objekt. Kann leicht für mehrere Dimensionen
     def __add__(self, other):  #Nimmt eine andere POS und addiert die Koordinaten. Gibt eine neue POS zurück
         return POS(self.y + other.y, self.x + other.x)
 
+    def __sub__(self, other):
+        return POS(self.y - other.y, self.x - other.x)
+
+    def invert(self):
+        return POS(-self.y, -self.x)
+
     def inText(self):  #Gibt einen String der Form (y/x) zurück (für Ausgabemethoden)
         return "("+str(self.y)+"/"+str(self.x)+")"
 
