@@ -150,6 +150,40 @@ class LEVEL_SOLVER:
                 return res
         return None
 
+
+    def make_path2(self):
+        worm = [self.level.startPos]
+
+        while self.level.endPos not in worm:
+            A = worm[-1]
+            N = [A + dir for dir in dirs if A + dir not in worm and
+                 self.in_boarder(A+dir) and self.witdh_search(A+dir,worm)]
+            worm.append(random.choice(N))
+
+        return worm
+
+
+
+    def witdh_search(self,start,nogos):
+        visited = []
+        snake = [start]
+
+        while snake:
+            item = snake[0]
+            del(snake[0])
+            if item == self.level.endPos:
+                return True
+            visited.append(item)
+            snake += [item + dir for dir in dirs if item + dir not in nogos
+                      and item + dir not in visited and item + dir not in snake and self.in_boarder(item + dir)]
+
+        return False
+
+
+    def in_boarder(self,pos):
+        return pos.y in range(self.level.sy) and pos.x in range(self.level.sx)
+
+
     def place_rooms(self):
         snake = []
         for row in self.tpl_mtx:
@@ -180,16 +214,27 @@ dirs = [POS(0,-1),POS(0,1),POS(-1,0),POS(1,0)]
 
 
 def create_level():
+    t = time.time()
+    dprint("Initializing...")
     l = LEVEL()
     s = LEVEL_SOLVER(l)
+    dprint("Making Level retreatable...")
     s.solve()
-    print("p")
-    while not s.path:
-        s.path = s.determine_path()
-    print(len(s.path))
+    dprint("Creating Path to end...")
+    s.path = s.make_path2()
+    print("Length of path:",len(s.path))
     s.place_path()
+    print("Placing Rooms...")
     s.place_rooms()
+    print("Done!")
+    print()
+    print("Took:",time.time() - t)
 
 
+def dprint(cont):
+    if debug:
+        print(cont)
+debug = False
 if __name__ == '__main__':
+    debug = True
     create_level()
