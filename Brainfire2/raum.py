@@ -1,6 +1,7 @@
 import time
 import random
 from multiprocessing import freeze_support, Pool, cpu_count
+import copy
 
 #VORSICHT: Im gesamten Programm wird immer ERST Y DANN X angegeben, da damit leichter zu rechnen ist.
 
@@ -65,6 +66,8 @@ class ROOM:  #Raum beinhaltet die Matrix, alle Eingänge, und ob diese miteinand
                                                                       #Setzt alle Werte dieser Matrix auf Falsch
         self.paths = [[None for _ in range(len(self.IO))] for __ in range(len(self.IO))]
         # Setzt alle Werte dieser Matrix auf Falsch
+
+        self.dead_points = []  #Liste aller Knoten
 
     def createMatrix(self):  #Generiert eine zufällige Map
         self.matrix = []
@@ -138,6 +141,51 @@ class ROOM:  #Raum beinhaltet die Matrix, alle Eingänge, und ob diese miteinand
 
     def conAmmount(self):
         return sum([sum(i) for i in self.connections]) - len(self.IO)
+
+
+    def calc_dead_ends(self):
+        k_all = []
+        for y in range(self.sy):
+            for x in range(self.sx):
+                k_all.append(POS(y,x))
+
+        not_dead = self.get_not_dead()
+        dead = [i for i in k_all if i not in not_dead]
+        self.dead_points = dead
+
+
+
+    def get_not_dead(self):
+        dirs = [up,down,left,right]
+        retreatable = copy.deepcopy(self.IO)
+        for y in range(self.sy):
+            for x in range(self.sx):
+                p = POS(y,x)
+                snake = [p]
+                visited = []
+                while snake:
+                    item = snake[0]
+                    del(snake[0])
+                    visited.append(item)
+                    if item in retreatable:
+                        retreatable.append(p)
+                        break
+                    for dir in dirs:
+                        new = self.run(item,dir)
+                        if new not in snake and new not in visited:
+                            snake.append(new)
+        return retreatable
+
+
+    def run(self, pos, direction):  # Berechnet rekursiv welche Position
+        # (abhänig von Startposition und Richtung) erreicht wird
+        nextPos = pos + direction  # direction ist auch eine POS (hier als Vektor zu sehen)
+        value = self.get(nextPos)  # Findet raus welchen Wert die nächste Position hätte
+        if value == 1 or value == None:  # Wenn Stein oder Wand
+            return pos  # Position davor rekursiv zurückgeben
+        else:
+            return self.run(nextPos, direction)  # weiterlaufen
+
 
 
 
@@ -246,8 +294,5 @@ def createRoom(i):
 
 
 if __name__ == '__main__':
-    tresh = 0
-    freeze_support()
-    time.clock()
-    massProduction_old(1000)
-    print(time.clock())
+    r = createRoom(0)
+    r.calc_dead_ends()

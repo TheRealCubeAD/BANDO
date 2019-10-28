@@ -209,6 +209,12 @@ class LEVEL_SOLVER:
             last_dif = dif.invert()
 
 
+    def prepare_rooms(self):
+        for row in self.level.matrix:
+            for room in row:
+                room.calc_dead_ends()
+
+
 
 dirs = [POS(0,-1),POS(0,1),POS(-1,0),POS(1,0)]
 
@@ -222,13 +228,15 @@ def create_level():
     s.solve()
     dprint("Creating Path to end...")
     s.path = s.make_path2()
-    print("Length of path:",len(s.path))
+    dprint("Length of path: "+str(len(s.path)))
     s.place_path()
-    print("Placing Rooms...")
+    dprint("Placing Rooms...")
     s.place_rooms()
-    print("Done!")
-    print()
-    print("Took:",time.time() - t)
+    dprint("Preparing Rooms...")
+    s.prepare_rooms()
+    dprint("Done!")
+    dprint("")
+    dprint("Took: "+str(time.time() - t))
 
 
 def dprint(cont):
