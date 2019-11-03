@@ -1,15 +1,15 @@
+
+# - Importware - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
 from sys import exit # Methode für Terminierung
 from pygame.color import THECOLORS # Importiert Liste von Farben
 import pygame # Engine
 pygame.init() # Zündschlüssel
 
-# Setze Fenstergröße fest
-width = 640
-height = 480
-size = (width,height)
 
-# Erstelle Fenster
-screen = pygame.display.set_mode(size)
+
+# - Hilfsmethoden - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
 def color(strColor):
@@ -36,15 +36,15 @@ def setCaption(strCaption):
     pygame.display.set_caption(strCaption)
 
 
-def fill(strColor):
+def fill(surface,strColor):
     """
     Färbt den gesamten Bildschirm in der entsprechenden Farbe ein.
     :param strColor: Farbe der neuen Bildschirmfläche
     """
-    screen.fill(color(strColor))
+    surface.fill(color(strColor))
 
 
-def drawCircle(strColor,pos,radius,lineWidth=0):
+def drawCircle(surface,strColor,pos,radius,lineWidth=0):
     """
     Zeichnet den beschriebenen Kreis auf dem Bildschirm
     :param strColor: Farbe des Kreises als str
@@ -52,10 +52,10 @@ def drawCircle(strColor,pos,radius,lineWidth=0):
     :param radius: Radius des Kreises als int
     :param lineWidth: Linienstärke des Kreises als int
     """
-    pygame.draw.circle(screen,color(strColor),pos,radius,lineWidth)
+    pygame.draw.circle(surface,color(strColor),pos,radius,lineWidth)
 
 
-def drawRectangle(strColor,pos,width,height,lineWidth=0):
+def drawRectangle(surface,strColor,pos,width,height,lineWidth=0):
     """
     Zeichnet das beschriebene Rechteck auf dem Bildschirm
     :param strColor: Farbe des Rechtecks als str
@@ -65,10 +65,10 @@ def drawRectangle(strColor,pos,width,height,lineWidth=0):
     :param lineWidth: Linienstärke des Rechtecks als int
     """
     rect = pygame.Rect(pos[0],pos[1],width,height) # Erstellt das Rechteck
-    pygame.draw.rect(screen,color(strColor),rect,lineWidth)
+    pygame.draw.rect(surface,color(strColor),rect,lineWidth)
 
 
-def drawSquare(strColor,pos,width,lineWidth=0):
+def drawSquare(surface,strColor,pos,width,lineWidth=0):
     """
     Zeichnet das beschriebene Quadrat auf dem Bildschirm
     :param strColor: Farbe des Quadrats als str
@@ -76,19 +76,19 @@ def drawSquare(strColor,pos,width,lineWidth=0):
     :param width: Breite des Quadrats als int
     :param lineWidth: Linienstärke des Quadrats als int
     """
-    drawRectangle(strColor,pos,width,width,lineWidth)
+    drawRectangle(surface,strColor,pos,width,width,lineWidth)
 
 
-def drawPixel(strColor,pos):
+def drawPixel(surface,strColor,pos):
     """
     Färbt den beschriebenen Pixel entsprechend ein.
     :param strColor: Farbe des Pixels als str
     :param pos: Position des Pixels als (x,y) int-Tupel
     """
-    drawSquare(strColor,pos,1)
+    drawSquare(surface,strColor,pos,1)
 
 
-def drawLines(strColor,closed,pointlist,lineWidth=1):
+def drawLines(surface,strColor,closed,pointlist,lineWidth=1):
     """
     Verbindet eine Liste von Punkten der Reihe nach mit Linien.
     :param strColor: Farbe der Linien als str
@@ -96,39 +96,186 @@ def drawLines(strColor,closed,pointlist,lineWidth=1):
     :param pointlist: Liste von (x,y) int-Tupel
     :param lineWidth: Linienstärke der Linien
     """
-    pygame.draw.lines(screen,strColor,closed,pointlist,lineWidth)
+    pygame.draw.lines(surface,strColor,closed,pointlist,lineWidth)
 
 
-def drawKreidrat(strColor,pos,width):
+def drawKreidrat(surface,strColor,pos,width):
     """
     Zeichnet das beschriebene Kreidrat auf dem Bildschirm.
     :param strColor: Farbe des Kreidrats.
     :param pos: Position der links-oberen Ecke des Kreidrats als (x,y) int-Tupel
     :param width: Ein Drittel der Breite des Kreidrats.
     """
-    drawCircle(strColor, (pos[0] + width, pos[1] + width), width)
-    drawCircle(strColor, (pos[0] + 2*width, pos[1] + width), width)
-    drawCircle(strColor, (pos[0] + width, pos[1] + 2*width), width)
-    drawCircle(strColor, (pos[0] + 2*width, pos[1] + 2*width), width)
-    drawSquare(strColor, (pos[0] + width, pos[1]), width)
-    drawSquare(strColor, (pos[0], pos[1] + width), width)
-    drawSquare(strColor, (pos[0] + 2*width, pos[1] + width), width)
-    drawSquare(strColor, (pos[0] + width, pos[1] + 2*width), width)
+    drawCircle(surface, strColor, (pos[0] + width, pos[1] + width), width)
+    drawCircle(surface, strColor, (pos[0] + 2*width, pos[1] + width), width)
+    drawCircle(surface, strColor, (pos[0] + width, pos[1] + 2*width), width)
+    drawCircle(surface, strColor, (pos[0] + 2*width, pos[1] + 2*width), width)
+    drawSquare(surface, strColor, (pos[0] + width, pos[1]), width)
+    drawSquare(surface, strColor, (pos[0], pos[1] + width), width)
+    drawSquare(surface, strColor, (pos[0] + 2*width, pos[1] + width), width)
+    drawSquare(surface, strColor, (pos[0] + width, pos[1] + 2*width), width)
+
+
+def drawSprite(surface,sprite):
+    """
+    :param surface: Zeichenfläche
+    :param sprite: Zu zeichnendes Sprite
+    """
+    surface.blit(sprite.image, sprite.rect)
+
+
+def drawSpriteGroup(surface,group):
+    """
+    :param surface: Zeichenfläche
+    :param group: Zu zeichnende Sprite Gruppe
+    """
+    for sprite in group:
+        drawSprite(surface,sprite)
+
+
+# - Sprites - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+class stoneSprite(pygame.sprite.Sprite):
+
+    def __init__(self,pos):
+
+        # Initiert Sprite
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface([einheit, einheit])
+
+        # Erstellt ein graues Kreidrat mit transparentem Hintergrund als Bild.
+        fill(self.image,"white")
+        drawKreidrat(self.image,"black",(0,0),int(einheit/3))
+        self.image.set_colorkey(color("white"))
+
+        # Setze rechteckige Hülle des Sprites fest.
+        self.rect = self.image.get_rect()
+        self.rect.left = pos[0]
+        self.rect.top = pos[1]
 
 
 
+class playerSprite(pygame.sprite.Sprite):
 
-fill("orange")
-drawKreidrat("magenta",(200,200),50)
-drawKreidrat("magenta",(400,100),30)
-flip()
+    def __init__(self,pos):
+
+        # Initiert Sprite
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface([einheit, einheit])
+
+        # Erstellt ein graues Kreidrat mit transparentem Hintergrund als Bild.
+        fill(self.image,"white")
+        drawKreidrat(self.image,"purple",(0,0),int(einheit/3))
+        self.image.set_colorkey(color("white"))
+
+        # Setze rechteckige Hülle des Sprites fest.
+        self.rect = self.image.get_rect()
+        self.rect.left = pos[0]
+        self.rect.top = pos[1]
+
+        # Setze Geschwindigkeit
+        self.velocity = [0,0]
+        self.inMotion = False
+
+
+    def move(self):
+        self.rect = self.rect.move(self.velocity)
+
+
+
+# - Setup - - -  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Setze Standardeinheit fest
+einheit = 16
+einheit *= 3 # Standardeinheit muss wegen der Kreidrate ein Vielfaches von 3 sein.
+
+# Setzt Bewegungsgeschwindgkeit fest
+speed = 8
+
+# Setze Fenstergröße fest
+height = einheit * (16+2)
+width = int( height * 4 / 3)
+size = (width,height)
+
+# Erstelle Fenster
+screen = pygame.display.set_mode(size)
 setCaption("Brainfire Early Preview")
 
+# Initialisiert Zeitbegrenzung
+clock = pygame.time.Clock()
 
-# Beginn der Ereignisschleife
+# Generiert alle Steine, die den Rand bilden und gruppiert sie.
+Border = pygame.sprite.Group()
+Border.add( stoneSprite([0,0]) )
+Border.add( stoneSprite([0,(16+1)*einheit]) )
+Border.add( stoneSprite([(16+1)*einheit,0]) )
+Border.add( stoneSprite([(16+1)*einheit,(16+1)*einheit]) )
+for i in range(1,17):
+    Border.add( stoneSprite([i*einheit,0]) )
+    Border.add( stoneSprite([0,i * einheit]) )
+    Border.add( stoneSprite([(16+1)*einheit,i * einheit]) )
+    Border.add( stoneSprite([i*einheit, (16 + 1) * einheit]))
+
+# Erstellt Spieler
+player = playerSprite([einheit,einheit])
+
+
+
+# - Mainschleife - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
 while True:
 
-    # Das Fenster lässt sich mit dem X-Knopf schließen
+    # Ereignisschleife
     for event in pygame.event.get():
+
+        # Das Fenster lässt sich mit dem X-Knopf schließen
         if event.type == pygame.QUIT:
             exit("Das Fenster wurde geschlossen.")
+
+        # Eine Pfeiltaste wurde degrückt
+        elif event.type == pygame.KEYDOWN:
+            # Ist der Spieler in Bewegung?
+            if not player.inMotion:
+
+                if event.key == pygame.K_UP:
+                    player.inMotion = True
+                    player.velocity = [0, -speed]
+
+                elif event.key == pygame.K_DOWN:
+                    player.inMotion = True
+                    player.velocity = [0, speed]
+
+                elif event.key == pygame.K_LEFT:
+                    player.inMotion = True
+                    player.velocity = [-speed, 0]
+
+                elif event.key == pygame.K_RIGHT:
+                    player.inMotion = True
+                    player.velocity = [speed, 0]
+
+
+    # Färbt den Bildschirm hellblau.
+    fill(screen, "lightblue")  # Eisfläche
+
+    # Legt alle Steine an den Rand.
+    drawSpriteGroup(screen, Border)
+
+    # Bewege den Spieler
+    player.move()
+    drawSprite(screen, player)
+
+    # Kollidiert der Spieler mit einer Wand, so setze ihn vor die Wand
+    if pygame.sprite.spritecollide(player,Border,False):
+        player.rect.left = round(player.rect.left / einheit) * einheit
+        player.rect.top = round(player.rect.top / einheit) * einheit
+        player.velocity = [0,0]
+        player.inMotion = False
+
+
+    # Aktualisiert das Fenster
+    flip()
+
+    # 90 FPS
+    clock.tick(60)
