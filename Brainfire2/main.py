@@ -186,11 +186,9 @@ class playerSprite(pygame.sprite.Sprite):
 
 
 if __name__ == '__main__':
-    # - Setup - - -  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    level_number = "test"
-    level = Level_inf.create_level(level_number)
 
-    raum = level.matrix[0][0]
+
+    # - Setup - - -  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     # Setze Standardeinheit fest
     einheit = 16
@@ -199,6 +197,9 @@ if __name__ == '__main__':
     # Setzt Bewegungsgeschwindgkeit fest
     speed = 8
 
+    # Startposition
+    startpos = ((1)*einheit,(9)*einheit)
+
     # Setze Fenstergröße fest
     height = einheit * (16+2)
     width = int( height * 4 / 3)
@@ -206,7 +207,7 @@ if __name__ == '__main__':
 
     # Erstelle Fenster
     screen = pygame.display.set_mode(size)
-    setCaption("Your Mom gay")
+    setCaption("Your Dad Lesbian")
 
     # Initialisiert Zeitbegrenzung
     clock = pygame.time.Clock()
@@ -218,17 +219,39 @@ if __name__ == '__main__':
     Border.add( stoneSprite([(16+1)*einheit,0]) )
     Border.add( stoneSprite([(16+1)*einheit,(16+1)*einheit]) )
     for i in range(1,17):
-        Border.add( stoneSprite([i*einheit,0]) )
-        Border.add( stoneSprite([0,i * einheit]) )
-        Border.add( stoneSprite([(16+1)*einheit,i * einheit]) )
-        Border.add( stoneSprite([i*einheit, (16 + 1) * einheit]))
+        if i != 8:
+            Border.add( stoneSprite([i*einheit,0]) )
+        if i != 9:
+            Border.add( stoneSprite([0,i * einheit]) )
+        if i != 8:
+            Border.add( stoneSprite([(16+1)*einheit,i * einheit]) )
+        if i != 9:
+            Border.add( stoneSprite([i*einheit, (16 + 1) * einheit]))
+
+
+
 
     # Erstellt Spieler
-    player = playerSprite([einheit,einheit])
+    player = playerSprite(startpos)
 
 
 
-    # - Mainschleife - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+    # Erstelle Level
+    level_number = "test"
+    level = Level_inf.create_level(level_number)
+
+    raum = level.matrix[1][1]
+
+    Stones = pygame.sprite.Group()
+    for x in range(16):
+        for y in range(16):
+            if raum.matrix[y][x] == 1:
+                Stones.add( stoneSprite([(x+1)*einheit,(y+1)*einheit]) )
+
+
+    # - Mainschleife - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
     while True:
@@ -261,19 +284,25 @@ if __name__ == '__main__':
                         player.inMotion = True
                         player.velocity = [speed, 0]
 
+                    elif event.key == pygame.K_r:
+                        player.rect.left = startpos[0]
+                        player.rect.top = startpos[1]
+
 
         # Färbt den Bildschirm hellblau.
         fill(screen, "lightblue")  # Eisfläche
 
         # Legt alle Steine an den Rand.
         drawSpriteGroup(screen, Border)
+        drawSpriteGroup(screen, Stones)
 
         # Bewege den Spieler
         player.move()
         drawSprite(screen, player)
 
         # Kollidiert der Spieler mit einer Wand, so setze ihn vor die Wand
-        if pygame.sprite.spritecollide(player,Border,False):
+        if pygame.sprite.spritecollide(player, Border, False)\
+                or pygame.sprite.spritecollide(player, Stones, False):
             player.rect.left = round(player.rect.left / einheit) * einheit
             player.rect.top = round(player.rect.top / einheit) * einheit
             player.velocity = [0,0]
@@ -284,4 +313,4 @@ if __name__ == '__main__':
         flip()
 
         # 90 FPS
-        clock.tick(60)
+        clock.tick(90)
