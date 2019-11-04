@@ -200,7 +200,7 @@ size = (width,height)
 
 # Erstelle Fenster
 screen = pygame.display.set_mode(size)
-setCaption("Brainfire Early Preview")
+setCaption("Your Mom gay")
 
 # Initialisiert Zeitbegrenzung
 clock = pygame.time.Clock()
