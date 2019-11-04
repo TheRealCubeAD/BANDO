@@ -230,7 +230,8 @@ def create_level(level_number):
     print("Done!")
     print()
     print("Took:",time.time() - t)
-    pickle.dump(l,open("level_"+str(level_number)+".lvl","wb"))
+    #pickle.dump(l,open("level_"+str(level_number)+".lvl","wb"))
+    return l
 
 
 def dprint(cont):

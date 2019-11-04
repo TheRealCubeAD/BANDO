@@ -5,6 +5,8 @@
 from sys import exit # Methode für Terminierung
 from pygame.color import THECOLORS # Importiert Liste von Farben
 import pygame # Engine
+import Level_inf
+import pickle
 pygame.init() # Zündschlüssel
 
 
@@ -183,99 +185,103 @@ class playerSprite(pygame.sprite.Sprite):
         self.rect = self.rect.move(self.velocity)
 
 
+if __name__ == '__main__':
+    # - Setup - - -  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    level_number = "test"
+    level = Level_inf.create_level(level_number)
 
-# - Setup - - -  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    raum = level.matrix[0][0]
 
-# Setze Standardeinheit fest
-einheit = 16
-einheit *= 3 # Standardeinheit muss wegen der Kreidrate ein Vielfaches von 3 sein.
+    # Setze Standardeinheit fest
+    einheit = 16
+    einheit *= 3 # Standardeinheit muss wegen der Kreidrate ein Vielfaches von 3 sein.
 
-# Setzt Bewegungsgeschwindgkeit fest
-speed = 8
+    # Setzt Bewegungsgeschwindgkeit fest
+    speed = 8
 
-# Setze Fenstergröße fest
-height = einheit * (16+2)
-width = int( height * 4 / 3)
-size = (width,height)
+    # Setze Fenstergröße fest
+    height = einheit * (16+2)
+    width = int( height * 4 / 3)
+    size = (width,height)
 
-# Erstelle Fenster
-screen = pygame.display.set_mode(size)
-setCaption("Your Mom gay")
+    # Erstelle Fenster
+    screen = pygame.display.set_mode(size)
+    setCaption("Your Mom gay")
 
-# Initialisiert Zeitbegrenzung
-clock = pygame.time.Clock()
+    # Initialisiert Zeitbegrenzung
+    clock = pygame.time.Clock()
 
-# Generiert alle Steine, die den Rand bilden und gruppiert sie.
-Border = pygame.sprite.Group()
-Border.add( stoneSprite([0,0]) )
-Border.add( stoneSprite([0,(16+1)*einheit]) )
-Border.add( stoneSprite([(16+1)*einheit,0]) )
-Border.add( stoneSprite([(16+1)*einheit,(16+1)*einheit]) )
-for i in range(1,17):
-    Border.add( stoneSprite([i*einheit,0]) )
-    Border.add( stoneSprite([0,i * einheit]) )
-    Border.add( stoneSprite([(16+1)*einheit,i * einheit]) )
-    Border.add( stoneSprite([i*einheit, (16 + 1) * einheit]))
+    # Generiert alle Steine, die den Rand bilden und gruppiert sie.
+    Border = pygame.sprite.Group()
+    Border.add( stoneSprite([0,0]) )
+    Border.add( stoneSprite([0,(16+1)*einheit]) )
+    Border.add( stoneSprite([(16+1)*einheit,0]) )
+    Border.add( stoneSprite([(16+1)*einheit,(16+1)*einheit]) )
+    for i in range(1,17):
+        Border.add( stoneSprite([i*einheit,0]) )
+        Border.add( stoneSprite([0,i * einheit]) )
+        Border.add( stoneSprite([(16+1)*einheit,i * einheit]) )
+        Border.add( stoneSprite([i*einheit, (16 + 1) * einheit]))
 
-# Erstellt Spieler
-player = playerSprite([einheit,einheit])
-
-
-
-# - Mainschleife - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-
-while True:
-
-    # Ereignisschleife
-    for event in pygame.event.get():
-
-        # Das Fenster lässt sich mit dem X-Knopf schließen
-        if event.type == pygame.QUIT:
-            exit("Das Fenster wurde geschlossen.")
-
-        # Eine Pfeiltaste wurde degrückt
-        elif event.type == pygame.KEYDOWN:
-            # Ist der Spieler in Bewegung?
-            if not player.inMotion:
-
-                if event.key == pygame.K_UP:
-                    player.inMotion = True
-                    player.velocity = [0, -speed]
-
-                elif event.key == pygame.K_DOWN:
-                    player.inMotion = True
-                    player.velocity = [0, speed]
-
-                elif event.key == pygame.K_LEFT:
-                    player.inMotion = True
-                    player.velocity = [-speed, 0]
-
-                elif event.key == pygame.K_RIGHT:
-                    player.inMotion = True
-                    player.velocity = [speed, 0]
+    # Erstellt Spieler
+    player = playerSprite([einheit,einheit])
 
 
-    # Färbt den Bildschirm hellblau.
-    fill(screen, "lightblue")  # Eisfläche
 
-    # Legt alle Steine an den Rand.
-    drawSpriteGroup(screen, Border)
-
-    # Bewege den Spieler
-    player.move()
-    drawSprite(screen, player)
-
-    # Kollidiert der Spieler mit einer Wand, so setze ihn vor die Wand
-    if pygame.sprite.spritecollide(player,Border,False):
-        player.rect.left = round(player.rect.left / einheit) * einheit
-        player.rect.top = round(player.rect.top / einheit) * einheit
-        player.velocity = [0,0]
-        player.inMotion = False
+    # - Mainschleife - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
-    # Aktualisiert das Fenster
-    flip()
+    while True:
 
-    # 90 FPS
-    clock.tick(60)
+        # Ereignisschleife
+        for event in pygame.event.get():
+
+            # Das Fenster lässt sich mit dem X-Knopf schließen
+            if event.type == pygame.QUIT:
+                exit("Das Fenster wurde geschlossen.")
+
+            # Eine Pfeiltaste wurde degrückt
+            elif event.type == pygame.KEYDOWN:
+                # Ist der Spieler in Bewegung?
+                if not player.inMotion:
+
+                    if event.key == pygame.K_UP:
+                        player.inMotion = True
+                        player.velocity = [0, -speed]
+
+                    elif event.key == pygame.K_DOWN:
+                        player.inMotion = True
+                        player.velocity = [0, speed]
+
+                    elif event.key == pygame.K_LEFT:
+                        player.inMotion = True
+                        player.velocity = [-speed, 0]
+
+                    elif event.key == pygame.K_RIGHT:
+                        player.inMotion = True
+                        player.velocity = [speed, 0]
+
+
+        # Färbt den Bildschirm hellblau.
+        fill(screen, "lightblue")  # Eisfläche
+
+        # Legt alle Steine an den Rand.
+        drawSpriteGroup(screen, Border)
+
+        # Bewege den Spieler
+        player.move()
+        drawSprite(screen, player)
+
+        # Kollidiert der Spieler mit einer Wand, so setze ihn vor die Wand
+        if pygame.sprite.spritecollide(player,Border,False):
+            player.rect.left = round(player.rect.left / einheit) * einheit
+            player.rect.top = round(player.rect.top / einheit) * einheit
+            player.velocity = [0,0]
+            player.inMotion = False
+
+
+        # Aktualisiert das Fenster
+        flip()
+
+        # 90 FPS
+        clock.tick(60)
