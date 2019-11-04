@@ -265,6 +265,13 @@ if __name__ == '__main__':
 
             # Eine Pfeiltaste wurde degrückt
             elif event.type == pygame.KEYDOWN:
+
+                if event.key == pygame.K_r:
+                    player.rect.left = startpos[0]
+                    player.rect.top = startpos[1]
+                    player.inMotion = False
+                    player.velocity = [0, 0]
+
                 # Ist der Spieler in Bewegung?
                 if not player.inMotion:
 
@@ -283,10 +290,6 @@ if __name__ == '__main__':
                     elif event.key == pygame.K_RIGHT:
                         player.inMotion = True
                         player.velocity = [speed, 0]
-
-                    elif event.key == pygame.K_r:
-                        player.rect.left = startpos[0]
-                        player.rect.top = startpos[1]
 
 
         # Färbt den Bildschirm hellblau.
