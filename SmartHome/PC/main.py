@@ -20,6 +20,7 @@ class CONNECT:
     def main(self):
         while 1:
             while not self.connected:
+                print("Connecting...")
                 self.connect()
                 time.sleep(5)
 
