@@ -197,8 +197,11 @@ if __name__ == '__main__':
     # Setzt Bewegungsgeschwindgkeit fest
     speed = 8
 
-    # Startposition
-    startpos = ((1)*einheit,(9)*einheit)
+    # Startpositionen
+    start_links = ( einheit, 9 * einheit )
+    start_oben = ( 8 * einheit, einheit )
+    start_rechts = ( 16 * einheit, 8 * einheit )
+    start_unten = ( 9 * einheit, 16 * einheit )
 
     # Setze Fenstergröße fest
     height = einheit * (16+2)
@@ -207,7 +210,7 @@ if __name__ == '__main__':
 
     # Erstelle Fenster
     screen = pygame.display.set_mode(size)
-    setCaption("Your Dad Lesbian")
+    setCaption("")
 
     # Initialisiert Zeitbegrenzung
     clock = pygame.time.Clock()
@@ -232,7 +235,7 @@ if __name__ == '__main__':
 
 
     # Erstellt Spieler
-    player = playerSprite(startpos)
+    player = playerSprite(start_links)
 
 
 
@@ -266,9 +269,27 @@ if __name__ == '__main__':
             # Eine Pfeiltaste wurde degrückt
             elif event.type == pygame.KEYDOWN:
 
-                if event.key == pygame.K_r:
-                    player.rect.left = startpos[0]
-                    player.rect.top = startpos[1]
+                if event.key == pygame.K_w:
+                    player.rect.left = start_oben[0]
+                    player.rect.top = start_oben[1]
+                    player.inMotion = False
+                    player.velocity = [0, 0]
+
+                elif event.key == pygame.K_a:
+                    player.rect.left = start_links[0]
+                    player.rect.top = start_links[1]
+                    player.inMotion = False
+                    player.velocity = [0, 0]
+
+                elif event.key == pygame.K_s:
+                    player.rect.left = start_unten[0]
+                    player.rect.top = start_unten[1]
+                    player.inMotion = False
+                    player.velocity = [0, 0]
+
+                if event.key == pygame.K_d:
+                    player.rect.left = start_rechts[0]
+                    player.rect.top = start_rechts[1]
                     player.inMotion = False
                     player.velocity = [0, 0]
 
