@@ -220,14 +220,14 @@ if __name__ == '__main__':
     speed = 8
 
     # Startpositionen
-    start_links = ( einheit, 9 * einheit )
-    start_oben = ( 8 * einheit, einheit )
-    start_rechts = ( 16 * einheit, 8 * einheit )
-    start_unten = ( 9 * einheit, 16 * einheit )
+    start_links = (einheit, 9 * einheit)
+    start_oben = (8 * einheit, einheit)
+    start_rechts = (16 * einheit, 8 * einheit)
+    start_unten = (9 * einheit, 16 * einheit)
 
     # Setze Fenstergröße fest
     height = einheit * (16+2)
-    width = int( height * 4 / 3)
+    width = int(height * 4 / 3)
     size = (width,height)
 
     # Erstelle Fenster
@@ -239,19 +239,19 @@ if __name__ == '__main__':
 
     # Generiert alle Steine, die den Rand bilden und gruppiert sie.
     Border = pygame.sprite.Group()
-    Border.add( stoneSprite([0,0]) )
-    Border.add( stoneSprite([0,(16+1)*einheit]) )
-    Border.add( stoneSprite([(16+1)*einheit,0]) )
-    Border.add( stoneSprite([(16+1)*einheit,(16+1)*einheit]) )
+    Border.add(stoneSprite([0,0]))
+    Border.add(stoneSprite([0,(16+1)*einheit]))
+    Border.add(stoneSprite([(16+1)*einheit,0]))
+    Border.add(stoneSprite([(16+1)*einheit,(16+1)*einheit]))
     for i in range(1,17):
         if i != 8:
-            Border.add( stoneSprite([i*einheit,0]) )
+            Border.add(stoneSprite([i*einheit,0]))
         if i != 9:
-            Border.add( stoneSprite([0,i * einheit]) )
+            Border.add(stoneSprite([0,i * einheit]))
         if i != 8:
-            Border.add( stoneSprite([(16+1)*einheit,i * einheit]) )
+            Border.add(stoneSprite([(16+1)*einheit,i * einheit]))
         if i != 9:
-            Border.add( stoneSprite([i*einheit, (16 + 1) * einheit]))
+            Border.add(stoneSprite([i*einheit, (16 + 1) * einheit]))
 
 
     # Generiert alle Türen
@@ -278,7 +278,7 @@ if __name__ == '__main__':
     for x in range(16):
         for y in range(16):
             if raum.matrix[y][x] == 1:
-                Stones.add( stoneSprite([(x+1)*einheit,(y+1)*einheit]) )
+                Stones.add(stoneSprite([(x+1)*einheit,(y+1)*einheit]))
 
 
     # - Mainschleife - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
