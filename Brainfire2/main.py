@@ -158,6 +158,28 @@ class stoneSprite(pygame.sprite.Sprite):
 
 
 
+class doorSprite(pygame.sprite.Sprite):
+
+    def __init__(self,pos, strWand):
+
+        # Initiert Sprite
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface([einheit, einheit])
+
+        # Erstellt ein graues Kreidrat mit transparentem Hintergrund als Bild.
+        fill(self.image,"white")
+        drawKreidrat(self.image,"brown",(0,0),int(einheit/3))
+        self.image.set_colorkey(color("white"))
+
+        # Setze rechteckige Hülle des Sprites fest.
+        self.rect = self.image.get_rect()
+        self.rect.left = pos[0]
+        self.rect.top = pos[1]
+
+        self.wand = strWand
+
+
+
 class playerSprite(pygame.sprite.Sprite):
 
     def __init__(self,pos):
@@ -232,12 +254,17 @@ if __name__ == '__main__':
             Border.add( stoneSprite([i*einheit, (16 + 1) * einheit]))
 
 
+    # Generiert alle Türen
+    Doors = pygame.sprite.Group()
+    Doors.add( doorSprite( [ 8 * einheit, 0 ], "oben" ) )
+    Doors.add( doorSprite( [ 0, 9 * einheit ], "links" ) )
+    Doors.add( doorSprite( [ 17 * einheit, 8 * einheit ], "rechts" ) )
+    Doors.add( doorSprite( [ 9 * einheit, 17 * einheit ], "unten" ) )
+
 
 
     # Erstellt Spieler
     player = playerSprite(start_links)
-
-
 
 
 
@@ -319,6 +346,7 @@ if __name__ == '__main__':
         # Legt alle Steine an den Rand.
         drawSpriteGroup(screen, Border)
         drawSpriteGroup(screen, Stones)
+        drawSpriteGroup(screen, Doors)
 
         # Bewege den Spieler
         player.move()
@@ -332,6 +360,11 @@ if __name__ == '__main__':
             player.velocity = [0,0]
             player.inMotion = False
 
+        if pygame.sprite.spritecollide(player, Doors, False):
+            player.rect.left = round(player.rect.left / einheit) * einheit
+            player.rect.top = round(player.rect.top / einheit) * einheit
+            player.velocity = [0, 0]
+            player.inMotion = False
 
         # Aktualisiert das Fenster
         flip()
