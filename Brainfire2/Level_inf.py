@@ -3,6 +3,7 @@ import time
 import random
 import copy
 import pprint
+import pickle
 
 POS = raum.POS
 
@@ -213,7 +214,7 @@ class LEVEL_SOLVER:
 dirs = [POS(0,-1),POS(0,1),POS(-1,0),POS(1,0)]
 
 
-def create_level():
+def create_level(level_number):
     t = time.time()
     dprint("Initializing...")
     l = LEVEL()
@@ -229,6 +230,8 @@ def create_level():
     print("Done!")
     print()
     print("Took:",time.time() - t)
+    #pickle.dump(l,open("level_"+str(level_number)+".lvl","wb"))
+    return l
 
 
 def dprint(cont):
@@ -237,4 +240,4 @@ def dprint(cont):
 debug = False
 if __name__ == '__main__':
     debug = True
-    create_level()
+    create_level("t")
