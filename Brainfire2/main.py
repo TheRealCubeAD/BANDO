@@ -287,10 +287,26 @@ if __name__ == '__main__':
 
     # Generiert alle Türen
     Doors = pygame.sprite.Group()
-    Doors.add(doorSprite([8 * einheit, 0], "oben"))
-    Doors.add(doorSprite([0, 9 * einheit], "links"))
-    Doors.add(doorSprite([17 * einheit, 8 * einheit], "rechts"))
-    Doors.add(doorSprite([9 * einheit, 17 * einheit], "unten"))
+
+    if dpos[0] != 0:
+        Doors.add(doorSprite([8 * einheit, 0], "oben"))
+    else:
+        Doors.add(stoneSprite([8 * einheit, 0]))
+
+    if dpos[1] != 0:
+        Doors.add(doorSprite([0, 9 * einheit], "links"))
+    else:
+        Doors.add(stoneSprite([0, 9 * einheit]))
+
+    if dpos[1] != 5:
+        Doors.add(doorSprite([17 * einheit, 8 * einheit], "rechts"))
+    else:
+        Doors.add(stoneSprite([17 * einheit, 8 * einheit]))
+
+    if dpos[0] != 5:
+        Doors.add(doorSprite([9 * einheit, 17 * einheit], "unten"))
+    else:
+        Doors.add(stoneSprite([9 * einheit, 17 * einheit]))
 
     # Generiert alle Steine
     Stones = pygame.sprite.Group()
