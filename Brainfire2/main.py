@@ -219,6 +219,9 @@ if __name__ == '__main__':
 
     # - Setup - - -  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+    # Debugging Tool
+    debugging = True
+
     # Setze Standardeinheit fest
     einheit = 16
     einheit *= 3 # Standardeinheit muss wegen der Kreidrate ein Vielfaches von 3 sein.
@@ -268,8 +271,6 @@ if __name__ == '__main__':
     Doors.add( doorSprite( [ 17 * einheit, 8 * einheit ], "rechts" ) )
     Doors.add( doorSprite( [ 9 * einheit, 17 * einheit ], "unten" ) )
 
-    debugging = True
-
     # Erstellt Spieler
     player = playerSprite(start_links)
 
@@ -281,7 +282,7 @@ if __name__ == '__main__':
     level_number = "test"
     level = Level_inf.create_level(level_number)
 
-    raum = level.matrix[1][1]
+    raum = level.matrix[5][5]
 
     Stones = pygame.sprite.Group()
     for x in range(16):
@@ -305,6 +306,8 @@ if __name__ == '__main__':
             # Eine Taste wurde degrückt
             elif event.type == pygame.KEYDOWN:
 
+                # Debugging Tool:
+                # Der Spieler kann sich an eine beliebige Tür mit WASD transportieren lassen.
                 if debugging:
 
                     if event.key == pygame.K_w:
