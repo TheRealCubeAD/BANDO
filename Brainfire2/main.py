@@ -320,6 +320,9 @@ if __name__ == '__main__':
                 Stones.add(stoneSprite([(x+1)*einheit,(y+1)*einheit]))
 
 
+    move_counter = 0
+    font = pygame.font.SysFont('Consolas', 30)
+
     # - Mainschleife - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
@@ -327,6 +330,8 @@ if __name__ == '__main__':
 
         # Ereignisschleife
         for event in pygame.event.get():
+
+            move_counter += 1
 
             # Das Fenster lässt sich mit dem X-Knopf schließen
             if event.type == pygame.QUIT:
@@ -487,18 +492,13 @@ if __name__ == '__main__':
 
         # Kollidiert der Spieler mit einer Wand, so setze ihn vor die Wand
         if pygame.sprite.spritecollide(player, Border, False)\
-                or pygame.sprite.spritecollide(player, Stones, False):
+                or pygame.sprite.spritecollide(player, Stones, False)\
+                or pygame.sprite.spritecollide(player, Doors, False):
             player.rect.left = round(player.rect.left / einheit) * einheit
             player.rect.top = round(player.rect.top / einheit) * einheit
             player.velocity = [0,0]
             player.inMotion = False
 
-
-        if pygame.sprite.spritecollide(player, Doors, False):
-            player.rect.left = round(player.rect.left / einheit) * einheit
-            player.rect.top = round(player.rect.top / einheit) * einheit
-            player.velocity = [0, 0]
-            player.inMotion = False
 
         # Aktualisiert das Fenster
         flip()
