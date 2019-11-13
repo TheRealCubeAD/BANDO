@@ -385,10 +385,51 @@ if __name__ == '__main__':
                     # Der Spieler will durch eine Tür gehen.
                     elif event.key == pygame.K_SPACE:
 
+                        # Switch, ob der Raum neu zu zeichnen ist.
+                        zeichneNeu = False
+
                         # Ist der Spieler and der oberen Tür?
                         if player.rect.left == start_oben[0] and player.rect.top == start_oben[1]:
                             # Gibt es einen darüberliegenden Raum?
-                            pass
+                            if dpos[0] != 0:
+                                # Bringe den Spieler in diesen Raum!
+                                zeichneNeu = True
+                                dpos[0] -= 1
+                                player.rect.left = start_unten[0]
+                                player.rect.top = start_unten[1]
+
+                        if zeichneNeu:
+
+                            raum = level_matrix[dpos[0]][dpos[1]]
+                            zeichneNeu = False
+
+                            if dpos[0] != 0:
+                                Doors.add(doorSprite([8 * einheit, 0], "oben"))
+                            else:
+                                Doors.add(stoneSprite([8 * einheit, 0]))
+
+                            if dpos[1] != 0:
+                                Doors.add(doorSprite([0, 9 * einheit], "links"))
+                            else:
+                                Doors.add(stoneSprite([0, 9 * einheit]))
+
+                            if dpos[1] != 5:
+                                Doors.add(doorSprite([17 * einheit, 8 * einheit], "rechts"))
+                            else:
+                                Doors.add(stoneSprite([17 * einheit, 8 * einheit]))
+
+                            if dpos[0] != 5:
+                                Doors.add(doorSprite([9 * einheit, 17 * einheit], "unten"))
+                            else:
+                                Doors.add(stoneSprite([9 * einheit, 17 * einheit]))
+
+                            # Generiert alle Steine
+                            Stones = pygame.sprite.Group()
+                            for x in range(16):
+                                for y in range(16):
+                                    if raum[y][x] == 1:
+                                        Stones.add(stoneSprite([(x + 1) * einheit, (y + 1) * einheit]))
+
 
 
 
