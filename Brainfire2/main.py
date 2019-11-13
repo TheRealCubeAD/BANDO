@@ -262,10 +262,11 @@ if __name__ == '__main__':
     Doors.add( doorSprite( [ 9 * einheit, 17 * einheit ], "unten" ) )
 
 
-
     # Erstellt Spieler
     player = playerSprite(start_links)
 
+
+    dungeonpos = [0,0]
 
 
     # Erstelle Level
@@ -359,6 +360,7 @@ if __name__ == '__main__':
             player.rect.top = round(player.rect.top / einheit) * einheit
             player.velocity = [0,0]
             player.inMotion = False
+
 
         if pygame.sprite.spritecollide(player, Doors, False):
             player.rect.left = round(player.rect.left / einheit) * einheit
