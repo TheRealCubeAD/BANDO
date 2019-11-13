@@ -5,6 +5,7 @@
 from sys import exit # Methode für Terminierung
 from pygame.color import THECOLORS # Importiert Liste von Farben
 import pygame # Engine
+from copy import deepcopy
 import Level_inf
 import pickle
 pygame.init() # Zündschlüssel
@@ -263,31 +264,39 @@ if __name__ == '__main__':
         if i != 9:
             Border.add(stoneSprite([i*einheit, (16 + 1) * einheit]))
 
-
-    # Generiert alle Türen
-    Doors = pygame.sprite.Group()
-    Doors.add( doorSprite( [ 8 * einheit, 0 ], "oben" ) )
-    Doors.add( doorSprite( [ 0, 9 * einheit ], "links" ) )
-    Doors.add( doorSprite( [ 17 * einheit, 8 * einheit ], "rechts" ) )
-    Doors.add( doorSprite( [ 9 * einheit, 17 * einheit ], "unten" ) )
-
     # Erstellt Spieler
     player = playerSprite(start_links)
-
-
-    dungeonpos = [0,0]
 
 
     # Erstelle Level
     level_number = "test"
     level = Level_inf.create_level(level_number)
 
-    raum = level.matrix[5][5]
+    # Bereite Dungeon vor
+    level_matrix = deepcopy(level.matrix)
+    anfangsraum = [ [ 0 for x in range(16) ] for y in range(16) ]
+    anfangsraum[7][0] = 1
+    anfangsraum[15][7] = 1
+    anfangsraum[8][15] = 1
+    anfangsraum[0][8] = 1
+    level_matrix[5][0] = anfangsraum
+    level_matrix[0][5] = anfangsraum
 
+    dpos = [5, 0]
+    raum = level_matrix[dpos[0]][dpos[1]]
+
+    # Generiert alle Türen
+    Doors = pygame.sprite.Group()
+    Doors.add(doorSprite([8 * einheit, 0], "oben"))
+    Doors.add(doorSprite([0, 9 * einheit], "links"))
+    Doors.add(doorSprite([17 * einheit, 8 * einheit], "rechts"))
+    Doors.add(doorSprite([9 * einheit, 17 * einheit], "unten"))
+
+    # Generiert alle Steine
     Stones = pygame.sprite.Group()
     for x in range(16):
         for y in range(16):
-            if raum.matrix[y][x] == 1:
+            if raum[y][x] == 1:
                 Stones.add(stoneSprite([(x+1)*einheit,(y+1)*einheit]))
 
 
@@ -334,9 +343,12 @@ if __name__ == '__main__':
                         player.inMotion = False
                         player.velocity = [0, 0]
 
+
+
                 # Ist der Spieler nicht in Bewegung?
                 if not player.inMotion:
 
+                    # Bewege den Spieler mit den Pfeiltasten
                     if event.key == pygame.K_UP:
                         player.inMotion = True
                         player.velocity = [0, -speed]
@@ -352,6 +364,16 @@ if __name__ == '__main__':
                     elif event.key == pygame.K_RIGHT:
                         player.inMotion = True
                         player.velocity = [speed, 0]
+
+
+                    # Der Spieler will durch eine Tür gehen.
+                    elif event.key == pygame.K_SPACE:
+
+                        # Ist der Spieler and der oberen Tür?
+                        if player.rect.left == start_oben[0] and player.rect.top == start_oben[1]:
+                            # Gibt es einen darüberliegenden Raum?
+                            pass
+
 
 
         # Färbt den Bildschirm hellblau.
