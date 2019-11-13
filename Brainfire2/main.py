@@ -273,7 +273,11 @@ if __name__ == '__main__':
     level = Level_inf.create_level(level_number)
 
     # Bereite Dungeon vor
-    level_matrix = deepcopy(level.matrix)
+    level_matrix = [ [ None for _ in range(16)] for _ in range(16) ]
+    for x in range(6):
+        for y in range(6):
+            level_matrix[y][x] = level.matrix[y][x].getMatrix()
+
     anfangsraum = [ [ 0 for x in range(16) ] for y in range(16) ]
     anfangsraum[7][0] = 1
     anfangsraum[15][7] = 1
@@ -398,10 +402,45 @@ if __name__ == '__main__':
                                 player.rect.left = start_unten[0]
                                 player.rect.top = start_unten[1]
 
+                        # Ist der Spieler an der links Tür?
+                        elif player.rect.left == start_links[0] and player.rect.top == start_links[1]:
+                            # Gibt es einen Raum links?
+                            if dpos[1] != 0:
+                                # Bringe den Spieler in diesen Raum!
+                                zeichneNeu = True
+                                dpos[1] -= 1
+                                player.rect.left = start_rechts[0]
+                                player.rect.top = start_rechts[1]
+
+                        # Ist der Spieler an der unteren Tür?
+                        elif player.rect.left == start_unten[0] and player.rect.top == start_unten[1]:
+                            # Gibt es einen darüberliegenden Raum?
+                            if dpos[0] != 5:
+                                # Bringe den Spieler in diesen Raum!
+                                zeichneNeu = True
+                                dpos[0] += 1
+                                player.rect.left = start_oben[0]
+                                player.rect.top = start_oben[1]
+
+
+                        # Ist der Spieler an der rechten Tür?
+                        elif player.rect.left == start_rechts[0] and player.rect.top == start_rechts[1]:
+                            # Gibt es einen darüberliegenden Raum?
+                            if dpos[1] != 5:
+                                # Bringe den Spieler in diesen Raum!
+                                zeichneNeu = True
+                                dpos[1] += 1
+                                player.rect.left = start_links[0]
+                                player.rect.top = start_links[1]
+
+
+
                         if zeichneNeu:
 
-                            raum = level_matrix[dpos[0]][dpos[1]]
                             zeichneNeu = False
+                            raum = deepcopy(level_matrix[dpos[0]][dpos[1]])
+
+                            Doors = pygame.sprite.Group()
 
                             if dpos[0] != 0:
                                 Doors.add(doorSprite([8 * einheit, 0], "oben"))
@@ -425,6 +464,7 @@ if __name__ == '__main__':
 
                             # Generiert alle Steine
                             Stones = pygame.sprite.Group()
+
                             for x in range(16):
                                 for y in range(16):
                                     if raum[y][x] == 1:
