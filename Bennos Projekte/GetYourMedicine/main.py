@@ -2,71 +2,99 @@ from machine import Pin, PWM
 import time
 
 
+class SPEAKER:
 
-def read_notes():
-    global notes
-    global freqs
-    res_notes = []
-    res_freq = []
-    t = open("note_edit.txt","r")
-    for line in t:
-        n, f = line.split()
-        res_notes.append(n)
-        res_freq.append(int(f))
-    t.close()
-    print(res_notes)
-    print(res_freq)
-    notes = res_notes
-    freqs = res_freq
+    def __init__(self):
+        self.speaker_pin = 15
+        self.speaker = PWM(Pin(self.speaker_pin))
+        self.speaker_off()
+        self.notes = []
+        self.freqs = []
+        self.read_notes()
 
 
-def speaker_off():
-    speaker.duty(0)
+    def read_notes(self):
+        self.notes = []
+        self.freqs = []
+        t = open("note_edit.txt","r")
+        for line in t:
+            n, f = line.split()
+            self.notes.append(n)
+            self.freqs.append(int(f))
+        t.close()
 
-def speaker_on():
-    speaker.duty(512)
+    def speaker_off(self):
+        self.speaker.duty(0)
 
-def trigger(sec):
-    speaker_on()
-    time.sleep(sec)
-    speaker_off()
+    def speaker_on(self):
+        self.speaker.duty(512)
 
-
-def get_freq(note):
-    try:
-        return freqs[notes.index(note)]
-    except:
-        return 0
-
-
-def play_tone(note,sec):
-    freq = get_freq(note)
-    print(freq)
-    speaker.freq(freq)
-    trigger(sec)
+    def trigger(self,sec):
+        self.speaker_on()
+        time.sleep(sec)
+        self.speaker_off()
 
 
-def play_tones(notes,sec):
-    for i in range(sec*10):
-        for note in notes:
-            play_tone(note, 0.1)
+    def get_freq(self,note):
+        try:
+            return self.freqs[self.notes.index(note)]
+        except:
+            return 0
+
+
+    def set_freq(self,note):
+        if type(note) == int:
+            self.speaker.freq(note)
+        else:
+            self.speaker.freq(self.get_freq(note))
+
+
+    def play_tone(self,note,sec):
+        self.set_freq(note)
+        self.trigger(sec)
+
+
+    def play_tones(self,notes,sec):
+        self.speaker_on()
+        for i in range(sec*10):
+            for note in notes:
+                self.set_freq(note)
+                time.sleep(0.1)
+        self.speaker_off()
 
 
 
-speaker_pin = 15
-speaker = PWM(Pin(speaker_pin))
-speaker_off()
-notes = []
-freqs = []
+class LED:
+
+    def __init__(self):
+        self.led_pin = 14
+        self.led = Pin(self.led_pin, Pin.OUT)
+
+
+    def led_on(self):
+        self.led.on()
+
+
+    def led_off(self):
+        self.led.off()
+
+
+    def toggle(self,sec):
+        self.led_on()
+        time.sleep(sec)
+        self.led_off()
+
+
+    def flash(self):
+        self.toggle(0.1)
+
 
 
 print("start")
-read_notes()
+speaker = SPEAKER()
+led = LED()
 
-play_tone("C5",1)
-play_tone("E5",1)
-play_tone("G5",1)
+speaker.play_tone("C5",1)
+led.flash()
 
-play_tones(["C5","E5","G5"],1)
-play_tones(["D4","F4","A4"],1)
-play_tones(["E5","G5","B5"],1)
+
