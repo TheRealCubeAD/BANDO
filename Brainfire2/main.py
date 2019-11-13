@@ -207,6 +207,13 @@ class playerSprite(pygame.sprite.Sprite):
         self.rect = self.rect.move(self.velocity)
 
 
+
+
+
+
+
+
+
 if __name__ == '__main__':
 
 
@@ -261,6 +268,7 @@ if __name__ == '__main__':
     Doors.add( doorSprite( [ 17 * einheit, 8 * einheit ], "rechts" ) )
     Doors.add( doorSprite( [ 9 * einheit, 17 * einheit ], "unten" ) )
 
+    debugging = True
 
     # Erstellt Spieler
     player = playerSprite(start_links)
@@ -294,34 +302,36 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 exit("Das Fenster wurde geschlossen.")
 
-            # Eine Pfeiltaste wurde degrückt
+            # Eine Taste wurde degrückt
             elif event.type == pygame.KEYDOWN:
 
-                if event.key == pygame.K_w:
-                    player.rect.left = start_oben[0]
-                    player.rect.top = start_oben[1]
-                    player.inMotion = False
-                    player.velocity = [0, 0]
+                if debugging:
 
-                elif event.key == pygame.K_a:
-                    player.rect.left = start_links[0]
-                    player.rect.top = start_links[1]
-                    player.inMotion = False
-                    player.velocity = [0, 0]
+                    if event.key == pygame.K_w:
+                        player.rect.left = start_oben[0]
+                        player.rect.top = start_oben[1]
+                        player.inMotion = False
+                        player.velocity = [0, 0]
 
-                elif event.key == pygame.K_s:
-                    player.rect.left = start_unten[0]
-                    player.rect.top = start_unten[1]
-                    player.inMotion = False
-                    player.velocity = [0, 0]
+                    elif event.key == pygame.K_a:
+                        player.rect.left = start_links[0]
+                        player.rect.top = start_links[1]
+                        player.inMotion = False
+                        player.velocity = [0, 0]
 
-                if event.key == pygame.K_d:
-                    player.rect.left = start_rechts[0]
-                    player.rect.top = start_rechts[1]
-                    player.inMotion = False
-                    player.velocity = [0, 0]
+                    elif event.key == pygame.K_s:
+                        player.rect.left = start_unten[0]
+                        player.rect.top = start_unten[1]
+                        player.inMotion = False
+                        player.velocity = [0, 0]
 
-                # Ist der Spieler in Bewegung?
+                    if event.key == pygame.K_d:
+                        player.rect.left = start_rechts[0]
+                        player.rect.top = start_rechts[1]
+                        player.inMotion = False
+                        player.velocity = [0, 0]
+
+                # Ist der Spieler nicht in Bewegung?
                 if not player.inMotion:
 
                     if event.key == pygame.K_UP:
