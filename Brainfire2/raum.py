@@ -189,6 +189,16 @@ class ROOM:  #Raum beinhaltet die Matrix, alle Eingänge, und ob diese miteinand
             return self.run(nextPos, direction)  # weiterlaufen
 
 
+    def equality(self,other):
+        count = 0
+        for y in range(self.sy):
+            for x in range(self.sx):
+                if self.matrix[y][x] == other.matrix[y][x]:
+                    count += 1
+        eq = count / (self.sy * self.sx)
+        return eq
+
+
 
 
 class ROOM_SOLVER:#Diese Klasse übernimmt die Breitensuche. Letzendlich füllt sie nur die Verbindungs-Matrix in ROOM aus

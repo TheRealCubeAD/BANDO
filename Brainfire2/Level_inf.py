@@ -189,6 +189,7 @@ class LEVEL_SOLVER:
 
     def place_rooms(self):
         snake = []
+        placed = []
         for row in self.tpl_mtx:
             snake += row
 
@@ -197,8 +198,15 @@ class LEVEL_SOLVER:
             for room in rooms:
                 for tpl in snake:
                     if tpl.check(room):
-                        self.level.matrix[tpl.y][tpl.x] = room
-                        snake.remove(tpl)
+                        b = True
+                        for prev in placed:
+                            if room.equality(prev) >= 0.9:
+                                b = False
+                                break
+                        if b:
+                            self.level.matrix[tpl.y][tpl.x] = room
+                            placed.append(room)
+                            snake.remove(tpl)
 
 
     def place_path(self):
