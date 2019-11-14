@@ -83,6 +83,8 @@ class ROOM:  #Raum beinhaltet die Matrix, alle Eingänge, und ob diese miteinand
         for pos in self.IO:  #Stellt sicher dass die Eingänge frei sind
             self.matrix[pos.y][pos.x] = 0
 
+    def getMatrix(self):
+        return self.matrix
 
     def addConn(self,start,end): #Fügt eine Verbindung hinzu. Wird von der Breitensuche aufgerufen
         startIndex = self.IO.index(start.pos)

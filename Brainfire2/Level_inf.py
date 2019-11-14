@@ -42,6 +42,8 @@ class LEVEL:
         self.endPos = POS(nsy-1,nsx-1)
         self.pathLenght = None
 
+    def getMatrix(self):
+        return self.matrix
 
 class LEVEL_SOLVER:
 

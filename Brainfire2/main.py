@@ -5,6 +5,7 @@
 from sys import exit # Methode für Terminierung
 from pygame.color import THECOLORS # Importiert Liste von Farben
 import pygame # Engine
+from copy import deepcopy
 import Level_inf
 import pickle
 pygame.init() # Zündschlüssel
@@ -207,10 +208,20 @@ class playerSprite(pygame.sprite.Sprite):
         self.rect = self.rect.move(self.velocity)
 
 
+
+
+
+
+
+
+
 if __name__ == '__main__':
 
 
     # - Setup - - -  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    # Debugging Tool
+    debugging = True
 
     # Setze Standardeinheit fest
     einheit = 16
@@ -253,33 +264,64 @@ if __name__ == '__main__':
         if i != 9:
             Border.add(stoneSprite([i*einheit, (16 + 1) * einheit]))
 
-
-    # Generiert alle Türen
-    Doors = pygame.sprite.Group()
-    Doors.add( doorSprite( [ 8 * einheit, 0 ], "oben" ) )
-    Doors.add( doorSprite( [ 0, 9 * einheit ], "links" ) )
-    Doors.add( doorSprite( [ 17 * einheit, 8 * einheit ], "rechts" ) )
-    Doors.add( doorSprite( [ 9 * einheit, 17 * einheit ], "unten" ) )
-
-
-
     # Erstellt Spieler
     player = playerSprite(start_links)
-
 
 
     # Erstelle Level
     level_number = "test"
     level = Level_inf.create_level(level_number)
 
-    raum = level.matrix[1][1]
+    # Bereite Dungeon vor
+    level_matrix = [ [ None for _ in range(16)] for _ in range(16) ]
+    for x in range(6):
+        for y in range(6):
+            level_matrix[y][x] = level.matrix[y][x].getMatrix()
 
+    anfangsraum = [ [ 0 for x in range(16) ] for y in range(16) ]
+    anfangsraum[7][0] = 1
+    anfangsraum[15][7] = 1
+    anfangsraum[8][15] = 1
+    anfangsraum[0][8] = 1
+    level_matrix[5][0] = anfangsraum
+    level_matrix[0][5] = anfangsraum
+
+    dpos = [5, 0]
+    raum = level_matrix[dpos[0]][dpos[1]]
+
+    # Generiert alle Türen
+    Doors = pygame.sprite.Group()
+
+    if dpos[0] != 0:
+        Doors.add(doorSprite([8 * einheit, 0], "oben"))
+    else:
+        Doors.add(stoneSprite([8 * einheit, 0]))
+
+    if dpos[1] != 0:
+        Doors.add(doorSprite([0, 9 * einheit], "links"))
+    else:
+        Doors.add(stoneSprite([0, 9 * einheit]))
+
+    if dpos[1] != 5:
+        Doors.add(doorSprite([17 * einheit, 8 * einheit], "rechts"))
+    else:
+        Doors.add(stoneSprite([17 * einheit, 8 * einheit]))
+
+    if dpos[0] != 5:
+        Doors.add(doorSprite([9 * einheit, 17 * einheit], "unten"))
+    else:
+        Doors.add(stoneSprite([9 * einheit, 17 * einheit]))
+
+    # Generiert alle Steine
     Stones = pygame.sprite.Group()
     for x in range(16):
         for y in range(16):
-            if raum.matrix[y][x] == 1:
+            if raum[y][x] == 1:
                 Stones.add(stoneSprite([(x+1)*einheit,(y+1)*einheit]))
 
+
+    move_counter = 0
+    font = pygame.font.SysFont('Consolas', 30)
 
     # - Mainschleife - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -289,40 +331,49 @@ if __name__ == '__main__':
         # Ereignisschleife
         for event in pygame.event.get():
 
+            move_counter += 1
+
             # Das Fenster lässt sich mit dem X-Knopf schließen
             if event.type == pygame.QUIT:
                 exit("Das Fenster wurde geschlossen.")
 
-            # Eine Pfeiltaste wurde degrückt
+            # Eine Taste wurde degrückt
             elif event.type == pygame.KEYDOWN:
 
-                if event.key == pygame.K_w:
-                    player.rect.left = start_oben[0]
-                    player.rect.top = start_oben[1]
-                    player.inMotion = False
-                    player.velocity = [0, 0]
+                # Debugging Tool:
+                # Der Spieler kann sich an eine beliebige Tür mit WASD transportieren lassen.
+                if debugging:
 
-                elif event.key == pygame.K_a:
-                    player.rect.left = start_links[0]
-                    player.rect.top = start_links[1]
-                    player.inMotion = False
-                    player.velocity = [0, 0]
+                    if event.key == pygame.K_w:
+                        player.rect.left = start_oben[0]
+                        player.rect.top = start_oben[1]
+                        player.inMotion = False
+                        player.velocity = [0, 0]
 
-                elif event.key == pygame.K_s:
-                    player.rect.left = start_unten[0]
-                    player.rect.top = start_unten[1]
-                    player.inMotion = False
-                    player.velocity = [0, 0]
+                    elif event.key == pygame.K_a:
+                        player.rect.left = start_links[0]
+                        player.rect.top = start_links[1]
+                        player.inMotion = False
+                        player.velocity = [0, 0]
 
-                if event.key == pygame.K_d:
-                    player.rect.left = start_rechts[0]
-                    player.rect.top = start_rechts[1]
-                    player.inMotion = False
-                    player.velocity = [0, 0]
+                    elif event.key == pygame.K_s:
+                        player.rect.left = start_unten[0]
+                        player.rect.top = start_unten[1]
+                        player.inMotion = False
+                        player.velocity = [0, 0]
 
-                # Ist der Spieler in Bewegung?
+                    if event.key == pygame.K_d:
+                        player.rect.left = start_rechts[0]
+                        player.rect.top = start_rechts[1]
+                        player.inMotion = False
+                        player.velocity = [0, 0]
+
+
+
+                # Ist der Spieler nicht in Bewegung?
                 if not player.inMotion:
 
+                    # Bewege den Spieler mit den Pfeiltasten
                     if event.key == pygame.K_UP:
                         player.inMotion = True
                         player.velocity = [0, -speed]
@@ -340,6 +391,93 @@ if __name__ == '__main__':
                         player.velocity = [speed, 0]
 
 
+                    # Der Spieler will durch eine Tür gehen.
+                    elif event.key == pygame.K_SPACE:
+
+                        # Switch, ob der Raum neu zu zeichnen ist.
+                        zeichneNeu = False
+
+                        # Ist der Spieler and der oberen Tür?
+                        if player.rect.left == start_oben[0] and player.rect.top == start_oben[1]:
+                            # Gibt es einen darüberliegenden Raum?
+                            if dpos[0] != 0:
+                                # Bringe den Spieler in diesen Raum!
+                                zeichneNeu = True
+                                dpos[0] -= 1
+                                player.rect.left = start_unten[0]
+                                player.rect.top = start_unten[1]
+
+                        # Ist der Spieler an der links Tür?
+                        elif player.rect.left == start_links[0] and player.rect.top == start_links[1]:
+                            # Gibt es einen Raum links?
+                            if dpos[1] != 0:
+                                # Bringe den Spieler in diesen Raum!
+                                zeichneNeu = True
+                                dpos[1] -= 1
+                                player.rect.left = start_rechts[0]
+                                player.rect.top = start_rechts[1]
+
+                        # Ist der Spieler an der unteren Tür?
+                        elif player.rect.left == start_unten[0] and player.rect.top == start_unten[1]:
+                            # Gibt es einen darüberliegenden Raum?
+                            if dpos[0] != 5:
+                                # Bringe den Spieler in diesen Raum!
+                                zeichneNeu = True
+                                dpos[0] += 1
+                                player.rect.left = start_oben[0]
+                                player.rect.top = start_oben[1]
+
+
+                        # Ist der Spieler an der rechten Tür?
+                        elif player.rect.left == start_rechts[0] and player.rect.top == start_rechts[1]:
+                            # Gibt es einen darüberliegenden Raum?
+                            if dpos[1] != 5:
+                                # Bringe den Spieler in diesen Raum!
+                                zeichneNeu = True
+                                dpos[1] += 1
+                                player.rect.left = start_links[0]
+                                player.rect.top = start_links[1]
+
+
+
+                        if zeichneNeu:
+
+                            zeichneNeu = False
+                            raum = deepcopy(level_matrix[dpos[0]][dpos[1]])
+
+                            Doors = pygame.sprite.Group()
+
+                            if dpos[0] != 0:
+                                Doors.add(doorSprite([8 * einheit, 0], "oben"))
+                            else:
+                                Doors.add(stoneSprite([8 * einheit, 0]))
+
+                            if dpos[1] != 0:
+                                Doors.add(doorSprite([0, 9 * einheit], "links"))
+                            else:
+                                Doors.add(stoneSprite([0, 9 * einheit]))
+
+                            if dpos[1] != 5:
+                                Doors.add(doorSprite([17 * einheit, 8 * einheit], "rechts"))
+                            else:
+                                Doors.add(stoneSprite([17 * einheit, 8 * einheit]))
+
+                            if dpos[0] != 5:
+                                Doors.add(doorSprite([9 * einheit, 17 * einheit], "unten"))
+                            else:
+                                Doors.add(stoneSprite([9 * einheit, 17 * einheit]))
+
+                            # Generiert alle Steine
+                            Stones = pygame.sprite.Group()
+
+                            for x in range(16):
+                                for y in range(16):
+                                    if raum[y][x] == 1:
+                                        Stones.add(stoneSprite([(x + 1) * einheit, (y + 1) * einheit]))
+
+
+
+
         # Färbt den Bildschirm hellblau.
         fill(screen, "lightblue")  # Eisfläche
 
@@ -354,17 +492,13 @@ if __name__ == '__main__':
 
         # Kollidiert der Spieler mit einer Wand, so setze ihn vor die Wand
         if pygame.sprite.spritecollide(player, Border, False)\
-                or pygame.sprite.spritecollide(player, Stones, False):
+                or pygame.sprite.spritecollide(player, Stones, False)\
+                or pygame.sprite.spritecollide(player, Doors, False):
             player.rect.left = round(player.rect.left / einheit) * einheit
             player.rect.top = round(player.rect.top / einheit) * einheit
             player.velocity = [0,0]
             player.inMotion = False
 
-        if pygame.sprite.spritecollide(player, Doors, False):
-            player.rect.left = round(player.rect.left / einheit) * einheit
-            player.rect.top = round(player.rect.top / einheit) * einheit
-            player.velocity = [0, 0]
-            player.inMotion = False
 
         # Aktualisiert das Fenster
         flip()
