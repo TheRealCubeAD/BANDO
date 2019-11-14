@@ -245,7 +245,23 @@ class cursorSprite(pygame.sprite.Sprite):
         self.rect.top = pos[1]
 
 
+class aimSprite(pygame.sprite.Sprite):
 
+    def __init__(self,pos):
+
+        # Initiert Sprite
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface([einheit, einheit])
+
+        # Erstellt ein graues Kreidrat mit transparentem Hintergrund als Bild.
+        fill(self.image,"white")
+        drawKreidrat(self.image,"gold",(0,0),int(einheit/3))
+        self.image.set_colorkey(color("white"))
+
+        # Setze rechteckige Hülle des Sprites fest.
+        self.rect = self.image.get_rect()
+        self.rect.left = pos[0]
+        self.rect.top = pos[1]
 
 
 
@@ -258,7 +274,7 @@ if __name__ == '__main__':
     # pygame.mouse.set_visible(False)
 
     # Debugging Tool
-    debugging = False
+    debugging = True
 
     # Setze Standardeinheit fest
     einheit = 15
@@ -324,10 +340,10 @@ if __name__ == '__main__':
     anfangsraum[15][7] = 1
     anfangsraum[8][15] = 1
     anfangsraum[0][8] = 1
-    level_matrix[5][0] = anfangsraum
-    level_matrix[0][5] = anfangsraum
+    level_matrix[0][0] = anfangsraum
+    level_matrix[5][5] = anfangsraum
 
-    dpos = [5, 0]
+    dpos = [0, 0]
     raum = level_matrix[dpos[0]][dpos[1]]
     cursor = cursorSprite([(dpos[1] + 19) * einheit, (dpos[0] + 1) * einheit])
 
@@ -368,6 +384,7 @@ if __name__ == '__main__':
         for y in range(6):
             Map.add( mapSprite([(x+19)*einheit,(y+1)*einheit]) )
 
+    aim = aimSprite([(5 + 19) * einheit, (5 + 1) * einheit])
 
 
 
@@ -382,6 +399,8 @@ if __name__ == '__main__':
     countdown = 5*60
 
     thanks_for_playing_text = font.render("Thanks for playing!", False, (0,0,0))
+
+    gameover_text = font.render("Game Over!", False, (0,0,0))
 
     time_stop = False
 
@@ -516,7 +535,6 @@ if __name__ == '__main__':
 
                             zeichneNeu = False
                             raum = deepcopy(level_matrix[dpos[0]][dpos[1]])
-
                             Doors = pygame.sprite.Group()
 
                             if dpos[0] != 0:
@@ -550,10 +568,12 @@ if __name__ == '__main__':
                             cursor.rect.left = (dpos[1] + 19) * einheit
                             cursor.rect.top = (dpos[0] + 1) * einheit
 
-                            if dpos == [0,5]:
+                            if dpos == [5,5]:
                                 zielraumErreicht = True
+                                aim.rect.left = (0 + 19) * einheit
+                                aim.rect.top = (0 + 1) * einheit
 
-                            if dpos == [5,0] and zielraumErreicht:
+                            if dpos == [0,0] and zielraumErreicht:
                                 time_stop = True
 
         # Färbt den Bildschirm hellblau.
@@ -564,6 +584,7 @@ if __name__ == '__main__':
         drawSpriteGroup(screen, Stones)
         drawSpriteGroup(screen, Doors)
         drawSpriteGroup(screen, Map)
+        drawSprite(screen,aim)
         drawSprite(screen,cursor)
 
         # Bewege den Spieler
@@ -606,6 +627,10 @@ if __name__ == '__main__':
             countdowntext = font.render(str(int(100 * countdown) / 100), False, (0, 0, 0))
             screen.blit(countdowntext, (20 * einheit, 14 * einheit))
             screen.blit(thanks_for_playing_text, (20 * einheit, 16 * einheit))
+
+        if countdown <= 0:
+            fill(screen,"red")
+            screen.blit(gameover_text, (width/2 - 1.5* einheit, height/2 - 0.5*einheit))
 
         # Aktualisiert das Fenster
         flip()
