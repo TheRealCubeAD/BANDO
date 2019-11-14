@@ -9,6 +9,7 @@ from copy import deepcopy
 import Level_inf
 import pickle
 pygame.init() # Zündschlüssel
+pygame.font.init()
 
 
 
@@ -220,11 +221,14 @@ if __name__ == '__main__':
 
     # - Setup - - -  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+    # Maus nicht sichtbar
+    # pygame.mouse.set_visible(False)
+
     # Debugging Tool
     debugging = True
 
     # Setze Standardeinheit fest
-    einheit = 16
+    einheit = 15
     einheit *= 3 # Standardeinheit muss wegen der Kreidrate ein Vielfaches von 3 sein.
 
     # Setzt Bewegungsgeschwindgkeit fest
@@ -239,11 +243,15 @@ if __name__ == '__main__':
     # Setze Fenstergröße fest
     height = einheit * (16+2)
     width = int(height * 4 / 3)
+    # width = height
     size = (width,height)
 
     # Erstelle Fenster
     screen = pygame.display.set_mode(size)
-    setCaption("")
+    setCaption("Brainfire (Closed Alpha)")
+    icon = pygame.Surface((1,1))
+    icon.set_alpha(0)
+    pygame.display.set_icon(icon)
 
     # Initialisiert Zeitbegrenzung
     clock = pygame.time.Clock()
@@ -265,8 +273,8 @@ if __name__ == '__main__':
             Border.add(stoneSprite([i*einheit, (16 + 1) * einheit]))
 
     # Erstellt Spieler
-    player = playerSprite(start_links)
-
+    player = playerSprite(start_unten)
+    last_start = start_unten
 
     # Erstelle Level
     level_number = "test"
@@ -320,8 +328,19 @@ if __name__ == '__main__':
                 Stones.add(stoneSprite([(x+1)*einheit,(y+1)*einheit]))
 
 
-    move_counter = 0
-    font = pygame.font.SysFont('Consolas', 30)
+    zielraumErreicht = False
+
+    timer = 0.0
+    font = pygame.font.SysFont('Consolas', int(einheit*2/3))
+    elapsed_time_text = font.render("Elapsed Seconds:", False, (0, 0, 0))
+
+    seconds_left_to_text = font.render("Seconds left to", False, (0, 0, 0))
+    reach_the_exit_text = font.render("reach the exit:", False, (0,0,0))
+    countdown = 5*60
+
+    thanks_for_playing_text = font.render("Thanks for playing!", False, (0,0,0))
+
+    time_stop = False
 
     # - Mainschleife - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -331,7 +350,6 @@ if __name__ == '__main__':
         # Ereignisschleife
         for event in pygame.event.get():
 
-            move_counter += 1
 
             # Das Fenster lässt sich mit dem X-Knopf schließen
             if event.type == pygame.QUIT:
@@ -339,6 +357,13 @@ if __name__ == '__main__':
 
             # Eine Taste wurde degrückt
             elif event.type == pygame.KEYDOWN:
+
+                # Reset-Button
+                if event.key == pygame.K_r:
+                    player.rect.left = last_start[0]
+                    player.rect.top = last_start[1]
+                    player.inMotion = False
+                    player.velocity = [0, 0]
 
                 # Debugging Tool:
                 # Der Spieler kann sich an eine beliebige Tür mit WASD transportieren lassen.
@@ -406,6 +431,7 @@ if __name__ == '__main__':
                                 dpos[0] -= 1
                                 player.rect.left = start_unten[0]
                                 player.rect.top = start_unten[1]
+                                last_start = start_unten
 
                         # Ist der Spieler an der links Tür?
                         elif player.rect.left == start_links[0] and player.rect.top == start_links[1]:
@@ -416,6 +442,7 @@ if __name__ == '__main__':
                                 dpos[1] -= 1
                                 player.rect.left = start_rechts[0]
                                 player.rect.top = start_rechts[1]
+                                last_start = start_rechts
 
                         # Ist der Spieler an der unteren Tür?
                         elif player.rect.left == start_unten[0] and player.rect.top == start_unten[1]:
@@ -426,6 +453,7 @@ if __name__ == '__main__':
                                 dpos[0] += 1
                                 player.rect.left = start_oben[0]
                                 player.rect.top = start_oben[1]
+                                last_start = start_oben
 
 
                         # Ist der Spieler an der rechten Tür?
@@ -437,6 +465,7 @@ if __name__ == '__main__':
                                 dpos[1] += 1
                                 player.rect.left = start_links[0]
                                 player.rect.top = start_links[1]
+                                last_start = start_links
 
 
 
@@ -475,8 +504,11 @@ if __name__ == '__main__':
                                     if raum[y][x] == 1:
                                         Stones.add(stoneSprite([(x + 1) * einheit, (y + 1) * einheit]))
 
+                            if dpos == [0,5]:
+                                zielraumErreicht = True
 
-
+                            if dpos == [5,0] and zielraumErreicht:
+                                time_stop = True
 
         # Färbt den Bildschirm hellblau.
         fill(screen, "lightblue")  # Eisfläche
@@ -500,8 +532,33 @@ if __name__ == '__main__':
             player.inMotion = False
 
 
+
+        if not time_stop:
+
+            timer += 0.01
+            timertext = font.render(str(int(timer)), False, (0, 0, 0))
+            screen.blit(elapsed_time_text,(19 * einheit, 9*einheit))
+            screen.blit(timertext,(19*einheit,10*einheit))
+
+            if zielraumErreicht:
+                countdown -= 0.01
+                screen.blit(seconds_left_to_text, (19*einheit,12*einheit))
+                screen.blit(reach_the_exit_text, (19 * einheit, 13 * einheit))
+                countdowntext = font.render(str(int(10*countdown)/10), False, (0, 0, 0))
+                screen.blit(countdowntext, (19 * einheit, 14 * einheit))
+
+        else:
+            timertext = font.render(str(int(100*timer)/100), False, (0, 0, 0))
+            screen.blit(elapsed_time_text, (19 * einheit, 9 * einheit))
+            screen.blit(timertext, (19 * einheit, 10 * einheit))
+            screen.blit(seconds_left_to_text, (19 * einheit, 12 * einheit))
+            screen.blit(reach_the_exit_text, (19 * einheit, 13 * einheit))
+            countdowntext = font.render(str(int(100 * countdown) / 100), False, (0, 0, 0))
+            screen.blit(countdowntext, (19 * einheit, 14 * einheit))
+            screen.blit(thanks_for_playing_text, (19 * einheit, 16 * einheit))
+
         # Aktualisiert das Fenster
         flip()
 
-        # 90 FPS
-        clock.tick(90)
+        # 100 FPS
+        clock.tick(100)
