@@ -159,6 +159,24 @@ class stoneSprite(pygame.sprite.Sprite):
         self.rect.top = pos[1]
 
 
+class mapSprite(pygame.sprite.Sprite):
+
+    def __init__(self,pos):
+
+        # Initiert Sprite
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface([einheit, einheit])
+
+        # Erstellt ein graues Kreidrat mit transparentem Hintergrund als Bild.
+        fill(self.image,"white")
+        drawKreidrat(self.image,"gray",(0,0),int(einheit/3))
+        self.image.set_colorkey(color("white"))
+
+        # Setze rechteckige Hülle des Sprites fest.
+        self.rect = self.image.get_rect()
+        self.rect.left = pos[0]
+        self.rect.top = pos[1]
+
 
 class doorSprite(pygame.sprite.Sprite):
 
@@ -170,7 +188,7 @@ class doorSprite(pygame.sprite.Sprite):
 
         # Erstellt ein graues Kreidrat mit transparentem Hintergrund als Bild.
         fill(self.image,"white")
-        drawKreidrat(self.image,"brown",(0,0),int(einheit/3))
+        drawKreidrat(self.image,"darkred",(0,0),int(einheit/3))
         self.image.set_colorkey(color("white"))
 
         # Setze rechteckige Hülle des Sprites fest.
@@ -179,7 +197,6 @@ class doorSprite(pygame.sprite.Sprite):
         self.rect.top = pos[1]
 
         self.wand = strWand
-
 
 
 class playerSprite(pygame.sprite.Sprite):
@@ -209,7 +226,23 @@ class playerSprite(pygame.sprite.Sprite):
         self.rect = self.rect.move(self.velocity)
 
 
+class cursorSprite(pygame.sprite.Sprite):
 
+    def __init__(self,pos):
+
+        # Initiert Sprite
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface([einheit, einheit])
+
+        # Erstellt ein graues Kreidrat mit transparentem Hintergrund als Bild.
+        fill(self.image,"white")
+        drawKreidrat(self.image,"purple",(0,0),int(einheit/3))
+        self.image.set_colorkey(color("white"))
+
+        # Setze rechteckige Hülle des Sprites fest.
+        self.rect = self.image.get_rect()
+        self.rect.left = pos[0]
+        self.rect.top = pos[1]
 
 
 
@@ -225,7 +258,7 @@ if __name__ == '__main__':
     # pygame.mouse.set_visible(False)
 
     # Debugging Tool
-    debugging = True
+    debugging = False
 
     # Setze Standardeinheit fest
     einheit = 15
@@ -242,7 +275,7 @@ if __name__ == '__main__':
 
     # Setze Fenstergröße fest
     height = einheit * (16+2)
-    width = int(height * 4 / 3)
+    width = einheit * 26
     # width = height
     size = (width,height)
 
@@ -296,6 +329,7 @@ if __name__ == '__main__':
 
     dpos = [5, 0]
     raum = level_matrix[dpos[0]][dpos[1]]
+    cursor = cursorSprite([(dpos[1] + 19) * einheit, (dpos[0] + 1) * einheit])
 
     # Generiert alle Türen
     Doors = pygame.sprite.Group()
@@ -326,6 +360,15 @@ if __name__ == '__main__':
         for y in range(16):
             if raum[y][x] == 1:
                 Stones.add(stoneSprite([(x+1)*einheit,(y+1)*einheit]))
+
+
+    # Generiert Map
+    Map = pygame.sprite.Group()
+    for x in range(6):
+        for y in range(6):
+            Map.add( mapSprite([(x+19)*einheit,(y+1)*einheit]) )
+
+
 
 
     zielraumErreicht = False
@@ -504,6 +547,9 @@ if __name__ == '__main__':
                                     if raum[y][x] == 1:
                                         Stones.add(stoneSprite([(x + 1) * einheit, (y + 1) * einheit]))
 
+                            cursor.rect.left = (dpos[1] + 19) * einheit
+                            cursor.rect.top = (dpos[0] + 1) * einheit
+
                             if dpos == [0,5]:
                                 zielraumErreicht = True
 
@@ -517,6 +563,8 @@ if __name__ == '__main__':
         drawSpriteGroup(screen, Border)
         drawSpriteGroup(screen, Stones)
         drawSpriteGroup(screen, Doors)
+        drawSpriteGroup(screen, Map)
+        drawSprite(screen,cursor)
 
         # Bewege den Spieler
         player.move()
@@ -533,29 +581,31 @@ if __name__ == '__main__':
 
 
 
+
+
         if not time_stop:
 
             timer += 0.01
             timertext = font.render(str(int(timer)), False, (0, 0, 0))
-            screen.blit(elapsed_time_text,(19 * einheit, 9*einheit))
-            screen.blit(timertext,(19*einheit,10*einheit))
+            screen.blit(elapsed_time_text,(20 * einheit, 9*einheit))
+            screen.blit(timertext,(20*einheit,10*einheit))
 
             if zielraumErreicht:
                 countdown -= 0.01
-                screen.blit(seconds_left_to_text, (19*einheit,12*einheit))
-                screen.blit(reach_the_exit_text, (19 * einheit, 13 * einheit))
+                screen.blit(seconds_left_to_text, (20*einheit,12*einheit))
+                screen.blit(reach_the_exit_text, (20 * einheit, 13 * einheit))
                 countdowntext = font.render(str(int(10*countdown)/10), False, (0, 0, 0))
-                screen.blit(countdowntext, (19 * einheit, 14 * einheit))
+                screen.blit(countdowntext, (20 * einheit, 14 * einheit))
 
         else:
             timertext = font.render(str(int(100*timer)/100), False, (0, 0, 0))
-            screen.blit(elapsed_time_text, (19 * einheit, 9 * einheit))
-            screen.blit(timertext, (19 * einheit, 10 * einheit))
-            screen.blit(seconds_left_to_text, (19 * einheit, 12 * einheit))
-            screen.blit(reach_the_exit_text, (19 * einheit, 13 * einheit))
+            screen.blit(elapsed_time_text, (20 * einheit, 9 * einheit))
+            screen.blit(timertext, (20 * einheit, 10 * einheit))
+            screen.blit(seconds_left_to_text, (20 * einheit, 12 * einheit))
+            screen.blit(reach_the_exit_text, (20 * einheit, 13 * einheit))
             countdowntext = font.render(str(int(100 * countdown) / 100), False, (0, 0, 0))
-            screen.blit(countdowntext, (19 * einheit, 14 * einheit))
-            screen.blit(thanks_for_playing_text, (19 * einheit, 16 * einheit))
+            screen.blit(countdowntext, (20 * einheit, 14 * einheit))
+            screen.blit(thanks_for_playing_text, (20 * einheit, 16 * einheit))
 
         # Aktualisiert das Fenster
         flip()
