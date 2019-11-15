@@ -275,7 +275,7 @@ if __name__ == '__main__':
     # pygame.mouse.set_visible(False)
 
     # Debugging Tool
-    debugging = True
+    debugging = False
 
     # Setze Standardeinheit fest
     einheit = 15
@@ -392,7 +392,7 @@ if __name__ == '__main__':
     zielraumErreicht = False
 
     timer = 0.0
-    font = pygame.font.SysFont('Consolas', int(einheit*2/3))
+    font = pygame.font.SysFont('Consolas', int(einheit*1.5/3))
     elapsed_time_text = font.render("Elapsed Seconds:", False, (0, 0, 0))
 
     seconds_left_to_text = font.render("Seconds left to", False, (0, 0, 0))
