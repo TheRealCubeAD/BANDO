@@ -19,7 +19,7 @@ class template:
         return self.y == other.y and self.x == other.x
 
     def add_conn(self,start,end):
-        self.conns[dirs.index(start)][dirs.index(end)]
+        self.conns[dirs.index(start)][dirs.index(end)] = True
 
     def check(self,room):
         for y in range(4):
@@ -251,6 +251,11 @@ def create_level(level_number):
     print("Placing Rooms...")
     s.place_rooms()
     print("Done!")
+    for y in range(l.sy):
+        for x in range(l.sx):
+            print(y,x)
+            pprint.pprint(s.tpl_mtx[y][x].conns)
+            pprint.pprint(l.matrix[y][x].connections)
     print()
     print("Took:",time.time() - t)
     #pickle.dump(l,open("level_"+str(level_number)+".lvl","wb"))
