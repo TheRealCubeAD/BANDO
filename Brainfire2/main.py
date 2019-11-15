@@ -8,6 +8,7 @@ import pygame # Engine
 from copy import deepcopy
 import Level_inf
 import pickle
+import pprint
 pygame.init() # Zündschlüssel
 pygame.font.init()
 
@@ -535,6 +536,8 @@ if __name__ == '__main__':
 
                             zeichneNeu = False
                             raum = deepcopy(level_matrix[dpos[0]][dpos[1]])
+                            level.print_path()
+                            pprint.pprint(level.matrix[dpos[0]][dpos[1]].connections)
                             Doors = pygame.sprite.Group()
 
                             if dpos[0] != 0:

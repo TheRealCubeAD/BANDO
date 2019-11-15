@@ -32,18 +32,26 @@ class template:
 
 
 
+
 class LEVEL:
 
-    def __init__(self,nsy=8,nsx=8):
+    def __init__(self,nsy=6,nsx=6):
         self.sy = nsy
         self.sx = nsx
         self.matrix = [[None for _ in range(self.sx)] for __ in range(self.sy)]
         self.startPos = POS(0,0)
         self.endPos = POS(nsy-1,nsx-1)
         self.pathLenght = None
+        self.path = None
 
     def getMatrix(self):
         return self.matrix
+
+    def print_path(self):
+        string = ""
+        for pos in self.path:
+            string += " " + pos.inText()
+        print(string)
 
 class LEVEL_SOLVER:
 
@@ -216,8 +224,12 @@ class LEVEL_SOLVER:
             next_pos = self.path[i+1]
             cur_tpl = self.tpl_mtx[cur_pos.y][cur_pos.x]
             dif = next_pos - cur_pos
+            print(last_dif.inText(),dif.inText())
             cur_tpl.add_conn(last_dif,dif)
             last_dif = dif.invert()
+
+
+
 
 
 
@@ -233,6 +245,7 @@ def create_level(level_number):
     s.solve()
     dprint("Creating Path to end...")
     s.path = s.make_path2()
+    l.path = s.path
     print("Length of path:",len(s.path))
     s.place_path()
     print("Placing Rooms...")
