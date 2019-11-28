@@ -58,7 +58,7 @@ class ROOM:  #Raum beinhaltet die Matrix, alle Eingänge, und ob diese miteinand
     def __init__(self):
         self.y = None
         self.x = None
-        self.sy = 16
+        self.sy = 32
         self.sx = 16
         self.random_tresh = 0.18
         self.IO = all_doors
@@ -306,5 +306,6 @@ def createRoom(i):
 
 
 if __name__ == '__main__':
-    r = createRoom(0)
-    r.calc_dead_ends()
+    print(time.clock())
+    massProduction(1000)
+    print(time.clock())
