@@ -16,9 +16,9 @@ for i in range(10): #to it a few times just to see
     data = np.fromstring(stream.read(CHUNK),dtype=np.int16)
     data = data * np.hanning(len(data)) # smooth the FFT by windowing data
     fft = abs(np.fft.fft(data).real)
-    fft = fft[:int(len(fft)/2)] # keep only first half
+    fft = fft[:int(len(fft)/2)] # keep only first.txt half
     freq = np.fft.fftfreq(CHUNK,1.0/RATE)
-    freq = freq[:int(len(freq)/2)] # keep only first half
+    freq = freq[:int(len(freq)/2)] # keep only first.txt half
     freqPeak = freq[np.where(fft==np.max(fft))[0][0]]+1
     print("peak frequency: %d Hz"%freqPeak)
 

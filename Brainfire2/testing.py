@@ -1,8 +1,5 @@
-
+import random
 class A:
-
-
-
     def __init__(self, i):
         self.x = []
         self.x.append(i)

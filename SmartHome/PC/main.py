@@ -7,7 +7,7 @@ class CONNECT:
 
     def __init__(self):
         self.server_ip = "192.168.0.45"
-        self.port = 10000
+        self.port = 10010
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         self.connected = False
@@ -23,6 +23,7 @@ class CONNECT:
                 print("Connecting...")
                 self.connect()
                 time.sleep(5)
+            time.sleep(5)
 
 
     def connect(self):
