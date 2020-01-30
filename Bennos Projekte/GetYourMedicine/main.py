@@ -23,19 +23,24 @@ class SPEAKER:
 
 
     def first(self):
+        print("playing:")
         self.play_melody(self.first_)
 
     def second(self):
+        print("playing:")
         self.play_melody(self.second_)
 
     def affirmative(self):
+        print("playing:")
         self.play_melody(self.affirm_)
 
 
     def read_melody(self, path, var):
+        print("reading melody:", path)
         with open(path) as file:
             for line in file:
                 note, duration = line.split()
+                print(note, duration)
                 note = self.get_freq(note)
                 duration = float(duration)
                 var.append([note, duration])
@@ -44,6 +49,7 @@ class SPEAKER:
     def play_melody(self, var):
         for line in var:
             freq, duration = line
+            print(freq, duration)
             if freq == 0:
                 time.sleep(duration)
             else:
@@ -51,11 +57,13 @@ class SPEAKER:
 
 
     def read_notes(self):
+        print("reading notes:")
         self.notes = ["0"]
         self.freqs = [0]
         t = open("note_edit.txt","r")
         for line in t:
             n, f = line.split()
+            print(n, f)
             self.notes.append(n)
             self.freqs.append(int(f))
         t.close()
@@ -145,7 +153,8 @@ class SYSTEM:
         self.speaker = SPEAKER()
         self.led = LED()
         self.clock = CLOCK.DS3231()
-        self.button = Pin(9999, Pin.IN)
+        self.button = Pin(12, Pin.IN)
+        self.button.irq(trigger=Pin.IRQ_FALLING, handler=self.button_callback)
 
         # Data
         self.sleep = ((23,00), (6,00))
@@ -214,14 +223,17 @@ class SYSTEM:
             m2 += 60
             h2 -= 1
         h1 -= hh
+        h2 -= hh
         if h1 < 0 or (h1 == 0 and m1 == 0):
+            print("sleeping")
             return False
         if h2 > 0 or (h2 == 0 and m2 == 0):
+            print("sleeping")
             return False
         return True
 
 
-    def button_callback(self):
+    def button_callback(self,p):
         if not self.affirmed:
             self.affirmed = True
             self.speaker.affirmative()
