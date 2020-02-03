@@ -3,10 +3,8 @@ import os
 import disp
 import fan
 import pcState
-
-#LED = led.LED()
-#LED.all((0,255,0))
-#LED.flow((255,0,0),(0,255,0),0,90,9,0.5)
+import sock
+import sound
 
 
 class SYSTEM:
@@ -20,22 +18,28 @@ class SYSTEM:
     def __init__(self):
         # SENSORS
         self.PC_STATE = pcState.PCSTATE(self.pc_state_response)
+        self.PC_sock = sock.SOCK(self)
 
         # ACTUATORS
 
         #self.LED = led.LED()
         self.DISP = disp.DISPLAY()
         self.FAN = fan.FAN()
+        self.SOUND = sound.SOUND()
+        print("init")
 
 
     def activate(self):
         self.FAN.turn_on()
         self.DISP.activate()
         self.DISP.add("beg")
+        self.SOUND.sound("08")
+
 
     def deactivate(self):
         self.FAN.turn_off()
         self.DISP.deactivate()
+        self.SOUND.sound("16")
 
     def pc_state_response(self,value):
         if value:
@@ -43,10 +47,25 @@ class SYSTEM:
         else:
             self.deactivate()
 
+    def input_response(self,value):
+        if value == "###":
+            self.DISP.print_starter()
+            self.PC_STATE.turn_on()
+        elif value == "end":
+            self.deactivate()
+            exit("Closed by user")
+        else:
+            print("unknown command")
+
+    def d_print(self,content,t):
+        self.DISP.add("pout",arg=(content,t))
+
 
 if __name__ == '__main__':
     sys = SYSTEM()
-    input()
+    while 1:
+        print()
+        sys.input_response(input(">>>"))
 
 
 

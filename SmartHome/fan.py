@@ -16,5 +16,7 @@ class FAN:
 
 if __name__ == '__main__':
     f = FAN()
+    input()
     f.turn_on()
+    input()
     f.turn_off()
