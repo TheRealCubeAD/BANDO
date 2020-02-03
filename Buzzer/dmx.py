@@ -103,7 +103,7 @@ print("type:", type(intf))
 print(intf)
 
 ep = usb.util.find_descriptor(intf,
-                              # match the first OUT endpoint
+                              # match the first.txt OUT endpoint
                               custom_match= \
                                   lambda e: \
                                       usb.util.endpoint_direction(e.bEndpointAddress) == \
@@ -133,7 +133,7 @@ usb request for cmd_SetChannelRange:
 	bmRequestType:	ignored by device, should be USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT
 	bRequest:		cmd_SetChannelRange
 	wValue:			number of channels to set [1 .. 512-wIndex]
-	wIndex:			index of first channel to set [0 .. 511]
+	wIndex:			index of first.txt channel to set [0 .. 511]
 	wLength:		length of data, must be >= wValue
 """
 
