@@ -398,6 +398,7 @@ if __name__ == '__main__':
     seconds_left_to_text = font.render("Seconds left to", False, (0, 0, 0))
     reach_the_exit_text = font.render("reach the exit:", False, (0,0,0))
     countdown = 5*60
+    # countdown = 0
 
     thanks_for_playing_text = font.render("Thanks for playing!", False, (0,0,0))
 
