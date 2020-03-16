@@ -306,5 +306,6 @@ def createRoom(i):
 
 
 if __name__ == '__main__':
-    r = createRoom(0)
-    r.calc_dead_ends()
+    time.clock()
+    r = massProduction(10000)
+    print(time.clock())
