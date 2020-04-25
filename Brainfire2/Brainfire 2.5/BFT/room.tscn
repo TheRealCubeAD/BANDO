@@ -681,6 +681,8 @@ cell_size = Vector2( 400, 400 )
 format = 1
 script = ExtResource( 40 )
 
+[node name="particel_layer" type="Node2D" parent="."]
+
 [node name="torch_layer" type="Node2D" parent="."]
 
 [node name="wall_map" type="TileMap" parent="."]
@@ -689,5 +691,4 @@ tile_set = SubResource( 29 )
 cell_size = Vector2( 200, 200 )
 centered_textures = true
 format = 1
-tile_data = PoolIntArray( 393281, 0, 0 )
 script = ExtResource( 38 )

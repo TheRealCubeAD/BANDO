@@ -57,7 +57,9 @@ func _physics_process(delta):
 			
 		if abs(rotation_degrees - rot_dest) < 20.0:
 			rotation_degrees = rot_dest
-
+	
+	if moving:
+		pass
 
 func _input(event):
 	# react to arrow-keys

@@ -1,9 +1,10 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
-[ext_resource path="res://New Folder/char_main0001.png" type="Texture" id=1]
+[ext_resource path="res://char/char_main0001.png" type="Texture" id=1]
 [ext_resource path="res://scripts/player.gd" type="Script" id=2]
-[ext_resource path="res://arm_motion.gd" type="Script" id=4]
-[ext_resource path="res://New Folder/char_arm0001.png" type="Texture" id=5]
+[ext_resource path="res://scripts/arm_motion.gd" type="Script" id=3]
+[ext_resource path="res://hud.gd" type="Script" id=4]
+[ext_resource path="res://char/char_arm0001.png" type="Texture" id=5]
 [ext_resource path="res://scripts/Camera2D.gd" type="Script" id=31]
 [ext_resource path="res://scripts/main.gd" type="Script" id=32]
 
@@ -12,7 +13,7 @@ polygon = PoolVector2Array( 35.485, 91.513, 53.3466, 73.6514, 73.8278, 66.0305, 
 
 [node name="game" type="Node2D"]
 script = ExtResource( 32 )
-room_size = 12
+room_size = 20
 wall_treshold = 0.2
 
 [node name="Camera2D" type="Camera2D" parent="."]
@@ -33,13 +34,13 @@ script = ExtResource( 2 )
 position = Vector2( 50, -40 )
 rotation = 0.0872665
 texture = ExtResource( 5 )
-script = ExtResource( 4 )
+script = ExtResource( 3 )
 
 [node name="arm_left" type="Sprite" parent="player"]
 position = Vector2( -50, -40 )
 rotation = -0.0872665
 texture = ExtResource( 5 )
-script = ExtResource( 4 )
+script = ExtResource( 3 )
 
 [node name="player_sprite" type="Sprite" parent="player"]
 texture = ExtResource( 1 )
@@ -49,3 +50,6 @@ position = Vector2( -100, -100 )
 occluder = SubResource( 1 )
 
 [node name="hud" type="Node2D" parent="."]
+script = ExtResource( 4 )
+
+[node name="mini_map" type="Node2D" parent="hud"]

@@ -1,6 +1,8 @@
 extends Node2D
 
 var game
+var running_particle
+var particle_layer
 
 var matrix
 
@@ -9,11 +11,16 @@ var torch_count
 
 var treshold
 
+
+
 func _enter_tree():
 	# get values
 	game = get_parent().get_parent()
 	size = game.room_size
 	treshold = game.wall_treshold
+	
+	running_particle = load("running_particle.tscn")
+	particle_layer = get_node("particel_layer")
 	
 	# calc torch count
 	torch_count = size * size / 20
@@ -72,7 +79,6 @@ func set_torches(): # set torches randomly
 			if t != null:
 				break
 		cur_torch_count += 1
-					
 
 
 func get_pos_v(vec): # get value in matric from vector
@@ -88,3 +94,10 @@ func run(pos, dir): # calc pos after running from pos in dir
 		return run(new_pos, dir)
 	else:
 		return pos
+
+
+func summon_particle(pos):
+	pos = pos + Vector2(randi() % 100 - 50, randi() % 100 - 50)
+	var new = running_particle.instance()
+	new.position = pos
+	particle_layer.add_child(new)

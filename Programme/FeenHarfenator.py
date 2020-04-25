@@ -784,7 +784,7 @@ def pausez(x, y, a):
         r = 40
         f = False
     elif art == 4:
-        r = 35
+        r = 15
         f = True
     elif art == 8:
         r = 25
@@ -842,6 +842,47 @@ def say(text, color):
     info.configure(text=text, fg=color)
 
 
+def tsave():
+    global noten
+    print("saving")
+    na = name.get()
+    if len(na) > 0:
+        file = open(na + ".txt", "w")
+        for note in noten:
+            res = ""
+            for element in note:
+                res += str(element) + " "
+            file.write(res)
+            file.write("\n")
+        file.close()
+        say("Als txt gespeichert", "green")
+    else:
+        say("Bitte gib den Namen der Datei an", "red")
+
+
+def read():
+    global noten
+
+    path = name.get()
+    if len(path) > 0:
+        try:
+            file = open(path+".txt", "r")
+            for line in file:
+                if line.rstrip() != "":
+                    cur = line.rstrip().split()
+                    cur[0] = int(cur[0])
+                    cur[1] = int(cur[1])
+                    cur[2] = int(cur[2])
+                    cur[4] = int(cur[4])
+                    noten.append(cur)
+            say("Noten eingelesen", "green")
+        except:
+            say("Datei konnte nicht gefunden werden", "red")
+    else:
+        say("Bitte Dateinamen angeben", "red")
+
+
+
 def ende():
     global pic
     global fenster
@@ -890,6 +931,8 @@ verbutton = Button(fenster, text="Hinzufügen", command=verbanwenden, bg="lightb
 fertigbutton = Button(fenster, text="Fertig", command=anwenden, bg="lightgreen", height=1, width=270)
 name = Entry(fenster, width=20)
 save = Button(fenster, text="Speichern und Beenden", command=ende, bg="darkorange", height=1, width=20)
+tsave = Button(fenster, text="Speichern als txt", command=tsave, bg="purple", height=1, width=20)
+readbutton = Button(fenster, text="Einlesen", command=read, bg="blue", height=1, width=10)
 
 label1.grid(row=0, column=13, pady=10)
 label2.grid(row=2, column=13, pady=10)
@@ -910,6 +953,7 @@ for i in range(4):
     langbutton[i].grid(row=5, column=i, pady=2)
 
 fenster.geometry("1900x400")
+fenster.resizable(True, True)
 pausebutton.grid(row=1, column=25, pady=2)
 punktbutton.grid(row=5, column=5, pady=2)
 anfangbutton.grid(row=5, column=18, pady=2)
@@ -918,8 +962,11 @@ verbutton.grid(row=5, column=21, pady=2)
 fertigbutton.place(x=0, y=310)
 name.place(x=20, y=360)
 save.place(x=160, y=356)
+tsave.place(x=340, y=356)
+readbutton.place(x=490, y=356)
 
 pic = Image.new("1", (2600, 2600), 1)
 draw = ImageDraw.Draw(pic)
+
 
 fenster.mainloop()

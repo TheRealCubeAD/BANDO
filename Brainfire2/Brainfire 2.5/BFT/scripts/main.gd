@@ -11,7 +11,7 @@ var player
 
 func _enter_tree():
 	# checking room size
-	if room_size % 2 == 1 or room_size < 6 or room_size > 16:
+	if room_size % 2 == 1 or room_size < 6 or room_size > 20:
 		print_debug("INVALID ROOM_SIZE")
 		get_tree().quit()
 
@@ -25,3 +25,8 @@ func _ready():
 	# init player
 	player = get_node("player")
 	player.set_pos(Vector2(0, room_size/2 - 1))
+
+
+func _input(event):
+	if event.is_action_pressed("key_esc"):
+		get_tree().quit()

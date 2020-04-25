@@ -32,7 +32,7 @@ class SYSTEM:
     def activate(self):
         self.FAN.turn_on()
         self.DISP.activate()
-        self.DISP.add("beg")
+        self.DISP.add_frame("beg")
         self.SOUND.sound("08")
 
 
@@ -58,7 +58,7 @@ class SYSTEM:
             print("unknown command")
 
     def d_print(self,content,t):
-        self.DISP.add("pout",arg=(content,t))
+        self.DISP.add_frame("pout", arg=(content, t))
 
 
 if __name__ == '__main__':
