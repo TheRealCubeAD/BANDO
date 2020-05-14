@@ -36,6 +36,8 @@ def load_settings():
 
 class main: # Controlling Class
 
+    # For main:
+
     def __init__(self):
         self.frame = Tk()
         self.frame.title("Veeh-Harpenator 2.0 (Benjamin Schaab)")
@@ -139,7 +141,7 @@ class main: # Controlling Class
                     final += "."
         return final
 
-
+    # For Crator:
 
     def get_update(self, note):
         for i in range(len(note)):
@@ -147,6 +149,8 @@ class main: # Controlling Class
         self.current_label.re_text(self.note_to_text(note))
         if self.verify_note(note):
             self.current_label.re_color(color.color_text_high)
+        else:
+            self.current_label.re_color(color.color_text_low)
 
 
     def get_add(self):
@@ -154,6 +158,9 @@ class main: # Controlling Class
             return True
         else:
             return False
+
+
+
 
 
 class FRAME: # handles Frame-widgets
@@ -432,12 +439,13 @@ class button_worker(WORK_FRAME):
     def add_button_callback(self):
         if self.add():
             self.reset()
+            self.push_update()
 
 
     def push_update(self):
         if self.update(self.note):
             self.reset()
-            self.update(self.note)
+
 
 
     def reset(self):
