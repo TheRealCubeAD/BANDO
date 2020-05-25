@@ -293,6 +293,7 @@ class SOURCE:
                             self.path = drive + lines[1].rstrip()
                             self.search_files()
                             self.active = True
+                            print(self.type, "found")
                             return True
             time.sleep(1)
 
@@ -353,6 +354,7 @@ class DESTINATION:
                             self.path = drive + lines[1].rstrip()
                             self.search_folders()
                             self.active = True
+                            print("dest found")
                             return True
             time.sleep(1)
 
@@ -422,11 +424,19 @@ class CONTROL:
         self.source_external.stop_searching()
         self.source_internal.stop_searching()
         to_create_dates = self.source_internal.get_dates()
-        to_create_dates.union(self.source_external.get_dates())
+        to_create_dates = to_create_dates.union(self.source_external.get_dates())
         to_create_dates.difference(self.destination.get_dates())
         self.destination.create_folders(to_create_dates)
-        all_files = self.source_internal.files + self.source_internal.files
+        all_files = self.source_internal.files + self.source_external.files
         to_copy = [file for file in all_files if not self.destination.does_exist(file)]
+        all_space = sum([file.get_size() for file in to_copy])
+        print("Copying " + str(all_space) + " Byte in " + str(len(to_copy)) + " Files")
+        for file in to_copy:
+            print("    Copying " + file.name + " ...")
+            self.destination.copy_file(file)
+
+        print("Finished!")
+        return True
 
 
 
@@ -438,6 +448,7 @@ def test(cause):
 c = CONTROL()
 while 1:
     time.sleep(1)
+    input()
     if c.start_transfer():
         break
 
