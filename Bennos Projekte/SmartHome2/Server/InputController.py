@@ -8,7 +8,7 @@ class INPCON:
         self.occupied = False
         for device in Device_init_list.INPUT_DEVICES:
             print(device)
-            self.add_device(device(self))
+            self.add_device(device(self.add_event))
 
 
 

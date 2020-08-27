@@ -40,15 +40,15 @@ class PCSTATE:
                     self.state = True
                     event = INPUT_EVENT()
                     event.set_device("PC")
-                    event.get_message("power_on")
+                    event.set_message("power_on")
                     event.set_prio_high()
-                    #self.callback(event)
+                    self.callback(event)
             else:
                 if not all(self.messure):
                     self.state = False
                     event = INPUT_EVENT()
                     event.set_device("PC")
-                    event.get_message("power_off")
+                    event.set_message("power_off")
                     event.set_prio_high()
                     self.callback(event)
             time.sleep(0.1)

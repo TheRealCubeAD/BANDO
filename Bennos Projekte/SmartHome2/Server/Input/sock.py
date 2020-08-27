@@ -11,7 +11,7 @@ class SOCK:
         self.thread = None
 
     def activate(self):
-        self.pc = PC(callback)
+        self.pc = PC(self.callback)
         self.addrs = {"192.168.0.173": self.pc}
         self.start_sck()
         print("Socket started")
