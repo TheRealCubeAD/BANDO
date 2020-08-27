@@ -24,6 +24,7 @@ class DISPLAY:
 
     def activate(self):  #Startet main() als Thread (von aussen aufzurufen)
         self.active = True
+        self.cueList =[]
         self.main_thread = threading.Thread(target=self.main)
         self.main_thread.daemon = True
         self.main_thread.start()
