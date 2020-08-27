@@ -1,0 +1,36 @@
+
+load_single_storie(id, mode="CSV")
+    id: id of the HackerStory-Item
+    mode: mode used to store the data (note: both modes do not work correctly)
+        "CSV": store data as .csv file
+        "sqlite": store data in sqlite table
+
+    returns:
+        HackerStore Object
+
+    use this if you want to get a single story by id
+
+
+def load_all_stories(mode="CSV")
+    mode: mode used to store the data (note: both modes do not work correctly)
+        "CSV": store data as .csv file
+        "sqlite": store data in sqlite table
+
+    returns:
+        List of all HackerStore Objects
+
+    use this if you want to get all stories (newest first)
+
+
+HackerStore:
+    get_data()
+        verify wether the object is has data
+        returns:
+            bool
+
+    store(path)
+        path: (string) Filepath (example "C:/HackerStory.csv"
+
+        stores the data as file at the location of the given path
+
+    the Object will automatically load the data from the web when initialised

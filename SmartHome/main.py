@@ -1,10 +1,7 @@
-import os
 #import led
-import disp
-import fan
+from Output import disp, fan, sound
 import pcState
 import sock
-import sound
 
 
 class SYSTEM:

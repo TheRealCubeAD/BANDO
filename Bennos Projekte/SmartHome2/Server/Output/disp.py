@@ -27,7 +27,7 @@ class DISPLAY:
         self.main_thread = threading.Thread(target=self.main)
         self.main_thread.daemon = True
         self.main_thread.start()
-        self.add("starter")
+        self.add("beg")
 
     def deactivate(self):  #Schaltet main() ab (von aussen aufzurufen)
         self.active = False
@@ -40,9 +40,6 @@ class DISPLAY:
 
     def add(self,meth,arg=None):  #Fuegt eine Aufgabe der Liste hinten an (von aussen aufzurufen)
         self.cueList.append((meth,arg))
-
-    def add_text(self, text):
-        self.add("pout", arg=text)
 
     def main(self):  #Fuehrt Aufgaben aus cueList aus. Gibt es keine Aufgabe wird die Zeit angezeigt
         while self.active:

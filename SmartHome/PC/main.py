@@ -6,7 +6,7 @@ from SwSpotify import spotify
 class CONNECT:
 
     def __init__(self):
-        self.server_ip = "192.168.0.45"
+        self.server_ip = "192.168.0.46"
         self.port = 10010
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 

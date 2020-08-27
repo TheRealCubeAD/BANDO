@@ -1,16 +1,27 @@
 import threading
 import socket
-from Output import sound
+from IOevent import INPUT_EVENT
 
 
 class SOCK:
 
-    def __init__(self,main):
-        self.main = main
-        self.pc = PC(main)
+    def __init__(self, callback):
+        self.callback = callback
+        self.sck = None
+        self.thread = None
+
+    def activate(self):
+        self.pc = PC(callback)
         self.start_sck()
         self.addrs = {"192.168.0.173":self.pc}
-        self.thread = None
+
+
+    def deactivate(self):
+        if self.sck != None:
+            self.sck.detach()
+            self.sck.close()
+        del self.thread
+        del self.pc
 
 
 
@@ -39,22 +50,24 @@ class SOCK:
 
 class PC:
 
-    def __init__(self,main):
-        self.main = main
+    def __init__(self, callback):
+        self.callback = callback
         self.addr = None
         self.con = None
         self.active = False
         self.recver = threading.Thread(target=self.recv)
         self.recver.daemon = True
         self.recver.start()
-        self.SOUND = sound.SOUND()
 
     def establish_conn(self,con,addr):
         self.addr = addr
         self.con = con
         self.active = True
-        print("PC connected")
-        self.SOUND.TTS("connected")
+        event = INPUT_EVENT()
+        event.set_device("PC")
+        event.set_message("connected")
+        self.callback(event)
+
 
     def recv(self):
         while 1:
@@ -64,8 +77,9 @@ class PC:
                     data = str(data,"utf-8")
                     self.handle_data(data)
                 except ConnectionResetError:
-                    print("PC disconnected")
-                    self.SOUND.TTS("disconnected")
+                    event.set_device("PC")
+                    event.set_message("disconnected")
+                    self.callback(event)
                     self.active = False
 
     def handle_data(self,data):
@@ -73,7 +87,9 @@ class PC:
             print(data)
             app, cont = data.split(":::")
             if app == "SPOTIFY":
-                self.main.d_print(cont,5)
+                event.set_device("Spotify")
+                event.set_message(cont)
+                self.callback(event)
         except:
             print("RECV ERROR")
 
