@@ -14,6 +14,7 @@ class CONTROLLER:
         if not self.active and not event.is_prio_high():
             return
         else:
+            print("starting event...")
             self.process = threading.Thread(target=self.process_input, name="process", args=event)
             self.process.daemon = True
             self.process.start()

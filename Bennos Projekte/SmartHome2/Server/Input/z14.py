@@ -30,7 +30,7 @@ class Z14:
         time.sleep(5)
         while self.running:
             reading = self.read()
-            print(reading)
+            print("Z14 read:", reading)
             if reading >= 1100:
                 if warned == 0:
                     warned = 1
@@ -47,6 +47,7 @@ class Z14:
                 event.set_message("s:::" + reading)
                 self.callback(event)
             time.sleep(20)
+        print("Z14 killed")
 
 if __name__ == "__main__":
     z = Z14(None)

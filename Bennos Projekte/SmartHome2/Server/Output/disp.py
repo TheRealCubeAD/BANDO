@@ -28,6 +28,7 @@ class DISPLAY:
         self.main_thread.daemon = True
         self.main_thread.start()
         self.add("beg")
+        print("DISP started")
 
     def deactivate(self):  #Schaltet main() ab (von aussen aufzurufen)
         self.active = False
@@ -37,6 +38,7 @@ class DISPLAY:
         self.print_text(["SHUTTING DOWN"],5)
         with canvas(self.device) as draw:  #Bildschirm schwaerzen
             draw.rectangle(self.device.bounding_box, outline="black", fill="black")
+        print("DISP killed")
 
     def add(self,meth,arg=None):  #Fuegt eine Aufgabe der Liste hinten an (von aussen aufzurufen)
         self.cueList.append((meth,arg))
@@ -65,6 +67,7 @@ class DISPLAY:
         self.print_text(cont,t)
 
     def meth_starter(self,meth,arg):  #Hilfsmethode zum ausfuehren der Aufgabe
+        print("DISP is printing...")
         self.occupied = True
         if arg:
             meth(arg)

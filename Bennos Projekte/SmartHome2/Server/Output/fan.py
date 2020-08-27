@@ -9,8 +9,10 @@ class FAN:
 
     def turn_on(self):
         GPIO.output(self.pin_fan,GPIO.HIGH)
+        print("FAN turned on")
 
     def turn_off(self):
+        print("FAN turned off")
         GPIO.output(self.pin_fan,GPIO.LOW)
 
 

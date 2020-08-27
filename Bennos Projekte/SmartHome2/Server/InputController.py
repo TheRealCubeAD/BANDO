@@ -19,8 +19,10 @@ class INPCON:
     def add_event(self, event):
         if not self.occupied:
             self.occupied = True
+            print("sending event...")
             self.main_controller.new_input_event(event)
         else:
+            print("adding event to queue")
             if event.is_prio_high():
                 self.input_queue.add_front(event)
             else:
@@ -38,6 +40,7 @@ class INPCON:
 
     def signal_finished(self):
         if not self.input_queue.is_empty():
+            print("sending event")
             self.main_controller.new_input_event(self.input_queue.pop())
         else:
             self.occupied = False

@@ -23,14 +23,17 @@ class SOUND:
     def TTS(self,text):
         while self.occupied:
             pass
+        print("TTS is processing...")
         self.occupied = True
         tts = gTTS(text, "en-uk")
         tts.save("temp.mp3")
+        print("TTS is playing...")
         os.system("mpg123 temp.mp3")
         self.occupied = False
 
 
     def sound(self,num,opt="e"):
+        print("SPK is playing:", num)
         path = "Mp3/"
         if opt == "e":
             path += "Click_Electronic/Click_Electronic_"
@@ -42,6 +45,7 @@ class SOUND:
 
     def keep_alive(self):
         while 1:
+            print("SPK is keeping alive")
             os.system("mpg123 Mp3/output.wav")
             time.sleep(30)
 

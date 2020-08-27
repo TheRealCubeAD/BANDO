@@ -27,9 +27,11 @@ class READ:
             line = None
             with open("buffer.ln", 'r') as file:
                 line = file.readline()
+            print("CML read:", line)
             os.remove("buffer.ln")
             event = INPUT_EVENT()
             event.set_device("CML")
             event.set_message(line)
             event.set_prio_high()
             self.callback(event)
+        print("CML killed")

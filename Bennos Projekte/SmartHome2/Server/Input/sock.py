@@ -12,8 +12,8 @@ class SOCK:
 
     def activate(self):
         self.pc = PC(callback)
+        self.addrs = {"192.168.0.173": self.pc}
         self.start_sck()
-        self.addrs = {"192.168.0.173":self.pc}
         print("Socket started")
 
 
