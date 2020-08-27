@@ -13,6 +13,7 @@ class Z14:
         self.thread = threading.Thread(target=self.main)
         self.thread.daemon = True
         self.thread.start()
+        print("Z14 started")
 
     def deactivate(self):
         self.running = False

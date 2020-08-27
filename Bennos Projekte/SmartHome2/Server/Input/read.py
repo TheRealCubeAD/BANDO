@@ -14,6 +14,7 @@ class READ:
         self.process = threading.Thread(target=self.run)
         self.process.daemon = True
         self.process.start()
+        print("CML started")
 
     def deactivate(self):
         self.running = False

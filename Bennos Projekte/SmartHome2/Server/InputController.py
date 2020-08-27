@@ -7,7 +7,9 @@ class INPCON:
         self.input_queue = QUEUE()
         self.occupied = False
         for device in Device_init_list.INPUT_DEVICES:
-            self.devices.append(device(self.add_event))
+            print(device)
+            self.add_device(device(self))
+
 
 
     def add_device(self, device):

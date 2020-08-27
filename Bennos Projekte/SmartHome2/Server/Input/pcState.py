@@ -20,6 +20,7 @@ class PCSTATE:
         thread = threading.Thread(target=self.run)
         thread.daemon = True
         thread.start()
+        print("pcState started")
 
     def activate(self):
         pass
@@ -41,7 +42,7 @@ class PCSTATE:
                     event.set_device("PC")
                     event.get_message("power_on")
                     event.set_prio_high()
-                    self.callback(event)
+                    #self.callback(event)
             else:
                 if not all(self.messure):
                     self.state = False
