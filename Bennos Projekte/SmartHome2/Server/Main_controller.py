@@ -40,10 +40,22 @@ class CONTROLLER:
                 self.out_con.text("PC connected")
             if event.get_message() == "disconnected":
                 self.out_con.text("PC disconnected")
+
         if event.get_device() == "Spotify":
             self.out_con.text(event.get_message())
+
         if event.get_message() == "CML":
-            self.out_con.start_pc()
+            if event.get_message() == "###":
+                self.out_con.start_pc()
+
+        if event.get_device() == "CO2":
+            m, val = event.get_message().split(":::")
+            if m == "f":
+                self.out_con.speak("Air-Quality critical. " + val + "ppm")
+                self.out_con.text("CO2-[%]##" + val + "ppm")
+            if m == "s":
+                self.out_con.text("CO2-[%]##" + val + "ppm")
+
         self.in_con.signal_finished()
 
 if __name__ == '__main__':

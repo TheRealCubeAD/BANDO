@@ -6,12 +6,20 @@ import threading
 class READ:
     def __init__(self, callback):
         self.callback = callback
+        self.process = None
+        self.running = False
+
+    def activate(self):
+        self.running = True
         self.process = threading.Thread(target=self.run)
         self.process.daemon = True
         self.process.start()
 
+    def deactivate(self):
+        self.running = False
+
     def run(self):
-        while 1:
+        while self.running:
             while not os.path.exists("buffer.ln"):
                 time.sleep(0.5)
             time.sleep(0.5)
