@@ -14,6 +14,11 @@ class DARK_THEME:
     color_text_low = "#999999"
     color_text_high = "#ffffff"
 
+    text_success = "#00aa00"
+    text_error = "#cc8800"
+    text_neutral = "#888888"
+    text_info = "#4444cc"
+
 class LIGHT_THEME:
     surface_1 = "#ffffff"
     surface_2 = "#ffffff"
@@ -28,6 +33,11 @@ class LIGHT_THEME:
 
     color_text_low = "#333333"
     color_text_high = "#000000"
+
+    text_success = "#00aa00"
+    text_error = "#ffaa00"
+    text_neutral = "#888888"
+    text_info = "#0000ff"
 
 
 def load_theme(theme):

@@ -1,14 +1,18 @@
 from tkinter import *
 from functools import partial
 import color_themes, languages
+from note import NOTE
+import note
+from copy import deepcopy
+from gui_elements import *
+import gui_elements
+from song import SONG
+import time
+from plott import plott
 
 # TODO: link maker
 # TODO: settings bar
-# TODO: info bar
-# TODO: history
-# TODO: history_tools
 # TODO: logic
-# TODO: current_bar
 # TODO: export
 # TODO: live view
 # TODO: cutter
@@ -32,6 +36,9 @@ def load_settings():
 
     text = languages.load_language(settings["language"])
     keys = text.keys
+    note.lng = text
+    gui_elements.color = color
+
 
 
 class main: # Controlling Class
@@ -45,20 +52,31 @@ class main: # Controlling Class
         self.frame.bind("<Configure>", self.configure)
 
         #Variables
-        self.current_note = [None, None, None, False, False, 0] #[main_note, sec_note, lenght, is_point, is_pause, link]
+        self.song = SONG()
 
         #Initial resolution for scaling
+        self.factor = 1
         self.fx, self.fy = 1000, 500
+        self.frame.wm_minsize(width=self.fx, height=self.fy)
 
         #INIT
         self.create_gui_structure()
 
+        self.info = INFO(self.main_frame.get("info_frame"), 400, 200)
+
         self.but_wo = button_worker(self.main_frame.get("create_frame"), 800, 300, self.get_update, self.get_add)
         self.but_wo.activate()
 
+        self.list = LIST(self.main_frame.get("notes_frame"), self.main_frame.get("note_tools"), 200, 350, self.insert,
+                         self.load_note, self.delete, self.info.failure, self.list_callback)
+
+        self.link = LINK(self.main_frame.get("link_frame"), self.link_add_remove)
+
+        self.show = BUTTON("show", self.main_frame.get("settings_frame"), LEFT, 200, 200, "show", color.surface_2, self.show_plott)
+
+
         #START
         self.frame.mainloop()
-
 
 
     def create_gui_structure(self):
@@ -95,204 +113,262 @@ class main: # Controlling Class
     def configure(self, event): # Called when Window changes
         # Resize all Widgets
         sx, sy = self.frame.winfo_width(), self.frame.winfo_height()
-        print(sx, sy)
-
 
         if sx / self.fx < sy / self.fy:
             factor = sx / self.fx
         else:
             factor = sy / self.fy
 
+        if factor == self.factor:
+            return
+        self.factor = factor
         print(factor)
+
         self.main_frame.resize(factor)
         self.but_wo.resize(factor)
+        self.list.resize(factor)
+        self.info.resize(factor)
+        self.link.resize(factor)
 
 
-    def verify_note(self, note):
-        if note[0] == None:
-            return False
-        if note[2] == None:
-            return False
-        return True
-
-
-    def note_to_text(self, note, simple=False):
-        if not simple:
-            final = ""
-            if note[4] == False:
-                final += text.pause_but_note
-            else:
-                final += text.pause_but_pause + " "
-                if note[0] != None:
-                    final += text.text_at
-
-            if note[0] != None:
-                final += " " + keys[note[0]]
-            else:
-                if note[1] != None:
-                    final += " ?"
-
-            if note[1] != None:
-                final += " " + text.text_with + " " + keys[note[1]]
-
-            if note[2] != None:
-                final += " " + text.text_of_lenght + " 1/" + str(note[2])
-                if note[3]:
-                    final += "."
-        return final
-
-    # For Crator:
+    # For Creator:
 
     def get_update(self, note):
-        for i in range(len(note)):
-            self.current_note[i] = note[i]
-        self.current_label.re_text(self.note_to_text(note))
-        if self.verify_note(note):
+        self.current_label.re_text(note.to_text())
+        if note.verify():
             self.current_label.re_color(color.color_text_high)
         else:
             self.current_label.re_color(color.color_text_low)
 
 
-    def get_add(self):
-        if self.verify_note(self.current_note):
+    def get_add(self, note):
+        if note.verify():
+            deep_note = deepcopy(note)
+            self.song.add_note(deep_note)
+            self.list.update(self.song)
+            self.list_callback(None)
+            self.info.success(str(deep_note) + " " + text.added)
             return True
         else:
+            self.info.failure(note.report_problem())
             return False
 
-
-
-
-
-class FRAME: # handles Frame-widgets
-
-    def __init__(self, name, mother, orientation, sx, sy, color, border=False, anchor=None):
-        self.name = name
-        self.children = {}
-        self.mother = mother
-        self.sx, self.sy = sx, sy
-
-        self.frame = Frame(mother.frame, height=sy, width=sx, relief=SOLID, bd=border, bg=color)
-        self.frame.pack_propagate(0)
-        self.frame.pack(side=orientation, anchor=anchor)
-
-
-    def resize(self, factor): # on window resize
-        self.frame.configure(width=int(factor*self.sx), height=int(factor*self.sy))
-        for child in self.children.values():
-            child.resize(factor)
-
-
-    def add_frame(self, name, orientation, sx, sy, color, border=False): # creates new FRAME, adds it as child
-        obj = FRAME(name, self, orientation, sx, sy, color, border=border)
-        self.children.update({name : obj})
-
-
-    def add_obj(self,obj): # add object to childs
-        self.children.update({obj.name : obj})
-
-
-    def get(self, name): # tree search for name
-        if self.name == name:
-            return self
+    def insert(self, index):
+        note = self.but_wo.get_note()
+        if note.verify():
+            deep_note = deepcopy(note)
+            self.song.add_note(deep_note, pos=index)
+            self.info.success(str(deep_note) + " " + text.inserted + " " + str(self.song.get_note(index + 1)))
+            self.list.update(self.song)
+            self.list_callback(None)
+            self.but_wo.reset()
         else:
-            for child in self.children.values():
-                val = child.get(name)
-                if val:
-                    return val
+            self.info.failure(note.report_problem())
+            return False
 
-        return None
+    def load_note(self, index):
+        note = deepcopy(self.song.get_note(index))
+        note.links = []
+        self.but_wo.load(note)
+        self.info.success(str(note) + " " + text.loaded)
 
-    def get_all(self):
-        return self.children
+    def delete(self, index):
+        self.info.success(str(self.song.get_note(index)) + " " + text.deleted)
+        self.song.del_note(index)
+        self.list.update(self.song)
+        self.list_callback(None)
+
+    def list_callback(self, event):
+        index = self.list.get_index()
+        if index != None:
+            note = self.song.get_note(index)
+            self.link.note_change(note.links)
+        else:
+            self.link.note_change(None)
+
+    def link_add_remove(self, id):
+        index = self.list.get_index()
+        if index == None:
+            self.info.failure(text.prob_no_selection)
+            return
+        note = self.song.get_note(index)
+        ammount = self.song.link_ammount(id)
+        if id in note.links:
+            note.remove_link(id)
+            self.info.info(text.removed_link + " " + str(id) + " " + text.text_from + " " + str(note))
+        else:
+            if ammount == 0:
+                note.add_link(id)
+                self.info.success(text.added_link + " " + str(id) + " " + text.text_to + " " + str(note))
+            elif ammount == 1:
+                note.add_link(id)
+                self.info.success(text.added_link + " " + str(id) + " " + text.text_to + " " + str(note)
+                                  + ". " + text.link_done)
+            else:
+                self.info.failure(text.prob_many_link)
+        self.list_callback(None)
+        self.list.update(self.song)
+
+    def show_plott(self):
+        plott(deepcopy(self.song))
 
 
-class BUTTON:
+class LINK:
 
-    def __init__(self, name, mother, orientation, sx, sy, _text, _color, method):
-        self.color = _color
-        self.name = name
-        self.mother = mother
+    def __init__(self, master, add_remove_cb):
+        self.add_remove_cb = add_remove_cb
+        self.label = LABEL("link_label", master, LEFT, 100, 50, text.label_link, color.color_text_low, color.surface_3)
+        self.id = LABEL("link_id", master, LEFT, 35, 35, "0", color.color_text_high, color.surface_2)
+        self.empty_frame1 = FRAME("empty1", master, LEFT, 10, 50, color.surface_3)
+        self.button_frame = FRAME("up_down_frame", master, LEFT, 25, 50, color.surface_3)
+        self.button_up = BUTTON("up_button", self.button_frame, TOP, 25, 24, "/\\", color.surface_3, self.up_callback)
+        self.button_down = BUTTON("down_button", self.button_frame, BOTTOM, 25, 25, "\\/",
+                                  color.surface_3, self.down_callback)
+        self.empty_frame2 = FRAME("empty2", master, LEFT, 60, 50, color.surface_3)
+        self.add = BUTTON("add_remove", master, LEFT, 120, 50, "", color.surface_3, self.add_remove)
+        self.cur_id = 0
+        self.cur_links = None
+
+    def up_callback(self):
+        self.cur_id += 1
+        self.id.re_text(self.cur_id)
+        self.update_text()
+
+    def down_callback(self):
+        if self.cur_id > 0:
+            self.cur_id -= 1
+            self.id.re_text(self.cur_id)
+            self.update_text()
+
+    def update_text(self):
+        if self.cur_links == None:
+            self.add.re_text("")
+        elif self.cur_id in self.cur_links:
+            self.add.re_text(text.link_but_rem)
+        else:
+            self.add.re_text(text.link_but_add)
+
+    def add_remove(self):
+        self.add_remove_cb(self.cur_id)
+
+    def resize(self, factor):
+        for item in [self.label, self.id, self.empty_frame1, self.button_frame, self.button_up, self.button_down,
+                     self.empty_frame2, self.add]:
+            item.resize(factor)
+
+    def note_change(self, links):
+        self.cur_links = links
+        self.update_text()
+
+
+class LIST:
+
+    def __init__(self, master, tools, sx, sy, insert_cb, load_cb, delete_cb, problem_cb, update_cb):
         self.sx = sx
         self.sy = sy
+        self.insert_cb = insert_cb
+        self.load_cb = load_cb
+        self.delete_cb = delete_cb
+        self.problem_cb = problem_cb
+        self.listbox = Listbox(master.frame, height=sy, width=sx, bg=color.surface_5, bd=0, fg=color.color_text_low,
+                               selectmode=SINGLE, relief=FLAT, selectbackground=color.color_active,
+                               highlightthickness=0)
+        self.listbox.pack_propagate(0)
+        self.listbox.pack()
+        self.listbox.bind('<<ListboxSelect>>', update_cb)
 
-        self.frame = Frame(mother.frame, height=sy, width=sx, bd=0, relief=SOLID, bg=_color)
-        self.frame.pack_propagate(0)
-        self.frame.pack(side=orientation)
+        self.insert_button = BUTTON("insert", tools, TOP, 200, 70, text.insert, color.surface_4, self.insert_callback)
+        self.load_button = BUTTON("load", tools, LEFT, 100, 80, text.load, color.surface_4, self.load_callback)
+        self.delete_button = BUTTON("delete", tools, RIGHT, 100, 80, text.delete, color.surface_4, self.delete_callback)
 
-        self.button = Button(self.frame, command=method, bd=1, relief=SOLID, bg=_color, fg=color.color_text_low, activebackground=color.color_click)
-        self.button.pack_propagate(0)
-        self.button.pack(fill=BOTH, expand=1)
-        self.re_text(_text)
+    def update(self, song):
+        self.listbox.delete(0, END)
+        for note in song.get_notes():
+            string = " " + str(note) + " "
+            if len(note.links) > 0:
+                string += str(note.links)
+            self.listbox.insert(END, " " + string)
 
+    def resize(self, factor):
+        self.listbox.configure(width=int(factor * self.sx), height=int(factor * self.sy))
+        self.insert_button.resize(factor)
+        self.load_button.resize(factor)
+        self.delete_button.resize(factor)
 
-    def re_text(self, new_text):
-        self.button.configure(text=new_text)
-
-
-    def resize(self, scale):
-        self.frame.configure(height=int(scale*self.sy), width=int(scale*self.sx))
-
-
-    def activate(self):
-        self.button.configure(bg=color.color_active)
-
-
-    def deactivate(self):
-        self.button.configure(bg=self.color)
-
-
-    def get(self, name):
-        if self.name == name:
-            return self
+    def insert_callback(self):
+        index = self.listbox.curselection()
+        if len(index) == 0:
+            if self.listbox.size() == 0:
+                self.problem_cb(text.prob_no_item)
+            else:
+                self.problem_cb(text.prob_no_selection)
+            return
         else:
-            return None
+            self.insert_cb(index[0])
 
-
-class LABEL:
-
-    def __init__(self, name, mother, orientation, sx, sy, _text, color_fg, color_bg):
-        self.name = name
-        self.mother = mother
-        self.sx = sx
-        self.sy = sy
-
-        self.frame = Frame(mother.frame, height=sy, width=sx, bd=0, relief=SOLID, bg=color_bg)
-        self.frame.pack_propagate(0)
-        self.frame.pack(side=orientation)
-
-        self.label = Label(self.frame, bd=0, bg=color_bg, fg=color_fg)
-        self.label.pack_propagate(0)
-        self.label.pack(fill=BOTH, expand=1)
-        self.re_text(_text)
-
-    def re_text(self, new_text):
-        self.label.configure(text=new_text)
-
-    def resize(self, scale):
-        self.frame.configure(height=int(scale * self.sy), width=int(scale * self.sx))
-
-    def re_color(self, _color):
-        self.label.configure(fg=_color)
-
-    def get(self, name):
-        if self.name == name:
-            return self
+    def load_callback(self):
+        index = self.listbox.curselection()
+        if len(index) == 0:
+            if self.listbox.size() == 0:
+                self.problem_cb(text.prob_no_item)
+            else:
+                self.problem_cb(text.prob_no_selection)
+            return
         else:
-            return None
+            self.load_cb(index[0])
 
+    def delete_callback(self):
+        index = self.listbox.curselection()
+        if len(index) == 0:
+            if self.listbox.size() == 0:
+                self.problem_cb(text.prob_no_item)
+            else:
+                self.problem_cb(text.prob_no_selection)
+            return
+        else:
+            self.delete_cb(index[0])
+
+    def get_index(self):
+        index = self.listbox.curselection()
+        if len(index) == 0:
+            return None
+        return index[0]
+
+
+
+class INFO:
+
+    def __init__(self, master, sx, sy):
+        self.label = LABEL("info", master, TOP, sx, sy, "", color.text_info, color.surface_3)
+
+    def resize(self, factor):
+        self.label.resize(factor)
+
+    def success(self, text):
+        self.label.re_color(color.text_success)
+        self.label.re_text(text)
+
+    def failure(self, text):
+        self.label.re_color(color.text_error)
+        self.label.re_text(text)
+
+    def info(self, text):
+        self.label.re_color(color.text_info)
+        self.label.re_text(text)
 
 class WORK_FRAME:
 
-    def __init__(self, mother, sx, sy, update_methode, add_methode):
-        self.note = [None, None, None, False, False] #  [main_note, sec_note, lenght, is_point, is_pause]
+    def __init__(self, master, sx, sy, update_methode, add_methode):
+        self.note = NOTE()
         self.update = update_methode
         self.add = add_methode
         self.sx = sx
         self.sy = sy
         self.children = {}
-        self.frame = Frame(mother.frame,  height=sy, width=sx, bg=color.surface_1)
+        self.frame = Frame(master.frame,  height=sy, width=sx, bg=color.surface_1)
         self.frame.pack_propagate(0)
         self.create_structure()
+        self.reset()
 
 
     def create_structure(self):
@@ -304,13 +380,19 @@ class WORK_FRAME:
         for item in self.children.values():
             item.resize(factor)
 
+    def load(self, note):
+        pass
+
 
     def activate(self):
+        self.reset()
         self.frame.pack()
-
 
     def deactivate(self):
         self.frame.pack_forget()
+
+    def reset(self):
+        pass
 
 
 class button_worker(WORK_FRAME):
@@ -389,11 +471,30 @@ class button_worker(WORK_FRAME):
         self.add_button = BUTTON("add_button", self, RIGHT, 120, 60, text.add_but, color.surface_7, self.add_button_callback)
         self.children.update({"add_button" : self.add_button})
 
+    def load(self, note):
+        self.reset()
+        self.note = note
+        if self.note.point:
+            self.lenght_key_frame.get("lenght_.").activate()
+        self.lenght_key_frame.get("lenght_" + str(self.note.lenght)).activate()
+        if self.note.notes[0] != None:
+            self.main_key_frame.get("main_" + keys[self.note.notes[0]]).activate()
+        if self.note.notes[1] != None:
+            self.no_sec_button.deactivate()
+            self.sec_key_frame.get("sec_" + keys[self.note.notes[1]]).activate()
+        if not self.note.is_note():
+            self.pause_button.re_text(text.pause_but_pause)
+        self.push_update()
+
+
+    def get_note(self):
+        return self.note
+
 
     def lenght_callback(self, value):
         if value == 0:
-            self.note[3] = not self.note[3]
-            if self.note[3]:
+            self.note.point = not self.note.point
+            if self.note.point:
                 self.lenght_key_frame.get("lenght_.").activate()
             else:
                 self.lenght_key_frame.get("lenght_.").deactivate()
@@ -404,12 +505,12 @@ class button_worker(WORK_FRAME):
             self.lenght_key_frame.get("lenght_8").deactivate()
 
             self.lenght_key_frame.get("lenght_"+str(value)).activate()
-            self.note[2] = value
+            self.note.lenght = value
         self.push_update()
 
 
     def main_key_callback(self, value):
-        self.note[0] = value
+        self.note.notes[0] = value
         for button in self.main_key_frame.get_all().values():
             button.deactivate()
         self.main_key_frame.get("main_"+keys[value]).activate()
@@ -417,7 +518,9 @@ class button_worker(WORK_FRAME):
 
 
     def sec_key_callback(self, value):
-        self.note[1] = value
+        if not self.note.is_note():
+            return
+        self.note.notes[1] = value
         for button in self.sec_key_frame.get_all().values():
             button.deactivate()
         if value == None:
@@ -428,23 +531,29 @@ class button_worker(WORK_FRAME):
 
 
     def pause_button_callback(self):
-        self.note[4] = not self.note[4]
-        if self.note[4]:
-            self.pause_button.re_text(text.pause_but_pause)
+        if self.note.is_note():
+            self.note.set_mode_pause()
         else:
+            self.note.set_mode_note()
+        if self.note.is_note():
             self.pause_button.re_text(text.pause_but_note)
+        else:
+            self.pause_button.re_text(text.pause_but_pause)
+            for button in self.sec_key_frame.get_all().values():
+                button.deactivate()
+            self.no_sec_button.activate()
+            self.note.notes[1] = None
         self.push_update()
 
 
     def add_button_callback(self):
-        if self.add():
+        if self.add(self.note):
             self.reset()
             self.push_update()
 
 
     def push_update(self):
-        if self.update(self.note):
-            self.reset()
+        self.update(self.note)
 
 
 
@@ -460,7 +569,10 @@ class button_worker(WORK_FRAME):
         self.lenght_key_frame.get("lenght_.").deactivate()
         self.pause_button.re_text(text.pause_but_note)
         self.no_sec_button.activate()
-        self.note = [None, None, None, False, False]
+        self.note = NOTE()
+        self.note.add_note(None)
+        self.note.add_note(None)
+        self.push_update()
 
 
 
