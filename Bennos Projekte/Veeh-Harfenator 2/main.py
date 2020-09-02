@@ -8,7 +8,8 @@ from gui_elements import *
 import gui_elements
 from song import SONG
 import time
-from plott import plott
+from plotter import plott
+import plotter
 
 # TODO: link maker
 # TODO: settings bar
@@ -37,6 +38,7 @@ def load_settings():
     text = languages.load_language(settings["language"])
     keys = text.keys
     note.lng = text
+    plotter.lng = text
     gui_elements.color = color
 
 
@@ -210,7 +212,7 @@ class main: # Controlling Class
         self.list.update(self.song)
 
     def show_plott(self):
-        plott(deepcopy(self.song))
+        plott(deepcopy(self.song), grid=True)
 
 
 class LINK:
