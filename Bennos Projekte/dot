@@ -1,0 +1,22 @@
+digraph example{
+    size = ”10”;
+    node [shape = circle, color = blue];
+    n1 [label = ”1,0”, ptype = ”input”];
+    n2 [label = ”2,0”, ptype = ”result”];
+    n3 [label = ”3,0”, ptype = ”inner”];
+    n4 [label = ”4,0”, ptype = ”inner”];
+    node [shape = circle, color = black];
+    subgraph 0{
+        n5 [label = ”interval,0”, atype = ”interval”];
+        n6 [label = ”interval,0”, atype = ”interval”];
+        n7 [label = ”collect,0”, atype = ”collect”];
+    }
+    n1 ->n5 [headlabel = ”0”];
+    n1 ->n6 [headlabel = ”0”];
+    n5 ->n3;
+    n6 ->n4;
+    n3 ->n7 [headlabel = ”0”];
+    n4 ->n7 [headlabel = ”1”];
+    n7 ->n2;
+
+}

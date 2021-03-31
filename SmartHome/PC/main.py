@@ -2,6 +2,7 @@ import socket
 import threading
 import time
 from SwSpotify import spotify
+import os
 
 class CONNECT:
 

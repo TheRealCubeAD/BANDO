@@ -1,0 +1,14 @@
+import math
+
+def T(n):
+    if n <= 2:
+        return 0
+    return 1 + T(math.ceil(math.sqrt(n)))
+
+for i in range(2, 1000000):
+    a = T(i)
+    b = math.ceil(math.log(math.ceil(math.log(i, 2)), 2))
+    print(a, b)
+    if a != b:
+        print("FALSE")
+        break
