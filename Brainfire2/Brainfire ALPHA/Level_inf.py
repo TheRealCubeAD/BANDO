@@ -205,7 +205,7 @@ class LEVEL_SOLVER:
             rooms = raum.massProduction(1000)
             for room in rooms:
                 for tpl in snake:
-                    if tpl.check(room):
+                    if tpl.check_meeting(room):
                         b = True
                         for prev in placed:
                             if room.equality(prev) >= 0.9:

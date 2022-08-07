@@ -4,7 +4,7 @@ import network
 from ntptime import settime
 import clock as CLOCK
 
-
+# print hello world
 class SPEAKER:
 
     def __init__(self):
@@ -289,3 +289,4 @@ class SYSTEM:
 
 s = SYSTEM()
 s.main()
+

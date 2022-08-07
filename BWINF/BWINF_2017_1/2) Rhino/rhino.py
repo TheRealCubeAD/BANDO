@@ -29,6 +29,6 @@ while y < höhe:
         x = x + 1
     x = 1
     y = y + 1
-image.save(bildName + "-entdeckt.png")
+image.show()
 print("Fertig")
 print("Zahl der gefundenen potentiellen Schuppen: ", count)

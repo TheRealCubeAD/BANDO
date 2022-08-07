@@ -45,16 +45,14 @@ active = False
 url = "http://digicampus.uni-augsburg.de/dispatch.php/ical/index/YQYWvmN8"
 events = []
 meetings = [
-    ZMT("Fragestunde zur Vorlesung, Informatik 3", None, None, link="https://tweedback.de/pd78"),
-    ZMT("Mess- und Regelungstechnik", None, None, link="https://uni-augsburg.zoom.us/j/91383112560?pwd=aFFxMFRWMXVaSmEvYTVsa0VEUjhnQT09"),
-    ZMT("Praktikum Konstruktionslehre", 91894241407, "p&.9=3"),
-    ZMT("Produktionstechnik", 91991098691, "PT20/21"),
-    ZMT("Zoom-Meeting, Ü1 - Info 3 - Mo 12:15", 99460867546, "E@ia8Q"),
-    ZMT("Übung zu Mess- und Regelungstechnik", 92721709124, "vZ?R%1"),
-    ZMT("Übung zu Produktionstechnik", 91991098691, "PT20/21"),
-    ZMT("test", 91991098691, "abc")
+    ZMT("Diskuusion zu Vorlesung, Numerische Verfahren", None, None, link="https://uni-augsburg.zoom.us/j/92384192432?pwd=Z0czWnlybWdHQ2VIYXpmRUpGU3VDdz09"),
+    ZMT("Praktikum Mess- und Regelungstechnik", None, None, link="https://uni-augsburg.zoom.us/j/95193816917?pwd=N0R5cWNzZFdkY0hUdGJRNmd1d21hUT09"),
+    ZMT("Praktikum für Produktionstechnik", None, None, "https://uni-augsburg.zoom.us/j/95352087019?pwd=dTFNQ21qcFh4VkhVcHVkL3I5R25PQT09"),
+    ZMT("Systemnahe Informatik", None, None, link="https://uni-augsburg.zoom.us/j/95120172814?pwd=bUFVTlc5RFpIOGE1bjlDbWs1T25yZz09"),
+    ZMT("Vorlesung, Modellierung informationstechnischer Systeme", None, None, link="https://uni-augsburg.zoom.us/j/91527370995?pwd=NmdaS0xTVTduWklvTHo0SytqY09OUT09"),
+    ZMT("Übung, Modellierung informationstechnischer Systeme", None, None, link="https://uni-augsburg.zoom.us/j/99404611629?pwd=WnVJcloxUXEyWDV3ZHh6Y1NjUDNMZz09"),
+    ZMT("Ü-SNI", None, None, link="https://uni-augsburg.zoom.us/j/92814142816?pwd=TmxNN2dmQ2N4OVdpUEhITHBLeWQ2dz09")
 ]
-
 
 def load():
     today = datetime.utcnow().replace(tzinfo=pytz.utc)
