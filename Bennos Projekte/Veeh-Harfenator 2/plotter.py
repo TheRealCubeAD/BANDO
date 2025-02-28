@@ -5,7 +5,9 @@ size = 2000
 max_note = 24
 border_x = 1
 border_y = 50
-max_notes_per_site = 51
+max_notes_per_site = 10
+
+sizes = {1: 20, 2: 15, 4: 15, 8: 10}
 
 lng = None
 
@@ -15,11 +17,14 @@ def plott(song, grid=False):
     :param song: Song object
     :param grid: Show grid
     """
+    links = prepare_links(song.get_notes())
     sites = calc_notes(song)
+    index = 0
     for site in sites:
-        plott_site(site, grid)
+        plott_site(site, grid, links, index)
+        index += len(site)
 
-def plott_site(entrys, grid):
+def plott_site(entrys, grid, links, start_index):
     """
     Plots a site
     :param entrys: List of notes
@@ -31,6 +36,38 @@ def plott_site(entrys, grid):
     # Grid
     if grid:
         draw_grid(draw, len(entrys))
+
+    # Links
+    for link in links:
+        y1 = None
+        y2 = None
+        if link[0] >= start_index and link[0] < start_index + len(entrys):
+            y1 = calc_y(len(entrys), link[0] - start_index)
+            draw.line(((link[2], y1), (link[4], y1)), width=3)
+            # arrow head
+            sign = 1 if link[2] > link[4] else -1
+            note = entrys[link[0] - start_index]
+            buff = sizes[note.lenght]
+            buff *= 1.5 if note.mode == 0 else 0.75
+
+            draw.polygon((
+                (link[2] - sign * buff, y1),
+                (link[2] - sign * (buff +20), y1 - 10),
+                (link[2] - sign * (buff +15), y1),
+                (link[2] - sign * (buff +20), y1 + 10)
+            ), fill=0)
+
+        if link[1] >= start_index and link[1] < start_index + len(entrys):
+            y2 = calc_y(len(entrys), link[1] - start_index)
+            draw.line(((link[4], y2), (link[3], y2)), width=3)
+
+        if y1 != None or y2 != None:
+            if y1 == None:
+                y1 = 0
+            if y2 == None:
+                y2 = size
+            draw.line(((link[4], y1), (link[4], y2)), width=3)
+
 
     # Vert lines
     for ey in range(len(entrys) - 1):
@@ -56,6 +93,82 @@ def plott_site(entrys, grid):
     image.show()
 
 
+def prepare_links(notes):
+    """
+    Prepares the links
+    :param notes: List of notes
+
+    """
+    links = []
+    for i, note in enumerate(notes):
+        for link in note.links:
+            if link != None:
+                for j in range(len(links)):
+                    if links[j][0] == link:
+                        links[j][1].append(i)
+                        break
+                else:
+                    links.append([link, [i]])
+    dependencies = []
+    for i in range(len(links)):
+        dependencies.append([])
+        for j in range(len(links)):
+            if i == j:
+                continue
+            if links[j][1][0] >= links[i][1][0] and links[j][1][0] <= links[i][1][1]:
+                # link i upper is within link j
+                dependencies[i].append(j)
+    # sort links by dependencies
+    result = []
+    while len(result) < len(links):
+        lowest = min([len(dependencies[i]) for i in range(len(dependencies))])
+        for i in range(len(links)):
+            if i in result:
+                continue
+            if len(dependencies[i]) == lowest:
+                result.append(i)
+                for j in range(len(dependencies)):
+                    if i in dependencies[j]:
+                        dependencies[j].remove(i)
+                break
+
+    final_links = []
+    # form: [(i_start, i_end, x_start, x_end, x_out)]
+    extremes = []
+    for note in notes:
+        positions = [calc_x(i) for i in note.notes if i != None]
+        extremes.append([min(positions), max(positions)])
+
+    BUFFER = 15
+    for i in result:
+        link = links[i][1]
+        local_min = min([extremes[i][0] for i in range(link[0], link[1] + 1)])
+        local_max = max([extremes[i][1] for i in range(link[0], link[1] + 1)])
+        # choose left or right
+        if local_min >= size - local_max:
+            # left
+            x_start = min([calc_x(note) for note in notes[link[0]].notes if note != None])
+            x_end = min([calc_x(note) for note in notes[link[1]].notes if note != None])
+            x_out = min(local_min - BUFFER, x_start - BUFFER*5, x_end - BUFFER*5)
+            if x_out < BUFFER:
+                x_out = BUFFER
+            for e in range(link[0], link[1] + 1):
+                extremes[e][0] = x_out
+        else:
+            # right
+            x_start = max([calc_x(note) for note in notes[link[0]].notes if note != None])
+            x_end = max([calc_x(note) for note in notes[link[1]].notes if note != None])
+            x_out = max(local_max + BUFFER, x_start + BUFFER*5, x_end + BUFFER*5)
+            if x_out > size - BUFFER:
+                x_out = size - BUFFER
+            for e in range(link[0], link[1] + 1):
+                extremes[e][1] = x_out
+        final_links.append((link[0], link[1], x_start, x_end, x_out))
+
+    return final_links
+
+
+
 def draw_note(draw, note, y):
     """
     Draws a note
@@ -64,7 +177,7 @@ def draw_note(draw, note, y):
     :param y: y position
     """
 
-    sizes = {1: 20, 2: 15, 4: 15, 8: 10}
+
     size = sizes[note.lenght]
     if note.lenght == 1 or note.lenght == 2:
         hollow = True

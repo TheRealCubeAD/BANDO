@@ -1,8 +1,11 @@
-
+from note import NOTE
 class SONG:
 
     def __init__(self):
         self.notes = []
+
+    def is_empty(self):
+        return len(self.notes) == 0
 
     def add_note(self, note, pos=-1):
         if pos == -1:
@@ -35,3 +38,18 @@ class SONG:
             if id in note.links:
                 ammount += 1
         return ammount
+
+    def to_csv(self):
+        result = ""
+        for note in self.notes:
+            result += note.to_csv() + "\n"
+        return result
+
+    def from_csv(self, csv):
+        lines = csv.split("\n")
+        for line in lines:
+            if line != "":
+                note = NOTE()
+                note.from_csv(line)
+                self.add_note(note)
+        self.update_index()

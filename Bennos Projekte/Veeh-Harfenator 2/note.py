@@ -57,6 +57,35 @@ class NOTE:
 
         return n_notes > 0 and self.lenght != None
 
+    def to_csv(self):
+        final = ""
+        if self.mode == MODE_NOTE:
+            final += "N"
+        else:
+            final += "P"
+        final += ";" + str(self.lenght)
+        if self.point:
+            final += ";1;"
+        else:
+            final += ";0;"
+        final += ",".join([str(note) for note in self.notes if note != None]) + ";"
+        final += ",".join([str(link) for link in self.links])
+        return final
+
+    def from_csv(self, csv):
+        data = csv.split(";")
+        if data[0] == "N":
+            self.mode = MODE_NOTE
+        else:
+            self.mode = MODE_PAUSE
+        self.lenght = int(data[1])
+        if data[2] == "1":
+            self.point = True
+        else:
+            self.point = False
+        self.notes = [int(note) if note != "" else None for note in data[3].split(",")]
+        self.links = [int(link) for link in data[4].split(",") if link != ""]
+
     def to_text(self):
         final = ""
         if self.mode == MODE_NOTE:

@@ -1,4 +1,7 @@
 from tkinter import *
+from tkinter.filedialog import askopenfilename, asksaveasfilename
+from tkinter.messagebox import askokcancel
+import os
 from functools import partial
 import color_themes, languages
 from note import NOTE
@@ -76,6 +79,9 @@ class main: # Controlling Class
 
         self.show = BUTTON("show", self.main_frame.get("settings_frame"), LEFT, 200, 200, "show", color.surface_2, self.show_plott)
 
+        self.load = BUTTON("load", self.main_frame.get("load_save_frame"), TOP, 200, 75, "load", color.surface_3, self.load_song)
+        self.save = BUTTON("save", self.main_frame.get("load_save_frame"), BOTTOM, 200, 75, "save", color.surface_4, self.save_song)
+
 
         #START
         self.frame.mainloop()
@@ -102,6 +108,8 @@ class main: # Controlling Class
         self.main_frame.get("work_frame").add_frame("bottom_frame", TOP, 800, 200, color.surface_4)
 
         self.main_frame.get("bottom_frame").add_frame("settings_frame", LEFT, 400, 200, color.surface_4, border=1)
+
+        self.main_frame.get("settings_frame").add_frame("load_save_frame", RIGHT, 200, 200, color.surface_4, border=0)
 
         self.main_frame.get("bottom_frame").add_frame("info_frame", RIGHT, 400, 200, color.surface_3, border=1)
 
@@ -213,6 +221,32 @@ class main: # Controlling Class
 
     def show_plott(self):
         plott(deepcopy(self.song), grid=True)
+
+    def save_song(self):
+        csv = self.song.to_csv()
+        file = asksaveasfilename(defaultextension=".csv", filetypes=[("CSV", "*.csv")])
+        if file == "":
+            return
+        if os.path.exists(file):
+            if not askokcancel("File already exists", "Do you want to overwrite the file?"):
+                return
+        with open(file, "w") as f:
+            f.write(csv)
+        self.info.success("Song saved to " + file)
+
+    def load_song(self):
+        if not self.song.is_empty():
+            if not askokcancel("Load new song", "Do you want to discard the current song?"):
+                return
+        file = askopenfilename(filetypes=[("CSV", "*.csv")])
+        if file == "":
+            return
+        with open(file, "r") as f:
+            csv = f.read()
+        self.song = SONG()
+        self.song.from_csv(csv)
+        self.list.update(self.song)
+        self.info.success("Song loaded from " + file)
 
 
 class LINK:
